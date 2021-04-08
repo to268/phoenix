@@ -14,7 +14,8 @@ isofiles/
 # Toolchain
 *.tar.gz
 *.tar.xz
-utils/toolchain/b*
+utils/toolchain/bin*
+utils/toolchain/build-*
 utils/toolchain/gcc*
 utils/toolchain/lib*
 utils/toolchain/include/
