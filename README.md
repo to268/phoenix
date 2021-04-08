@@ -1,6 +1,6 @@
 # Phoenix
 An hobbyist operating system which aims to be simple and customizable.\
-Prebuild iso file is avariable in the Release tab.
+The prebuild iso file is available in the Release tab.
 
 ## Build
 In order to build it you need to:
