@@ -1,0 +1,10 @@
+## Basic Options
+
+ARCH=x86_64
+CROSS_COMPILER_PREFIX=utils/toolchain/bin/x86_64-elf-
+
+# CFLAGS to add
+#CONFIG_CFLAGS=
+
+# LDFLAGS to add
+#CONFIG_LDFLAGS=

@@ -1,0 +1,22 @@
+# Basic
+.cache/
+.gdb_history
+*.o
+*.a
+*.elf
+*.iso
+*.map
+config
+compile_commands.json
+serial.log
+isofiles/
+
+# Toolchain
+*.tar.gz
+*.tar.xz
+utils/toolchain/b*
+utils/toolchain/gcc*
+utils/toolchain/lib*
+utils/toolchain/include/
+utils/toolchain/share/
+utils/toolchain/x86_64-elf
