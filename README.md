@@ -13,7 +13,7 @@ To build the cross os toolchain:
 ```bash
 make toolchain
 ```
-(you can set the -j option to allow parallel build when using make).\
+(you can set the -j option to allow parallel build when using make).
 
 To Generate the config file:
 ```bash

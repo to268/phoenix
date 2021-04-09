@@ -35,6 +35,9 @@ void init(struct stivale2_struct* hdr) {
     // Init GDT
     gdt_init();
 
+    // Init Paging
+    page_init();
+
     // Jump in kernel_main
     kernel_main();
 }
