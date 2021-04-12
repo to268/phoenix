@@ -1,5 +1,5 @@
 # Phoenix
-An hobbyist operating system which aims to be simple and customizable.\
+An hobbyist unix operating system which aims to be simple and customizable.\
 The prebuild iso file is available in the Release tab.
 
 ## Build
