@@ -6,7 +6,7 @@ int putchar(int ic, uint8_t severity);
 
 int putchar(int ic, uint8_t severity) {
 	char c = (char) ic;
-    // Add color severity
+    /* Add color severity */
     switch (severity) {
         case KERN_VERBOSE:
             vga_setcolor(vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK));

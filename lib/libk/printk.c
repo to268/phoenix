@@ -9,9 +9,11 @@
 #define INT_MAX 2147483647
 
 static int print(const char* data, size_t length, uint8_t severity);
+int convert_int_to_char(int number, int base, char* buff);
 int printk(uint8_t severity, const char* restrict format, ...);
 
-static int print(const char* data, size_t length, uint8_t severity) {
+static int print(const char* data, size_t length, uint8_t severity)
+{
 	const unsigned char* bytes = (const unsigned char*) data;
 	for (size_t i = 0; i < length; i++)
 		if (putchar(bytes[i], severity) == EOF)
@@ -19,7 +21,16 @@ static int print(const char* data, size_t length, uint8_t severity) {
 	return 1;
 }
 
-int printk(uint8_t severity, const char* restrict format, ...) {
+
+int convert_int_to_char(int number, int base, char* buff)
+{
+    itoa(number, buff, base);
+    int len = strlen(buff);
+    return len;
+}
+
+int printk(uint8_t severity, const char* restrict format, ...)
+{
     va_list parameters;
     va_start(parameters, format);
 
@@ -76,22 +87,9 @@ int printk(uint8_t severity, const char* restrict format, ...) {
             case 'B':
                 format++;
                 int number = va_arg(parameters, int);
-                char buff[8];
-                // convert char to binary
-                itoa(number, buff, 2);
-                int len = strlen(buff);
-                if (!print(buff, len, severity))
-                    return -1;
-                written += len;
-                break;
-
-            case 'd':
-            case 'D':
-                format++;
-                number = va_arg(parameters, int);
-                // convert char to int
-                itoa(number, buff, 10);
-                len = strlen(buff);
+                char buff[INT_LENGTH];
+                /* Convert char to binary */
+                int len = convert_int_to_char(number, 2, buff);
                 if (!print(buff, len, severity))
                     return -1;
                 written += len;
@@ -101,9 +99,19 @@ int printk(uint8_t severity, const char* restrict format, ...) {
             case 'O':
                 format++;
                 number = va_arg(parameters, int);
-                // convert char to octal
-                itoa(number, buff, 8);
-                len = strlen(buff);
+                /* Convert char to octal base */
+                len = convert_int_to_char(number, 8, buff);
+                if (!print(buff, len, severity))
+                    return -1;
+                written += len;
+                break;
+
+            case 'd':
+            case 'D':
+                format++;
+                number = va_arg(parameters, int);
+                /* Convert char to decimal */
+                len = convert_int_to_char(number, 10, buff);
                 if (!print(buff, len, severity))
                     return -1;
                 written += len;
@@ -113,9 +121,8 @@ int printk(uint8_t severity, const char* restrict format, ...) {
             case 'X':
                 format++;
                 number = va_arg(parameters, int);
-                // convert char to hex
-                itoa(number, buff, 16);
-                len = strlen(buff);
+                /* Convert char to Hexadecimal */
+                len = convert_int_to_char(number, 10, buff);
                 if (!print(buff, len, severity))
                     return -1;
                 written += len;

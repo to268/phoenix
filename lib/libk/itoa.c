@@ -3,14 +3,15 @@
 
 char* itoa(int value, char* buffer, int base);
 
-char* itoa(int value, char* buffer, int base) {
-    // Check if the base is valid
+char* itoa(int value, char* buffer, int base)
+{
+    /* Check if the base is valid */
     if (base < 2 || base > 32) {
         *buffer = '\0';
         return buffer;
     }
 
-    // Get absolute value
+    /* Get absolute value */
     int n = abs(value);
 
     int i = 0;
@@ -25,18 +26,18 @@ char* itoa(int value, char* buffer, int base) {
         n = n / base;
     }
 
-    // Check if number is 0
+    /* Check if number is 0 */
     if (i == 0)
         buffer[i++] = '0';
 
-    // Set minus for negative decimals
+    /* Set minus for negative decimals */
     if (value < 0 && base == 10)
         memmove(buffer, "-", 1);
 
-    // Add NULL terminator
+    /* Add NULL terminator */
     buffer[i] = '\0';
 
-    // reverse the string
+    /* reverse the string */
     int len = strlen(buffer);
     for (int i = 0; i < len / 2; i++) {
         char temp = buffer[i];

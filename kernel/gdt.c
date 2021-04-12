@@ -1,51 +1,74 @@
+#include <phoenix/serial.h>
 #include <phoenix/gdt.h>
 #include <stdint.h>
 
-void gdt_init(void);
+/* Flags */
+#define GRANULARITY_BIT (1 << 0x0f)             /* Granularity (0: 1B - 1MB, 1: 4kB - 4GB) */
+#define SIZE_BIT        (1 << 0x0e)             /* Size (0: 16 bit, 1: 32 bit) */
+#define LONG_BIT        (1 << 0x0d)             /* Long mode */
+#define FREE_BIT        (1 << 0x0c)             /* Free to use */
+#define PRESENT_BIT     (1 << 0x07)             /* Present */
+#define PRIVILEGE(x)    ((x & 0x03) << 0x05)    /* Privilege level (0 - 3) */
+#define DESCRIPTOR_BIT  (1 << 0x04)             /* Descriptor type (0: system, 1: code/data) */
+#define EX_BIT          (1 << 0x03)             /* Executable bit */
+#define RW_BIT          (1 << 0x01)             /* Read/Write bit */
 
-// Initializing basic GDT structs
+/* Descriptors */
+#define KERNEL_CODE     (GRANULARITY_BIT  | SIZE_BIT | LONG_BIT | \
+                        PRESENT_BIT | PRIVILEGE(0) | DESCRIPTOR_BIT | \
+                        EX_BIT)
+
+#define KERNEL_DATA     (GRANULARITY_BIT  | SIZE_BIT | LONG_BIT | \
+                        PRESENT_BIT | PRIVILEGE(0) | DESCRIPTOR_BIT | \
+                        RW_BIT)
+
+#define USERSPACE_CODE  (GRANULARITY_BIT | SIZE_BIT | LONG_BIT | \
+                        PRESENT_BIT | PRIVILEGE(3) | DESCRIPTOR_BIT | \
+                        EX_BIT)
+
+#define USERSPACE_DATA  (GRANULARITY_BIT | SIZE_BIT | LONG_BIT | \
+                        PRESENT_BIT | PRIVILEGE(3) | DESCRIPTOR_BIT | \
+                        RW_BIT)
+
+/* Initializing GDT structs */
 static struct gdt_descriptor gdt[5];
-struct gdt_pointer gdt_ptr = {.limit = sizeof(gdt) - 1, .base = (uint64_t)gdt};
+static struct gdt_pointer gdt_ptr = {.base = (uint64_t)gdt, .limit = sizeof(gdt) - 1};
 
-void gdt_init(void) {
-    // GDT descriptor 0 (null)
-    gdt[0] = (struct gdt_descriptor) {.flags = 0};
+void create_descriptor(uint32_t base, uint32_t limit, uint16_t access,
+                        struct gdt_descriptor* descriptor)
+{
+    /* Access */
+    descriptor->access      =   (access & 0x00ff);
+    descriptor->flags       =   (access & 0xf000) >> 12;
 
-    // GDT descriptor 1 (kernel code)
-    gdt[1] = (struct gdt_descriptor) {.flags =  LONG_BIT | PRESENT_BIT | PRIVILEGE(0)
-                                                | DESCRIPTOR_BIT | EX_BIT | RW_BIT};
-    // GDT descriptor 2 (kernel data)
-    gdt[2] = (struct gdt_descriptor) {.flags =  LONG_BIT | PRESENT_BIT | PRIVILEGE(0)
-                                                | DESCRIPTOR_BIT | RW_BIT};
-    // GDT descriptor 3 (userspace code)
-    gdt[3] = (struct gdt_descriptor) {.flags =  LONG_BIT | PRESENT_BIT | PRIVILEGE(3)
-                                                | DESCRIPTOR_BIT | EX_BIT | RW_BIT};
-    // GDT descriptor 4 (userspace data)
-    gdt[4] = (struct gdt_descriptor) {.flags =  LONG_BIT | PRESENT_BIT | PRIVILEGE(3)
-                                                | DESCRIPTOR_BIT | RW_BIT};
-    // Load GDT
-    asm volatile("lgdt %0"
-                :
-                : "m"(gdt_ptr)
-                : "memory");
+    /* Base bits */
+    descriptor->base_low    =   (base & 0x0000ffff);        /* set base bits 15:0 */
+    descriptor->base_mid    =   (base & 0x00ff0000) >> 16;  /* set base bits 23:16 */
+    descriptor->base_high   =   (base & 0xff000000) >> 24;  /* set base bits 31:24 */
 
-    // Reload GDT
-    asm volatile(
-                "mov %%rsp, %%rax\n"
-                "push $0x10\n"
-                "push %%rax\n"
-                "pushf\n"
-                "push $0x8\n"
-                "push $1f\n"
-                "iretq\n"
-                "1:\n"
-                "mov $0x10, %%ax\n"
-                "mov %%ax, %%ds\n"
-                "mov %%ax, %%es\n"
-                "mov %%ax, %%ss\n"
-                "mov %%ax, %%fs\n"
-                "mov %%ax, %%gs\n"
-                :
-                :
-                : "rax", "memory");
+    /* Limit bits */
+    descriptor->limit_low   =   (limit & 0x0ffff);          /* set limit bits 15:0 */
+    descriptor->limit_high  =   (limit & 0xf0000) >> 16;    /* set limit bits 19:16 */
+}
+
+void gdt_init(void)
+{
+    create_descriptor(0, 0, 0, &gdt[0]);
+    create_descriptor(0, 0xfffff, KERNEL_CODE,      &gdt[1]);
+    create_descriptor(0, 0xfffff, KERNEL_DATA,      &gdt[2]);
+    create_descriptor(0, 0xfffff, USERSPACE_CODE,   &gdt[3]);
+    create_descriptor(0, 0xfffff, USERSPACE_DATA,   &gdt[4]);
+    /* Add TSS descriptor here */
+
+    debug("[GDT] Created Descriptors\n");
+
+    /* Load GDT */
+    extern void gdt_load(void *);
+    gdt_load((void *)&gdt_ptr);
+
+    /* Reload GDT */
+    extern void gdt_flush(void);
+    gdt_flush();
+
+    debug("[GDT] Loaded\n");
 }

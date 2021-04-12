@@ -1,6 +1,7 @@
+#include <phoenix/serial.h>
 #include <phoenix/mem.h>
-#include <phoenix/io.h>
 #include <phoenix/vga.h>
+#include <phoenix/io.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -15,19 +16,22 @@ static size_t vga_column;
 static uint8_t vga_color;
 static uint16_t* vga_buffer = VGA_MEMORY;
 
-void vga_cursor_enable(void) {
+void vga_cursor_enable(void)
+{
     outb(0x3d4, 0x0a);
     outb(0x3d5, (inb(0x3d5) & 0xc0) | 14);
     outb(0x3d4, 0x0b);
     outb(0x3d5, (inb(0x3d5) & 0xe0) | 15);
 }
 
-void vga_cursor_disable(void) {
+void vga_cursor_disable(void)
+{
     outb(0x3d4, 0x0a);
     outb(0x3d5, 0x20);
 }
 
-uint16_t vga_cursor_get_pos(void) {
+uint16_t vga_cursor_get_pos(void)
+{
     uint16_t pos = 0;
     outb(0x3d4, 0x0f);
     pos |= inb(0x3d5);
@@ -36,7 +40,8 @@ uint16_t vga_cursor_get_pos(void) {
     return pos;
 }
 
-void vga_cursor_set_pos(uint8_t x, uint8_t y) {
+void vga_cursor_set_pos(uint8_t x, uint8_t y)
+{
     uint16_t pos = y * VGA_WIDTH + x;
     outb(0x3d4, 0x0f);
     outb(0x3d5, (uint8_t) (pos & 0xff));
@@ -44,7 +49,8 @@ void vga_cursor_set_pos(uint8_t x, uint8_t y) {
     outb(0x3d5, (uint8_t) ((pos >> 8) & 0xff));
 }
 
-void vga_clear(void) {
+void vga_clear(void)
+{
 	vga_row = 0;
 	vga_column = 0;
 	for (size_t y = 0; y < VGA_HEIGHT; y++) {
@@ -55,29 +61,35 @@ void vga_clear(void) {
 	}
 }
 
-void vga_init(void) {
+void vga_init(void)
+{
 	vga_row = 0;
 	vga_column = 0;
 	vga_color = vga_entry_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
 
-    // Apply the selected color to the screen
+    /* Apply the selected color to the screen */
     vga_clear();
-    // enable cursor
+    /* enable cursor */
     vga_cursor_enable();
+
+    debug("[VGA] initialized\n");
 }
 
-void vga_setcolor(uint8_t color) {
+void vga_setcolor(uint8_t color)
+{
 	vga_color = color;
 }
 
-void vga_putentryat(unsigned char c, uint8_t color, size_t x, size_t y) {
+void vga_putentryat(unsigned char c, uint8_t color, size_t x, size_t y)
+{
 	const size_t index = y * VGA_WIDTH + x;
 	vga_buffer[index] = vga_entry(c, color);
 }
 
-void vga_putchar(const char c) {
+void vga_putchar(const char c)
+{
     unsigned char uc = c;
-    // Check if the cursor is on the last line to auto scroll
+    /* Check if the cursor is on the last line to auto scroll */
     if (vga_cursor_get_pos() >= VGA_WIDTH * (VGA_HEIGHT - 1)) {
         size_t i = VGA_WIDTH;
         for (; i < VGA_WIDTH * VGA_HEIGHT; i++)
@@ -85,7 +97,8 @@ void vga_putchar(const char c) {
         vga_row--;
         vga_column = 0;
     }
-    // Check for special characters
+
+    /* Check for special characters */
     if (!strcmp(&c, "\n")) {
         vga_row++;
         vga_column = 0;
@@ -95,7 +108,8 @@ void vga_putchar(const char c) {
         vga_column = 0;
     } else {
         vga_putentryat(uc, vga_color, vga_column, vga_row);
-        // Create a new line if the cursor will wrote more characters on the line
+
+        /* Create a new line if the cursor will wrote more characters on the line */
         if (vga_column == VGA_WIDTH) {
             vga_row++;
             vga_column = 0;
@@ -105,13 +119,15 @@ void vga_putchar(const char c) {
     }
 }
 
-void vga_write(const char* data, size_t size) {
+void vga_write(const char* data, size_t size)
+{
 	for (size_t i = 0; i < size; i++)
 		vga_putchar(data[i]);
     vga_cursor_set_pos(vga_column, vga_row);
 }
 
-void vga_writestring(const char* string) {
+void vga_writestring(const char* string)
+{
 	vga_write(string, strlen(string));
     vga_cursor_set_pos(vga_column, vga_row);
 }

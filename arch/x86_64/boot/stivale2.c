@@ -1,11 +1,13 @@
 #include <phoenix/kernel.h>
-#include <phoenix/stivale.h>
+#include <phoenix/stivale2.h>
+#include <phoenix/serial.h>
+#include <phoenix/pmm.h>
 #include <phoenix/vga.h>
 #include <stivale2.h>
 #include <stdint.h>
 #include <stddef.h>
 
-// Stack required by the stivale2 specifications
+/* Stack required by the stivale2 specifications */
 static uint8_t stack[4096];
 
 /*
@@ -30,17 +32,18 @@ static struct stivale2_header_tag_smp smp_tag = {
 };
 */
 
-// Base Stivale2 header
+/* Base Stivale2 header */
 __attribute__((section(".stivale2hdr"), used))
 struct stivale2_header stivale_hdr = {
     .entry_point = (uint64_t)&init,
     .stack = (uintptr_t)stack + sizeof(stack),
     .flags = 0,
     .tags = 0,
-    //.tags = (uint64_t)&smp_tag,
+    /*.tags = (uint64_t)&smp_tag, */
 };
 
-void stivale2_print_fb_tag(struct stivale2_struct_tag_framebuffer* fb_tag) {
+void stivale2_print_fb_tag(struct stivale2_struct_tag_framebuffer* fb_tag)
+{
     info("Framebuffer tag:\n");
     info("\tAddress: 0x%x\n",   fb_tag->framebuffer_addr);
     info("\tWidth:   %d\n",     fb_tag->framebuffer_width);
@@ -56,7 +59,8 @@ void stivale2_print_fb_tag(struct stivale2_struct_tag_framebuffer* fb_tag) {
     info("\tBlue mask size:  %d\n", fb_tag->blue_mask_shift);
 }
 
-void stivale2_print_smp_tag(struct stivale2_struct_tag_smp* smp_tag) {
+void stivale2_print_smp_tag(struct stivale2_struct_tag_smp* smp_tag)
+{
     info("SMP Info:\n");
     info("\tFlags:        0x%x\n", smp_tag->flags);
     info("\tBSP LAPIC ID:   %d\n", smp_tag->bsp_lapic_id);
@@ -72,9 +76,10 @@ void stivale2_print_smp_tag(struct stivale2_struct_tag_smp* smp_tag) {
     info("\n");
 }
 
-void stivale2_print_memmap(struct stivale2_struct_tag_memmap* memmap_tag) {
+void stivale2_print_memmap(struct stivale2_struct_tag_memmap* memmap_tag)
+{
     info("Memmap Entries: %d\n", memmap_tag->entries);
-    for(size_t i = 0; i < memmap_tag->entries; i++) {
+    for(uint64_t i = 0; i < memmap_tag->entries; i++) {
         struct stivale2_mmap_entry* current_entry = &memmap_tag->memmap[i];
         switch (current_entry->type) {
 
@@ -120,89 +125,130 @@ void stivale2_print_memmap(struct stivale2_struct_tag_memmap* memmap_tag) {
     info("\n");
 }
 
-void* stivale2_get_tag(struct stivale2_struct* hdr, uint64_t id) {
+void* stivale2_get_tag(struct stivale2_struct* hdr, uint64_t id)
+{
     struct stivale2_tag* current_tag = (void*)hdr->tags;
     for (;;) {
         if (current_tag == NULL) {
-            // Return NULL if not found
+            /* Return NULL if not found */
             return NULL;
         }
 
         if (current_tag->identifier == id) {
-            // Return the pointer of the tag if found
+            /* Return the pointer of the tag if found */
             return current_tag;
         }
 
-        // Set the pointer to the next item
+        /* Set the pointer to the next item */
         current_tag = (void*)current_tag->next;
     }
 }
 
-void stivale2_print_tags(struct stivale2_struct* hdr) {
-    // Tags
+struct usable_memory_hdr
+stivale2_get_usable_memory(struct stivale2_struct* hdr)
+{
+    /* Get memmap tag */
+    struct stivale2_struct_tag_memmap* memmap_tag;
+    memmap_tag = (struct stivale2_struct_tag_memmap*)
+                stivale2_get_tag(hdr, STIVALE2_STRUCT_TAG_MEMMAP_ID);
+
+    /* Panic if the stivale2 memmap tag has not been found */
+    if (memmap_tag == NULL) {
+        fatal("No stivale2 memmap tag has been found !\n");
+        fatal("Cannot determine usable memory !\n");
+        panic();
+    }
+
+    /* Get Usable Entries */
+    struct usable_memory_hdr usable_hdr;
+    struct usable_memory entry;
+    usable_hdr.entries = 0;
+    uint64_t i;
+    for (i = 0; i < memmap_tag->entries; i++) {
+        struct stivale2_mmap_entry* current_entry = &memmap_tag->memmap[i];
+
+        usable_hdr.total_memory += entry.length;
+
+        if (current_entry->type == STIVALE2_MMAP_USABLE ||
+            current_entry->type == STIVALE2_MMAP_KERNEL_AND_MODULES) {
+
+            /* Found an Usable Entry */
+            entry.base = current_entry->base;
+            entry.length = current_entry->length;
+            usable_hdr.segments[usable_hdr.entries] = entry;
+
+            debug("[STIVALE2_MEMMAP] Found an usable entry\n");
+
+            usable_hdr.usable_memory += entry.length;
+            usable_hdr.entries++;
+        }
+    }
+
+    /* Panic if no entries are found */
+    if (usable_hdr.entries <= 0) {
+        fatal("No usable memory has been found !\n");
+        panic();
+    }
+
+    return usable_hdr;
+}
+
+void stivale2_process_tags(struct stivale2_struct* hdr)
+{
+    /* Tags */
     struct stivale2_tag* current_tag = (void*)hdr->tags;
     struct stivale2_struct_tag_framebuffer* fb_tag_ptr;
     struct stivale2_struct_tag_smp* smp_tag_ptr;
     struct stivale2_struct_tag_cmdline* cmdline_tag_ptr;
-    struct stivale2_struct_tag_kernel_file* file_tag_ptr;
-    struct stivale2_struct_tag_kernel_slide* slide_tag_ptr;
     struct stivale2_struct_tag_pxe_server_info* pxe_tag_ptr;
     struct stivale2_struct_tag_memmap* memmap_tag_ptr;
 
-    // Loop on all tags
+    /* Bootloader Info */
+    info("Bootloader brand:     %s\n",      hdr->bootloader_brand);
+    info("Bootloader version:   %s\n\n",    hdr->bootloader_version);
+
+    /* Loop on all tags */
     for (;;) {
         if (current_tag == NULL)
             break;
 
         switch (current_tag->identifier) {
 
-            // Framebuffer Tag
+            /* Framebuffer Tag */
             case STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID:
                 fb_tag_ptr = (struct stivale2_struct_tag_framebuffer*)current_tag;
                 stivale2_print_fb_tag(fb_tag_ptr);
                 break;
 
-            // SMP Tag
+            /* SMP Tag */
             case STIVALE2_STRUCT_TAG_SMP_ID:
                 smp_tag_ptr = (struct stivale2_struct_tag_smp*)current_tag;
                 stivale2_print_smp_tag(smp_tag_ptr);
                 break;
 
-            // Cmdline Tag
+            /* Cmdline Tag */
             case STIVALE2_STRUCT_TAG_CMDLINE_ID:
                 cmdline_tag_ptr = (struct stivale2_struct_tag_cmdline*)current_tag;
                 info("Cmdline: %s\n\n", (char*)cmdline_tag_ptr->cmdline);
                 break;
 
-            // File Tag
-            case STIVALE2_STRUCT_TAG_KERNEL_FILE_ID:
-                file_tag_ptr = (struct stivale2_struct_tag_kernel_file*)current_tag;
-                info("Kernel File: 0x%x\n\n", file_tag_ptr->kernel_file);
-                break;
-
-            // Slide Tag
-            case STIVALE2_STRUCT_TAG_KERNEL_SLIDE_ID:
-                slide_tag_ptr = (struct stivale2_struct_tag_kernel_slide*)current_tag;
-                info("Slide: 0x%x\n\n", slide_tag_ptr->kernel_slide);
-                break;
-
-            // PXE Tag
+            /* PXE Tag */
             case STIVALE2_STRUCT_TAG_PXE_SERVER_INFO:
                 pxe_tag_ptr = (struct stivale2_struct_tag_pxe_server_info*)current_tag;
                 info("PXE IP: %d\n\n", pxe_tag_ptr->server_ip);
                 break;
 
-            // Memmap Tag
+            /* Memmap Tag */
             case STIVALE2_STRUCT_TAG_MEMMAP_ID:
                 memmap_tag_ptr = (struct stivale2_struct_tag_memmap*)current_tag;
                 stivale2_print_memmap(memmap_tag_ptr);
                 break;
 
-            // Tag not supported
+            /* Tag not supported */
             default:
                 break;
         }
-        // Get Next Tag
+        /* Get Next Tag */
         current_tag = (void*)current_tag->next;
     }
 }
