@@ -87,4 +87,4 @@ static inline void io_wait(void)
 }
 #endif
 
-#endif
+#endif /* _IO_H_ */

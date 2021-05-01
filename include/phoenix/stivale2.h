@@ -23,4 +23,4 @@ stivale2_get_usable_memory(struct stivale2_struct* hdr);
 }
 #endif
 
-#endif
+#endif /*__STIVALE2_H_*/

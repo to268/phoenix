@@ -29,4 +29,4 @@ void gdt_init(void);
 }
 #endif
 
-#endif
+#endif /* _GDT_H_*/

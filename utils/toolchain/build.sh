@@ -2,7 +2,7 @@
 
 set -e
 
-# Reset values
+# Reset values to make sure to have clean env variables
 export CC=gcc
 export LD=ld
 export AR=ar
@@ -57,3 +57,8 @@ make $JOBS all-target-libgcc
 make install-gcc
 make install-target-libgcc
 cd ..
+
+rm -rf build-binutils
+rm -rf build-gcc
+rm -rf binutils-$BINUTILSVERSION/
+rm -rf gcc-$GCCVERSION/

@@ -29,4 +29,4 @@ void pmm_init(struct stivale2_struct* hdr);
 }
 #endif
 
-#endif
+#endif /* _PMM_H_*/

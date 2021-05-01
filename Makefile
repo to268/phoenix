@@ -1,6 +1,7 @@
 # Base variables
 export ARCH?=$(shell uname -m)
-CONFIG_PATH?=config
+export CONFIG_PATH=$(PWD)/config
+GENCONFIG=utils/genconfig/genconfig
 
 # Output files
 KERNEL_NAME=phoenix
@@ -22,9 +23,12 @@ ASM_OBJS:=$(ASM_FILES:.asm=.o)
 C_FILES=$(shell find -path ./utils -prune -false -o -name "*.c")
 OBJS=$(C_FILES:.c=.o)
 
+# Suppress "Entering directory..."
+MAKEFLAGS += --no-print-directory
+
 all: config $(KERNEL)
 
-config:
+config: genconfig
 # Check if config file exists
 ifeq ("$(wildcard $(CONFIG_PATH))", "")
 	cp -f arch/$(ARCH)/default-config config
@@ -73,9 +77,6 @@ export MKISOFS=xorriso -as mkisofs
 
 endif
 
-# Suppress "Entering directory..."
-MAKEFLAGS += --no-print-directory
-
 endif
 
 $(KERNEL): $(ASM_OBJS) $(OBJS) libk.a config
@@ -84,12 +85,12 @@ $(KERNEL): $(ASM_OBJS) $(OBJS) libk.a config
 	echo "   NM        $(MAP)"
 	$(NM) -n $(KERNEL) > $(MAP)
 
-# Asm files
+# Process asm files
 $(ASM_OBJS): $(ASM_FILES)
 	echo "   ASM       $*.o"
 	$(ASM) -f elf64 -i arch/$(ARCH)/asm/ $*.asm -o $@
 
-# C Files
+# Process C Files
 $(OBJS): $(C_FILES)
 	echo "   CC        $*.o"
 	$(CC) $(CFLAGS) -c $*.c -o $@
@@ -111,10 +112,8 @@ clean:
 	rm -f $(MAP)
 	echo "   RM        serial.log"
 	rm -f serial.log
-	echo "   RM        utils/toolchain/build-binutils/"
-	cd utils/toolchain/ && rm -rf build-binutils
-	echo "   RM        utils/toolchain/build-gcc/"
-	cd utils/toolchain/ && rm -rf build-gcc
+	echo "   CLEAN     genconfig"
+	$(MAKE) -C utils/genconfig/ clean
 
 iso: $(KERNEL) config
 	echo "   ISO       $(ISO)"
@@ -143,6 +142,9 @@ gdb: $(KERNEL) iso
 	echo "   GDB       $(ISO)"
 	qemu-system-$(ARCH) -no-reboot -s -S -cdrom $(ISO)
 
+genconfig:
+	$(MAKE) -C utils/genconfig/
+
 mrproper: clean
 	echo "   RM        $(KERNEL)"
 	rm -f $(KERNEL)
@@ -152,7 +154,9 @@ mrproper: clean
 	rm -f $(CONFIG_PATH)
 	echo "   RM        utils/toolchain/*"
 	cd utils/toolchain/ && rm -rf bin/ gcc* binutils* \
-		include/ share/ lib* build-* x86_84-elf/
+		include/ share/ lib* x86_64-elf/
+	echo "   RM        $(GENCONFIG)"
+	$(MAKE) -C utils/genconfig/ mrproper
 
 .SILENT:
-.PHONY: all config $(KERNEL) iso run runv serial gdb toolchain clean mrproper
+.PHONY: all config genconfig iso run runv serial gdb toolchain clean mrproper

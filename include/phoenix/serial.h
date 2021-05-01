@@ -28,4 +28,4 @@ void serial_writestring(const uint16_t serial_port, const char* string);
 }
 #endif
 
-#endif
+#endif /*_SERIAL_H_*/

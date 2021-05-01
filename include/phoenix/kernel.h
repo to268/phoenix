@@ -45,4 +45,4 @@ void kernel_main(void);
 }
 #endif
 
-#endif
+#endif /*__KERNEL_H_*/

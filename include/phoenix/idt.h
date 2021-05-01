@@ -43,4 +43,4 @@ typedef struct {
 }
 #endif
 
-#endif
+#endif /* _IDT_H_*/

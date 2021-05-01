@@ -52,4 +52,4 @@ static inline uint16_t vga_entry(unsigned char uc, uint8_t color)
 }
 #endif
 
-#endif
+#endif /* _VGA_H_*/

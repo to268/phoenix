@@ -22,4 +22,4 @@ size_t strlen(const char* str);
 }
 #endif
 
-#endif
+#endif /*__MEM_H_*/
