@@ -47,6 +47,7 @@ export CFLAGS =	-mcmodel=kernel -mno-red-zone -mno-mmx \
 				-fno-non-call-exceptions -nostdlib \
 				--sysroot=$(PWD) -isystem=/include \
 				$(CONFIG_CFLAGS)
+				#-fstack-protector-strong -fno-exceptions
 
 # Export default LDFLAGS
 export LDFLAGS = -n --data-sections $(CFLAGS) $(CONFIG_LDFLAGS)

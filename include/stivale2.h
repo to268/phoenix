@@ -29,6 +29,13 @@ struct stivale2_header_tag_framebuffer {
 
 #define STIVALE2_HEADER_TAG_FB_MTRR_ID 0x4c7bb07731282e00
 
+#define STIVALE2_HEADER_TAG_TERMINAL_ID 0xa85d499b1823be72
+
+struct stivale2_header_tag_terminal {
+    struct stivale2_tag tag;
+    uint64_t flags;
+} __attribute__((__packed__));
+
 #define STIVALE2_HEADER_TAG_SMP_ID 0x1ab015085f3273df
 
 struct stivale2_header_tag_smp {
@@ -37,6 +44,8 @@ struct stivale2_header_tag_smp {
 } __attribute__((__packed__));
 
 #define STIVALE2_HEADER_TAG_5LV_PAGING_ID 0x932f477032007e8f
+
+#define STIVALE2_HEADER_TAG_UNMAP_NULL_ID 0x92919432b16fe7e7
 
 /* --- Struct --------------------------------------------------------------- */
 /*  Information passed from the bootloader to the kernel                      */
@@ -67,6 +76,7 @@ struct stivale2_struct_tag_cmdline {
 #define STIVALE2_MMAP_BAD_MEMORY             5
 #define STIVALE2_MMAP_BOOTLOADER_RECLAIMABLE 0x1000
 #define STIVALE2_MMAP_KERNEL_AND_MODULES     0x1001
+#define STIVALE2_MMAP_FRAMEBUFFER            0x1002
 
 struct stivale2_mmap_entry {
     uint64_t base;
@@ -110,6 +120,16 @@ struct stivale2_struct_tag_edid {
 } __attribute__((__packed__));
 
 #define STIVALE2_STRUCT_TAG_FB_MTRR_ID 0x6bc1a78ebe871172
+
+#define STIVALE2_STRUCT_TAG_TERMINAL_ID 0xc2b3f4c3233b0974
+
+struct stivale2_struct_tag_terminal {
+    struct stivale2_tag tag;
+    uint32_t flags;
+    uint16_t cols;
+    uint16_t rows;
+    uint64_t term_write;
+} __attribute__((__packed__));
 
 #define STIVALE2_STRUCT_TAG_MODULES_ID 0x4b6fe466aade04ce
 
@@ -169,6 +189,15 @@ struct stivale2_struct_tag_kernel_file {
 struct stivale2_struct_tag_kernel_slide {
     struct stivale2_tag tag;
     uint64_t kernel_slide;
+} __attribute__((packed));
+
+#define STIVALE2_STRUCT_TAG_SMBIOS_ID 0x274bd246c62bf7d1
+
+struct stivale2_struct_tag_smbios {
+    struct stivale2_tag tag;
+    uint64_t flags;
+    uint64_t smbios_entry_32;
+    uint64_t smbios_entry_64;
 } __attribute__((packed));
 
 #define STIVALE2_STRUCT_TAG_SMP_ID 0x34d1d96339647025
