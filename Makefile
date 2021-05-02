@@ -1,6 +1,6 @@
 # Base variables
 export ARCH?=$(shell uname -m)
-export CONFIG_PATH=$(PWD)/config
+CONFIG_PATH=config
 GENCONFIG=utils/genconfig/genconfig
 
 # Output files
@@ -16,7 +16,7 @@ LIMINE_CFG=utils/limine/limine.cfg
 LIMINE_SYS=utils/limine/limine.sys
 
 # Linker script
-LD_SCRIPT=arch/$(ARCH)/linker.ld
+LD_SCRIPT=arch/$(ARCH)/linkers/stivale2.ld
 
 ASM_FILES:=$(shell find -path ./utils -prune -false -o -name "*.asm")
 ASM_OBJS:=$(ASM_FILES:.asm=.o)
