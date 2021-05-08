@@ -12,8 +12,8 @@ description: The multiboot2 boot protocol using grub
 arch: x86_64
 dirs: arch/$ARCH/asm/multiboot2, arch/$ARCH/boot/multiboot2
 defines: MULTIBOOT2
-property: BOOT_PROTOCOL=multiboot2, LD_SCRIPT=arch/$ARCH/linkers/multiboot2.ld
-depends: x86_64
+property: CONFIG_BOOT_PROTOCOL=multiboot2, LD_SCRIPT=arch/$ARCH/linkers/multiboot2.ld
+depends:
 conflicts: stivale2
 
 stivale2 ->
@@ -21,6 +21,6 @@ description: The stivale2 boot protocol using limine
 arch: x86_64
 dirs: arch/$ARCH/boot/stivale2
 defines: STIVALE2
-property: BOOT_PROTOCOL=stivale2, LD_SCRIPT=arch/$ARCH/linkers/multiboot2.ld
-depends: x86_64
+property: CONFIG_BOOT_PROTOCOL=stivale2, LD_SCRIPT=arch/$ARCH/linkers/stivale2.ld
+depends:
 conflicts: multiboot2

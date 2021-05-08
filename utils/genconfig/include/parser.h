@@ -7,7 +7,7 @@ extern "C" {
 
 #include <stdio.h>
 
-#define MAX_LENGTH      2048
+#define MAX_LENGTH      4096
 #define MAX_SECTIONS    128
 #define DATA_FILE       "data/data.kcp"
 
@@ -33,7 +33,7 @@ struct config_section {
     char files[MAX_LENGTH];
     char dirs[MAX_LENGTH];
     char defines[MAX_LENGTH];
-    char property[MAX_LENGTH];
+    char properties[MAX_LENGTH];
 };
 
 struct config {

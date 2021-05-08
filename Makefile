@@ -62,14 +62,14 @@ LIBS = -lk
 endif
 
 # If the Cross Compiler is provided, set Make variables
-ifndef CROSS_COMPILER_PREFIX
+ifndef CONFIG_TOOLCHAIN
 $(error The Cross Compiler Prefix is needed, Native Compiler is unsupported)
 else
 # Make variables
-export CC=$(CROSS_COMPILER_PREFIX)gcc
-export AR=$(CROSS_COMPILER_PREFIX)ar
-export NM=$(CROSS_COMPILER_PREFIX)nm
-export LD=$(CROSS_COMPILER_PREFIX)ld
+export CC=$(CONFIG_TOOLCHAIN)gcc
+export AR=$(CONFIG_TOOLCHAIN)ar
+export NM=$(CONFIG_TOOLCHAIN)nm
+export LD=$(CONFIG_TOOLCHAIN)ld
 # Only tested with nasm assembler
 export ASM=nasm
 
