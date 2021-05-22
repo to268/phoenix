@@ -14,6 +14,8 @@ ISO_DIR=isofiles
 LIMINE_CD=utils/limine/limine-cd.bin
 LIMINE_CFG=utils/limine/limine.cfg
 LIMINE_SYS=utils/limine/limine.sys
+LIMINE_ELTORITO=utils/limine/limine-eltorito-efi.bin
+LIMINE_INSTALL=utils/limine/limine-install
 
 # Linker script
 LD_SCRIPT=arch/$(ARCH)/linkers/stivale2.ld
@@ -62,14 +64,14 @@ LIBS = -lk
 endif
 
 # If the Cross Compiler is provided, set Make variables
-ifndef CONFIG_TOOLCHAIN
+ifndef CONFIG_CROSS_COMPILER_PREFIX
 $(error The Cross Compiler Prefix is needed, Native Compiler is unsupported)
 else
 # Make variables
-export CC=$(CONFIG_TOOLCHAIN)gcc
-export AR=$(CONFIG_TOOLCHAIN)ar
-export NM=$(CONFIG_TOOLCHAIN)nm
-export LD=$(CONFIG_TOOLCHAIN)ld
+export CC=$(CONFIG_CROSS_COMPILER_PREFIX)gcc
+export AR=$(CONFIG_CROSS_COMPILER_PREFIX)ar
+export NM=$(CONFIG_CROSS_COMPILER_PREFIX)nm
+export LD=$(CONFIG_CROSS_COMPILER_PREFIX)ld
 # Only tested with nasm assembler
 export ASM=nasm
 
@@ -122,9 +124,14 @@ iso: $(KERNEL) config
 	cp $(LIMINE_CFG) $(ISO_DIR)
 	cp $(LIMINE_SYS) $(ISO_DIR)
 	cp $(LIMINE_CD) $(ISO_DIR)
-	$(MKISOFS) -no-emul-boot -b limine-cd.bin \
-            -boot-load-size 4 -boot-info-table -o $(ISO) $(ISO_DIR)
+	cp $(LIMINE_ELTORITO) $(ISO_DIR)
+	$(MKISOFS) -b limine-cd.bin -no-emul-boot \
+			-boot-load-size 4 -boot-info-table \
+			-part_like_isohybrid --mbr-force-bootable \
+			-eltorito-alt-boot -e limine-eltorito-efi.bin \
+			-no-emul-boot $(ISO_DIR) -isohybrid-gpt-basdat -o $(ISO)
 	rm -rf $(ISO_DIR)
+	$(LIMINE_INSTALL) $(ISO)
 
 run: $(KERNEL) iso
 	echo "   QMU       $(ISO)"

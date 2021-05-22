@@ -79,7 +79,7 @@ void stivale2_print_smp_tag(struct stivale2_struct_tag_smp* smp_tag)
 void stivale2_print_memmap(struct stivale2_struct_tag_memmap* memmap_tag)
 {
     info("Memmap Entries: %d\n", memmap_tag->entries);
-    for(uint64_t i = 0; i < memmap_tag->entries; i++) {
+    for (uint64_t i = 0; i < memmap_tag->entries; i++) {
         struct stivale2_mmap_entry* current_entry = &memmap_tag->memmap[i];
         switch (current_entry->type) {
 
