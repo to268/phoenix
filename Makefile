@@ -130,6 +130,11 @@ iso: $(KERNEL) config
 			-part_like_isohybrid --mbr-force-bootable \
 			-eltorito-alt-boot -e limine-eltorito-efi.bin \
 			-no-emul-boot $(ISO_DIR) -isohybrid-gpt-basdat -o $(ISO)
+	$(MKISOFS) -b limine-cd.bin -no-emul-boot \
+			-boot-load-size 4 -boot-info-table \
+        	--efi-boot limine-eltorito-efi.bin \
+        	-efi-boot-part --efi-boot-image \
+			--protective-msdos-label $(ISO_DIR) -o $(ISO)
 	rm -rf $(ISO_DIR)
 	$(LIMINE_INSTALL) $(ISO)
 

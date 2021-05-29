@@ -1,7 +1,7 @@
 ## Basic Options
 
 ARCH=x86_64
-CONFIG_TOOLCHAIN=utils/toolchain/bin/x86_64-elf-
+CONFIG_CROSS_COMPILER_PREFIX=utils/toolchain/bin/x86_64-elf-
 
 # CFLAGS to add
 #CONFIG_CFLAGS=
