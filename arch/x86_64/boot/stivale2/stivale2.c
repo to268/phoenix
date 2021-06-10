@@ -154,9 +154,7 @@ stivale2_get_usable_memory(struct stivale2_struct* hdr)
 
     /* Panic if the stivale2 memmap tag has not been found */
     if (memmap_tag == NULL) {
-        fatal("No stivale2 memmap tag has been found !\n");
-        fatal("Cannot determine usable memory !\n");
-        panic();
+        panic("No stivale2 memmap tag has been found !\n");
     }
 
     /* Get Usable Entries */
@@ -186,8 +184,7 @@ stivale2_get_usable_memory(struct stivale2_struct* hdr)
 
     /* Panic if no entries are found */
     if (usable_hdr.entries <= 0) {
-        fatal("No usable memory has been found !\n");
-        panic();
+        panic("No usable memory has been found !\n");
     }
 
     return usable_hdr;

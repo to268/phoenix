@@ -21,7 +21,6 @@ static int print(const char* data, size_t length, uint8_t severity)
 	return 1;
 }
 
-
 int convert_int_to_char(int number, int base, char* buff)
 {
     itoa(number, buff, base);

@@ -28,14 +28,13 @@ int convert_int_to_char(int number, int base, char* buff);
 #define info(...)       printk(KERN_INFO, __VA_ARGS__)
 #define warn(...)       printk(KERN_WARN, __VA_ARGS__)
 #define error(...)      printk(KERN_ERROR, __VA_ARGS__)
-#define fatal(...)      printk(KERN_FATAL, __VA_ARGS__)
 
 /* Basic Functions */
 int abs(int x);
 int atoi(const char* nptr);
 char* itoa(int value, char* buffer, int base);
 __attribute__((__noreturn__))
-void panic(void);
+void panic(char *msg);
 
 /* Kernel entry points */
 void init(struct stivale2_struct* hdr);

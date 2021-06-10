@@ -3,14 +3,6 @@
 #include <phoenix/mem.h>
 #include <phoenix/io.h>
 
-int serial_init(const uint16_t serial_port, uint16_t baud_divisor);
-int serial_port_check(const uint16_t serial_port);
-int serial_received(const uint16_t serial_port);
-char serial_read(const uint16_t serial_port);
-int serial_is_transmit_empty(const uint16_t serial_port);
-void serial_write(const uint16_t serial_port, const char c);
-void serial_writestring(const uint16_t serial_port, const char* string);
-
 static uint8_t serial_initialized = 0;
 
 /* Initialize serial connexion */

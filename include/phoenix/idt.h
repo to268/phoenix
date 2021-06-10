@@ -7,37 +7,31 @@ extern "C" {
 
 #include <stdint.h>
 
-/* Long Mode IDT Entry */
-typedef struct {
-    uint16_t offset_low16; /* Bits 0->15 of the address of the ISR */
-    uint16_t cs; /* The CS to be switched to upon interrupt */
-    uint8_t ist; /* Contains an offset to the TSS for that IST */
-    uint8_t attributes; /* Contains info regarding the DPL and gate type etc... */
-    uint16_t offset_mid16; /* Bits 15->31 of the address of the ISR */
-    uint32_t offset_high32; /* Bits 31->63 of the address of the ISR */
-    uint32_t zero; /* Always zero */
-} __attribute__((packed)) idt_entry_t;
+struct idt_descriptor{
+	uint16_t    isr_low;      /* The lower 16 bits of the ISR's address */
+	uint16_t    kernel_cs;    /* The GDT segment selector */
+	uint8_t	    ist;          /* The IST in the TSS */
+	uint8_t     attributes;   /* Type and attributes; see the IDT page */
+	uint16_t    isr_mid;      /* The higher 16 bits of the lower 32 bits of the ISR's address */
+	uint32_t    isr_high;     /* The higher 32 bits of the ISR's address */
+	uint32_t    reserved;     /* Set to zero */
+} __attribute__((packed));
 
-typedef struct {
-    uint16_t size; /* The size of the IDT */
-    uint64_t offset; /* The address of the IDT */
-} __attribute__((packed)) idtr_t;
+struct idt_pointer{
+    uint16_t    limit;  /* The limit of the IDT */
+    uint64_t    base;   /* The base of the IDT */
+} __attribute__((packed));
 
-/* Protected Mode IDT Entry */
-typedef struct {
-    uint16_t offset_low16; /* The lower 16 bits of the address of the ISR */
-    uint16_t cs; /* The CS to be switched to upon interrupt */
-    uint8_t zero; /* Always zero */
-    uint8_t attributes; /* Contains info regarding the DPL and gate type etc... */
-    uint16_t offset_high16; /* The higher 16 bits of the address of the ISR */
-} __attribute__((packed)) idt_entry16_t;
+#define IDT_MAX_DESCRIPTORS 256
 
-typedef struct {
-    uint8_t gate_type:4;
-    uint8_t zero:1;
-    uint8_t dpl:2;
-    uint8_t p:1;
-} attributes;
+/* Gate types */
+#define IDT_INTERRUPT_GATE  0x8e
+#define IDT_TASK_GATE       0x8c
+#define IDT_TRAP_GATE       0x8f
+
+void idt_init(void);
+__attribute__((noreturn))
+void exception_handler(uint64_t irq);
 
 #ifdef __cplusplus
 }

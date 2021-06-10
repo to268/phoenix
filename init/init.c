@@ -2,6 +2,7 @@
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
 #include <phoenix/gdt.h>
+#include <phoenix/idt.h>
 #include <phoenix/pmm.h>
 #include <phoenix/vga.h>
 #include <stdint.h>
@@ -27,6 +28,9 @@ void init(struct stivale2_struct* hdr)
 
     /* Init GDT */
     gdt_init();
+
+    /* Init IDT */
+    idt_init();
 
     /* Init pmm */
     pmm_init(hdr);
