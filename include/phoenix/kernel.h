@@ -34,7 +34,7 @@ int abs(int x);
 int atoi(const char* nptr);
 char* itoa(int value, char* buffer, int base);
 __attribute__((__noreturn__))
-void panic(char *msg);
+void panic(const char *msg);
 
 /* Kernel entry points */
 void init(struct stivale2_struct* hdr);

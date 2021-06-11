@@ -140,7 +140,7 @@ iso: $(KERNEL) config
 
 run: $(KERNEL) iso
 	echo "   QMU       $(ISO)"
-	qemu-system-$(ARCH) -no-reboot -cdrom $(ISO)
+	qemu-system-$(ARCH) -no-reboot -no-shutdown -cdrom $(ISO)
 
 runv: $(KERNEL) iso
 	echo "   VBX       $(ISO)"
@@ -148,11 +148,11 @@ runv: $(KERNEL) iso
 
 serial: $(KERNEL) iso
 	echo "   SRL       $(ISO)"
-	qemu-system-$(ARCH) -no-reboot -serial file:serial.log -cdrom $(ISO)
+	qemu-system-$(ARCH) -no-reboot -no-shutdown -serial file:serial.log -cdrom $(ISO)
 
 gdb: $(KERNEL) iso
 	echo "   GDB       $(ISO)"
-	qemu-system-$(ARCH) -no-reboot -s -S -cdrom $(ISO)
+	qemu-system-$(ARCH) -no-reboot -no-shutdown -s -S -cdrom $(ISO)
 
 genconfig:
 	$(MAKE) -C utils/genconfig/

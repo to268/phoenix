@@ -72,7 +72,7 @@ void vga_init(void)
     /* enable cursor */
     vga_cursor_enable();
 
-    debug("[VGA] initialized\n");
+    debug("[VGA] Initialized\n");
 }
 
 void vga_setcolor(uint8_t color)
@@ -109,7 +109,7 @@ void vga_putchar(const char c)
     } else {
         vga_putentryat(uc, vga_color, vga_column, vga_row);
 
-        /* Create a new line if the cursor will wrote more characters on the line */
+        /* Create a new line if the cursor is at the end of the line */
         if (vga_column == VGA_WIDTH) {
             vga_row++;
             vga_column = 0;

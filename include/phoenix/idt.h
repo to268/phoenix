@@ -31,7 +31,7 @@ struct idt_pointer{
 
 void idt_init(void);
 __attribute__((noreturn))
-void exception_handler(uint64_t irq);
+void exception_handler(uint64_t vector);
 
 #ifdef __cplusplus
 }

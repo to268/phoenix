@@ -27,8 +27,8 @@ static char *exceptions[] = {
 };
 
 __attribute__((noreturn))
-void exception_handler(uint64_t irq)
+void exception_handler(uint64_t vector)
 {
     cli();
-    panic(exceptions[irq]);
+    panic(exceptions[vector]);
 }

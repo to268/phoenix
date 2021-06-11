@@ -14,5 +14,5 @@ void pmm_init(struct stivale2_struct* hdr)
     info("\n%d/%d Mb is usable\n\n", (usable_hdr.usable_memory/1024/1024),
     (usable_hdr.total_memory/1024/1024));
 
-    debug("[PMM] initialized\n");
+    debug("[PMM] Initialized\n");
 }

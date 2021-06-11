@@ -1,5 +1,7 @@
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
+#include <phoenix/pic.h>
+#include <phoenix/vga.h>
 #include <phoenix/idt.h>
 #include <phoenix/io.h>
 
@@ -28,6 +30,9 @@ extern void *isr_stub_table[];
 
 void idt_init(void)
 {
+    /* Remap the PIC */
+    pic_remap();
+
     /* Map interrupt gates */
     for (uint8_t vector = 0; vector < 31; vector++) {
         if (vector == 9 || (vector > 20 && vector < 30)) {
