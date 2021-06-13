@@ -110,7 +110,7 @@ void vga_putchar(const char c)
         vga_putentryat(uc, vga_color, vga_column, vga_row);
 
         /* Create a new line if the cursor is at the end of the line */
-        if (vga_column == VGA_WIDTH) {
+        if (vga_column == VGA_WIDTH - 1) {
             vga_row++;
             vga_column = 0;
         } else {

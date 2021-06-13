@@ -28,8 +28,11 @@ extern "C" {
 #define ICW4_BUF_SLAVE	    0x08		/* Buffered mode/slave */
 #define ICW4_BUF_MASTER	    0x0C		/* Buffered mode/master */
 #define ICW4_SFNM           0x10		/* Special fully nested */
-#define PIC_MASTER_OFFSET   0x08        /* Vector offset of the master IRQ */
-#define PIC_SLAVE_OFFSET    0x70        /* Vector offset of the slave IRQ */
+#define PIC_MASTER_OFFSET   0x20        /* Vector offset of the master IRQ */
+#define PIC_SLAVE_OFFSET    0x28        /* Vector offset of the slave IRQ */
+
+/* Convert an IRQ number to a vector number */
+#define IRQ(x)              (PIC_MASTER_OFFSET + x)
 
 void pic_remap(void);
 void pic_send_eoi(unsigned char irq);
