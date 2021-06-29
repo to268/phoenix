@@ -10,6 +10,7 @@ config
 compile_commands.json
 serial.log
 isofiles/
+utils/genconfig/genconfig
 
 # Toolchain
 *.tar.gz
