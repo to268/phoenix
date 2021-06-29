@@ -1,7 +1,6 @@
 # Base variables
 export ARCH?=$(shell uname -m)
 CONFIG_PATH=config
-GENCONFIG=utils/genconfig/genconfig
 
 # Output files
 KERNEL_NAME=phoenix
@@ -30,7 +29,7 @@ MAKEFLAGS += --no-print-directory
 
 all: config $(KERNEL)
 
-config: genconfig
+config:
 # Check if config file exists
 ifeq ("$(wildcard $(CONFIG_PATH))", "")
 	cp -f arch/$(ARCH)/default-config config
@@ -114,8 +113,6 @@ clean:
 	rm -f $(MAP)
 	echo "   RM        serial.log"
 	rm -f serial.log
-	echo "   CLEAN     genconfig"
-	$(MAKE) -C utils/genconfig/ clean
 
 iso: $(KERNEL) config
 	echo "   ISO       $(ISO)"
@@ -154,9 +151,6 @@ gdb: $(KERNEL) iso
 	echo "   GDB       $(ISO)"
 	qemu-system-$(ARCH) -no-reboot -no-shutdown -s -S -cdrom $(ISO)
 
-genconfig:
-	$(MAKE) -C utils/genconfig/
-
 mrproper: clean
 	echo "   RM        $(KERNEL)"
 	rm -f $(KERNEL)
@@ -167,8 +161,6 @@ mrproper: clean
 	echo "   RM        utils/toolchain/*"
 	cd utils/toolchain/ && rm -rf bin/ gcc* binutils* \
 		include/ share/ lib* x86_64-elf/
-	echo "   RM        $(GENCONFIG)"
-	$(MAKE) -C utils/genconfig/ mrproper
 
 .SILENT:
-.PHONY: all config genconfig iso run runv serial gdb toolchain clean mrproper
+.PHONY: all config iso run runv serial gdb toolchain clean mrproper
