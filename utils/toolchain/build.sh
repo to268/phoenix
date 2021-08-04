@@ -1,25 +1,23 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 # Reset values to make sure to have clean env variables
 export CC=gcc
 export LD=ld
 export AR=ar
 export NM=nm
-export CFLAGS=
+export CFLAGS="-O2 -pipe"
 export LDFLAGS=
 
-BINUTILSVERSION=2.36.1
-GCCVERSION=11.1.0
+BINUTILSVERSION=2.37
+GCCVERSION=11.2.0
 
 PREFIX="$(pwd)"
 TARGET=x86_64-elf
 export PATH="$PREFIX/bin:$PATH"
 
 JOBS="$1"
-[[ $JOBS == *"-j"* ]] || JOBS=""
-
 EXT=".tar.gz"
 
 if [ ! -f binutils-$BINUTILSVERSION$EXT ]; then
@@ -31,13 +29,13 @@ fi
 
 rm -rf bin/ gcc-$GCCVERSION/ binutils-$BINUTILSVERSION/ include/ share/ lib* build-* x86_64-elf/
 
-tar -xvf binutils-$BINUTILSVERSION$EXT
-tar -xvf gcc-$GCCVERSION$EXT
+tar -zxf binutils-$BINUTILSVERSION$EXT
+tar -zxf gcc-$GCCVERSION$EXT
 
 mkdir build-binutils
 cd build-binutils
-../binutils-$BINUTILSVERSION/configure --target=$TARGET --prefix="$PREFIX" \
-    --with-sysroot --disable-nls --disable-werror
+../binutils-$BINUTILSVERSION/configure CFLAGS="$CFLAGS" CXXFLAGS="$CFLAGS" --target=$TARGET \
+    --prefix="$PREFIX" --with-sysroot --disable-nls --disable-werror
 
 make $JOBS
 make install
@@ -49,8 +47,8 @@ patch -p1 < ../patches/gcc.patch
 cd ..
 mkdir build-gcc
 cd build-gcc
-../gcc-$GCCVERSION/configure --target=$TARGET --prefix="$PREFIX" --disable-nls \
-    --enable-languages=c,c++ --without-headers
+../gcc-$GCCVERSION/configure CFLAGS="$CFLAGS" CXXFLAGS="$CFLAGS" --target=$TARGET \
+    --prefix="$PREFIX" --disable-nls --enable-languages=c,c++ --without-headers
 
 make $JOBS all-gcc
 make $JOBS all-target-libgcc

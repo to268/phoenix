@@ -35,7 +35,7 @@ static struct stivale2_header_tag_smp smp_tag = {
 /* Base Stivale2 header */
 __attribute__((section(".stivale2hdr"), used))
 struct stivale2_header stivale_hdr = {
-    .entry_point = (uint64_t)&init,
+    .entry_point = (uintptr_t)&init,
     .stack = (uintptr_t)stack + sizeof(stack),
     .flags = 0,
     .tags = 0,
@@ -168,11 +168,13 @@ stivale2_get_usable_memory(struct stivale2_struct* hdr)
         usable_hdr.total_memory += entry.length;
 
         if (current_entry->type == STIVALE2_MMAP_USABLE ||
-            current_entry->type == STIVALE2_MMAP_KERNEL_AND_MODULES) {
+            current_entry->type == STIVALE2_MMAP_KERNEL_AND_MODULES ||
+        current_entry->type == STIVALE2_MMAP_BOOTLOADER_RECLAIMABLE) {
 
             /* Found an Usable Entry */
             entry.base = current_entry->base;
             entry.length = current_entry->length;
+        entry.type = current_entry->type;
             usable_hdr.segments[usable_hdr.entries] = entry;
 
             debug("[STIVALE2_MEMMAP] Found an usable entry\n");
@@ -188,6 +190,21 @@ stivale2_get_usable_memory(struct stivale2_struct* hdr)
     }
 
     return usable_hdr;
+}
+
+char* stivale2_get_cmdline(struct stivale2_struct* hdr)
+{
+    /* Get cmdline tag */
+    struct stivale2_struct_tag_cmdline* cmdline_tag;
+    cmdline_tag = (struct stivale2_struct_tag_cmdline*)
+                stivale2_get_tag(hdr, STIVALE2_STRUCT_TAG_CMDLINE_ID);
+
+    /* Panic if the stivale2 cmdline tag has not been found */
+    if (cmdline_tag == NULL) {
+        panic("No stivale2 cmdline tag has been found !\n");
+    }
+
+    return (char*)cmdline_tag->cmdline;
 }
 
 void stivale2_process_tags(struct stivale2_struct* hdr)

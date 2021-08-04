@@ -2,7 +2,9 @@
 #include <phoenix/serial.h>
 #include <phoenix/mem.h>
 #include <phoenix/io.h>
+#include <stddef.h>
 
+static int serial_port_check(const uint16_t serial_port);
 static uint8_t serial_initialized = 0;
 
 /* Initialize serial connexion */
@@ -22,7 +24,7 @@ int serial_init(const uint16_t serial_port, uint16_t baud_divisor)
     outb(serial_port + 0, 0xae);                         /* Test serial chip */
 
     /* Check if serial output is the same */
-    if(inb(serial_port + 0) != 0xae) {
+    if (inb(serial_port + 0) != 0xae) {
         return 1;
     }
 
@@ -33,7 +35,7 @@ int serial_init(const uint16_t serial_port, uint16_t baud_divisor)
 }
 
 /* Check if a serial port is valid */
-int serial_port_check(const uint16_t serial_port)
+static int serial_port_check(const uint16_t serial_port)
 {
     if (serial_port == SERIAL_COM1 || serial_port == SERIAL_COM2 ||
         serial_port == SERIAL_COM3 || serial_port == SERIAL_COM4) {
@@ -62,8 +64,26 @@ char serial_read(const uint16_t serial_port)
     return inb(serial_port);
 }
 
+/* Read a string thought serial */
+void serial_readstring(const uint16_t serial_port, char* buff, size_t size)
+{
+    size_t i = 0;
+    char c = serial_read(serial_port);
+    while (c != -1 || c != '\n' || c != '\r') {
+    if (i >= (size - 1))
+        break;
+
+    buff[i] = c;
+    c = serial_read(serial_port);
+    i++;
+    }
+
+    /* Add NULL terminator */
+    *buff = '\0';
+}
+
 /* Check the end of the received data */
-int serial_is_transmit_empty(const uint16_t serial_port)
+static int serial_is_transmit_empty(const uint16_t serial_port)
 {
     /* Check is the serial port is supported */
     if (!serial_initialized || serial_port_check(serial_port)) return -1;

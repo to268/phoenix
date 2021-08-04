@@ -9,16 +9,22 @@
 #define INT_MAX 2147483647
 
 static int print(const char* data, size_t length, uint8_t severity);
+inline uintptr_t convert_to_mb(uintptr_t nb_bytes);
 int convert_int_to_char(int number, int base, char* buff);
 int printk(uint8_t severity, const char* restrict format, ...);
 
 static int print(const char* data, size_t length, uint8_t severity)
 {
-	const unsigned char* bytes = (const unsigned char*) data;
-	for (size_t i = 0; i < length; i++)
-		if (putchar(bytes[i], severity) == EOF)
-			return 0;
-	return 1;
+    const unsigned char* bytes = (const unsigned char*) data;
+    for (size_t i = 0; i < length; i++)
+        if (putchar(bytes[i], severity) == EOF)
+            return 0;
+    return 1;
+}
+
+inline uintptr_t convert_to_mb(uintptr_t nb_bytes)
+{
+    return nb_bytes / 1024 / 1024;
 }
 
 int convert_int_to_char(int number, int base, char* buff)

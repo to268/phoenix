@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <stddef.h>
 
 /* Serial Ports */
 #define SERIAL_COM1 0x3f8
@@ -17,10 +18,9 @@ extern "C" {
 
 /* Serial Functions */
 int serial_init(const uint16_t serial_port, uint16_t baud_divisor);
-int serial_port_check(const uint16_t serial_port);
 int serial_received(const uint16_t serial_port);
 char serial_read(const uint16_t serial_port);
-int serial_is_transmit_empty(const uint16_t serial_port);
+void serial_readstring(const uint16_t serial_port, char* buff, size_t size);
 void serial_write(const uint16_t serial_port, const char c);
 void serial_writestring(const uint16_t serial_port, const char* string);
 

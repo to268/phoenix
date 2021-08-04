@@ -21,6 +21,7 @@ extern "C" {
 int printk(uint8_t severity, const char* restrict format, ...);
 int putchar(int ic, uint8_t severity);
 int puts(uint8_t severity, const char* string);
+uintptr_t convert_to_mb(uintptr_t nb_bytes);
 int convert_int_to_char(int number, int base, char* buff);
 
 /* Macros for printk */

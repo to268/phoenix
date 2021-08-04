@@ -8,26 +8,22 @@ SECTIONS {
         KEEP(*(.stivale2hdr))
     }
 
-    .text :
-    {
+    .text : {
         *(.text*)
     }
 
-    .rodata :
-    {
+    .rodata : {
         *(..rodata.*)
     }
 
-    .data :
-    {
+    .data : {
         *(.data*)
     }
 
-    .bss :
-    {
+    .bss : {
         *(COMMON)
         *(.bss*)
     }
 
-    endkernel = .;
+    kernel_end = .;
 }

@@ -1,6 +1,7 @@
 # Base variables
 export ARCH?=$(shell uname -m)
 CONFIG_PATH=config
+NCPUS = $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
 
 # Output files
 KERNEL_NAME=phoenix
@@ -102,7 +103,7 @@ libk.a: $(wildcard lib/libk/*.c)
 	$(AR) rcs lib/$@ $(wildcard lib/libk/*.o)
 
 toolchain:
-	cd utils/toolchain/ && bash build.sh $(MAKEFLAGS)
+	cd utils/toolchain/ && bash build.sh -j$(NCPUS)
 
 clean:
 	echo "   RM        *.o"
@@ -124,13 +125,8 @@ iso: $(KERNEL) config
 	cp $(LIMINE_ELTORITO) $(ISO_DIR)
 	$(MKISOFS) -b limine-cd.bin -no-emul-boot \
 			-boot-load-size 4 -boot-info-table \
-			-part_like_isohybrid --mbr-force-bootable \
-			-eltorito-alt-boot -e limine-eltorito-efi.bin \
-			-no-emul-boot $(ISO_DIR) -isohybrid-gpt-basdat -o $(ISO)
-	$(MKISOFS) -b limine-cd.bin -no-emul-boot \
-			-boot-load-size 4 -boot-info-table \
-        	--efi-boot limine-eltorito-efi.bin \
-        	-efi-boot-part --efi-boot-image \
+			--efi-boot limine-eltorito-efi.bin \
+			-efi-boot-part --efi-boot-image \
 			--protective-msdos-label $(ISO_DIR) -o $(ISO)
 	rm -rf $(ISO_DIR)
 	$(LIMINE_INSTALL) $(ISO)
