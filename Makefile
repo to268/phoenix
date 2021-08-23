@@ -52,11 +52,11 @@ export CFLAGS =	-mcmodel=kernel -mno-red-zone -mno-mmx \
 				-fno-stack-protector -fno-exceptions \
 				-fno-non-call-exceptions -nostdlib \
 				--sysroot=$(PWD) -isystem=/include \
-				$(CONFIG_CFLAGS)
-				#-fstack-protector-strong -fno-exceptions
+				-mabi=sysv $(CONFIG_CFLAGS)
+				#-fstack-protector-strong
 
 # Export default LDFLAGS
-export LDFLAGS = -n --data-sections $(CFLAGS) $(CONFIG_LDFLAGS)
+export LDFLAGS = -n -nostdlib -static $(CONFIG_LDFLAGS)
 
 # Export default LIBS
 LIBS = -lk
@@ -83,7 +83,7 @@ endif
 
 $(KERNEL): $(ASM_OBJS) $(OBJS) libk.a config
 	echo "   LD        $(KERNEL)"
-	$(CC) $(LDFLAGS) -T $(LD_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(OBJS) $(LIBS)
+	$(LD) $(LDFLAGS) -T $(LD_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(OBJS)
 	echo "   NM        $(MAP)"
 	$(NM) -n $(KERNEL) > $(MAP)
 
@@ -95,7 +95,7 @@ $(ASM_OBJS): $(ASM_FILES)
 # Process C Files
 $(OBJS): $(C_FILES)
 	echo "   CC        $*.o"
-	$(CC) $(CFLAGS) -c $*.c -o $@
+	$(CC) $(CFLAGS) -c $*.c -o $@ $(LIBS)
 
 # Libs
 libk.a: $(wildcard lib/libk/*.c)
@@ -134,10 +134,6 @@ iso: $(KERNEL) config
 run: $(KERNEL) iso
 	echo "   QMU       $(ISO)"
 	qemu-system-$(ARCH) -no-reboot -no-shutdown -cdrom $(ISO)
-
-runv: $(KERNEL) iso
-	echo "   VBX       $(ISO)"
-	virtualbox $(ISO)
 
 serial: $(KERNEL) iso
 	echo "   SRL       $(ISO)"

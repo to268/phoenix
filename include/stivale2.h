@@ -3,29 +3,45 @@
 
 #include <stdint.h>
 
+#if (defined (_STIVALE2_SPLIT_64) && defined (__i386__)) || defined(_STIVALE2_SPLIT_64_FORCE)
+
+#define _stivale2_split64(NAME) \
+    union {                    \
+        uint32_t NAME;         \
+        uint32_t NAME##_lo;    \
+    };                         \
+    uint32_t NAME##_hi
+
+#else
+
+#define _stivale2_split64(NAME) \
+    uint64_t NAME
+
+#endif
+
 // Anchor for non ELF kernels
 struct stivale2_anchor {
     uint8_t anchor[15];
     uint8_t bits;
-    uint64_t phys_load_addr;
-    uint64_t phys_bss_start;
-    uint64_t phys_bss_end;
-    uint64_t phys_stivale2hdr;
+    _stivale2_split64(phys_load_addr);
+    _stivale2_split64(phys_bss_start);
+    _stivale2_split64(phys_bss_end);
+    _stivale2_split64(phys_stivale2hdr);
 };
 
 struct stivale2_tag {
     uint64_t identifier;
-    uint64_t next;
+    _stivale2_split64(next);
 };
 
 /* --- Header --------------------------------------------------------------- */
 /*  Information passed from the kernel to the bootloader                      */
 
 struct stivale2_header {
-    uint64_t entry_point;
-    uint64_t stack;
+    _stivale2_split64(entry_point);
+    _stivale2_split64(stack);
     uint64_t flags;
-    uint64_t tags;
+    _stivale2_split64(tags);
 };
 
 #define STIVALE2_HEADER_TAG_ANY_VIDEO_ID 0xc75c9fa92a44c4db
@@ -52,11 +68,22 @@ struct stivale2_header_tag_framebuffer {
 struct stivale2_header_tag_terminal {
     struct stivale2_tag tag;
     uint64_t flags;
-    uint64_t callback;
+    _stivale2_split64(callback);
 };
 
 #define STIVALE2_TERM_CB_DEC 10
 #define STIVALE2_TERM_CB_BELL 20
+#define STIVALE2_TERM_CB_PRIVATE_ID 30
+#define STIVALE2_TERM_CB_STATUS_REPORT 40
+#define STIVALE2_TERM_CB_POS_REPORT 50
+#define STIVALE2_TERM_CB_KBD_LEDS 60
+#define STIVALE2_TERM_CB_MODE 70
+#define STIVALE2_TERM_CB_LINUX 80
+
+#define STIVALE2_TERM_CTX_SIZE ((uint64_t)(-1))
+#define STIVALE2_TERM_CTX_SAVE ((uint64_t)(-2))
+#define STIVALE2_TERM_CTX_RESTORE ((uint64_t)(-3))
+#define STIVALE2_TERM_FULL_REFRESH ((uint64_t)(-4))
 
 #define STIVALE2_HEADER_TAG_SMP_ID 0x1ab015085f3273df
 
@@ -237,6 +264,14 @@ struct stivale2_struct_tag_kernel_file {
     uint64_t kernel_file;
 };
 
+#define STIVALE2_STRUCT_TAG_KERNEL_FILE_V2_ID 0x37c13018a02c6ea2
+
+struct stivale2_struct_tag_kernel_file_v2 {
+    struct stivale2_tag tag;
+    uint64_t kernel_file;
+    uint64_t kernel_size;
+};
+
 #define STIVALE2_STRUCT_TAG_KERNEL_SLIDE_ID 0xee80847d01506c57
 
 struct stivale2_struct_tag_kernel_slide {
@@ -300,5 +335,7 @@ struct stivale2_struct_vmap {
     struct stivale2_tag tag;
     uint64_t addr;
 };
+
+#undef _stivale2_split64
 
 #endif
