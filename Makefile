@@ -2,7 +2,7 @@
 export ARCH?=$(shell uname -m)
 CONFIG_PATH=config
 NCPUS=$(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
-QEMU_FLAGS=-device pvpanic -enable-kvm -d cpu_reset -cpu host -m 512M -no-reboot -no-shutdown
+QEMU_FLAGS=-enable-kvm -cpu host -m 512M -no-reboot -no-shutdown
 
 # Output files
 KERNEL_NAME=phoenix

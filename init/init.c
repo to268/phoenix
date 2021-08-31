@@ -45,7 +45,7 @@ void init(struct stivale2_struct* hdr)
     gdt_init();
 
     /* Init IDT */
-    idt_init();
+    //idt_init();
 
     /* Init pmm */
     pmm_init(hdr);

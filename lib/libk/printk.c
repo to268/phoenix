@@ -142,7 +142,7 @@ int printk(uint8_t severity, const char* restrict format, ...)
                 format++;
                 number = va_arg(parameters, int);
                 /* Convert char to Hexadecimal */
-                len = convert_int_to_char(number, 10, buff);
+                len = convert_int_to_char(number, 16, buff);
                 if (!print(buff, len, severity))
                     return -1;
                 written += len;

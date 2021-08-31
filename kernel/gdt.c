@@ -13,6 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <phoenix/kernel.h>
 #include <phoenix/serial.h>
 #include <phoenix/gdt.h>
 #include <stdint.h>
@@ -29,19 +30,19 @@
 #define RW_BIT          (1 << 0x01)             /* Read/Write bit */
 
 /* Descriptors */
-#define KERNEL_CODE     (GRANULARITY_BIT  | SIZE_BIT | LONG_BIT | \
+#define KERNEL_CODE     (GRANULARITY_BIT  | LONG_BIT | \
                         PRESENT_BIT | PRIVILEGE(0) | DESCRIPTOR_BIT | \
-                        EX_BIT)
+                        RW_BIT | EX_BIT)
 
-#define KERNEL_DATA     (GRANULARITY_BIT  | SIZE_BIT | LONG_BIT | \
+#define KERNEL_DATA     (GRANULARITY_BIT  | SIZE_BIT | \
                         PRESENT_BIT | PRIVILEGE(0) | DESCRIPTOR_BIT | \
                         RW_BIT)
 
-#define USERSPACE_CODE  (GRANULARITY_BIT | SIZE_BIT | LONG_BIT | \
+#define USERSPACE_CODE  (GRANULARITY_BIT | LONG_BIT | \
                         PRESENT_BIT | PRIVILEGE(3) | DESCRIPTOR_BIT | \
-                        EX_BIT)
+                        RW_BIT | EX_BIT)
 
-#define USERSPACE_DATA  (GRANULARITY_BIT | SIZE_BIT | LONG_BIT | \
+#define USERSPACE_DATA  (GRANULARITY_BIT | SIZE_BIT | \
                         PRESENT_BIT | PRIVILEGE(3) | DESCRIPTOR_BIT | \
                         RW_BIT)
 
@@ -54,7 +55,6 @@ void create_descriptor(uint32_t base, uint32_t limit, uint16_t access,
 {
     /* Access */
     descriptor->access      =   (access & 0x00ff);
-    descriptor->limit_flags =   (access & 0xf000) >> 12;
 
     /* Base bits */
     descriptor->base_low    =   (base & 0x0000ffff);        /* set base bits 15:0 */
@@ -64,6 +64,9 @@ void create_descriptor(uint32_t base, uint32_t limit, uint16_t access,
     /* Limit bits */
     descriptor->limit_low   =   (limit & 0x0ffff);          /* set limit bits 15:0 */
     descriptor->limit_flags =   (limit & 0xf0000) >> 16;    /* set limit bits 19:16 */
+
+    /* Flags */
+    descriptor->limit_flags |=   (access & 0xf000) >> 8;
 }
 
 void gdt_init(void)

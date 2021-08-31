@@ -11,7 +11,6 @@
 ;
 ; You should have received a copy of the GNU General Public License
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-;
 BITS 64
 
 global gdt_flush
@@ -22,13 +21,20 @@ section .text
 ; Flushes the gdt with a far jump
 gdt_flush:
     lgdt [rdi]
+    mov rax, rsp
+    push qword 0x10
+    push rax
+    pushf
+    push qword 0x8
+    push .reload_cs
+    iretq
+
+; Reload segment registers
+.reload_cs:
     mov ax, 0x10
-    mov ss, ax
     mov ds, ax
     mov es, ax
-    mov rax, qword .trampoline
-    push qword 0x8
-    push rax
-    o64 retf
-.trampoline:
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
     ret
