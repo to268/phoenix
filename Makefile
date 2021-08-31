@@ -1,7 +1,8 @@
 # Base variables
 export ARCH?=$(shell uname -m)
 CONFIG_PATH=config
-NCPUS = $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
+NCPUS=$(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
+QEMU_FLAGS=-device pvpanic -enable-kvm -d cpu_reset -cpu host -m 512M -no-reboot -no-shutdown
 
 # Output files
 KERNEL_NAME=phoenix
@@ -26,7 +27,8 @@ C_FILES=$(shell find -path ./utils -prune -false -o -name "*.c")
 OBJS=$(C_FILES:.c=.o)
 
 # Suppress "Entering directory..."
-MAKEFLAGS += --no-print-directory
+MAKEFLAGS+=--no-print-directory
+-include $(C_FILES:.c=.d)
 
 all: config $(KERNEL)
 
@@ -49,14 +51,15 @@ else
 export CFLAGS =	-mcmodel=kernel -mno-red-zone -mno-mmx \
 				-mno-sse -mno-sse2 -std=gnu18 -Wall -Wextra \
 				-O2 -ffreestanding -fno-common -fno-pic \
-				-fno-stack-protector -fno-exceptions \
-				-fno-non-call-exceptions -nostdlib \
+				-pipe -fno-stack-protector -fno-exceptions \
+				-fno-non-call-exceptions -nostdlib -MMD \
 				--sysroot=$(PWD) -isystem=/include \
 				-mabi=sysv $(CONFIG_CFLAGS)
 				#-fstack-protector-strong
 
 # Export default LDFLAGS
-export LDFLAGS = -n -nostdlib -static $(CONFIG_LDFLAGS)
+export LDFLAGS = -n -nostdlib -static -z max-page-size=0x1000 \
+				 $(CONFIG_LDFLAGS)
 
 # Export default LIBS
 LIBS = -lk
@@ -81,7 +84,7 @@ endif
 
 endif
 
-$(KERNEL): $(ASM_OBJS) $(OBJS) libk.a config
+$(KERNEL): $(ASM_OBJS) $(OBJS) lib/libk.a config
 	echo "   LD        $(KERNEL)"
 	$(LD) $(LDFLAGS) -T $(LD_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(OBJS)
 	echo "   NM        $(MAP)"
@@ -98,9 +101,9 @@ $(OBJS): $(C_FILES)
 	$(CC) $(CFLAGS) -c $*.c -o $@ $(LIBS)
 
 # Libs
-libk.a: $(wildcard lib/libk/*.c)
-	echo "   AR        lib/$@"
-	$(AR) rcs lib/$@ $(wildcard lib/libk/*.o)
+lib/libk.a: $(wildcard lib/libk/*.c)
+	echo "   AR        $@"
+	$(AR) rcs $@ $(wildcard lib/libk/*.o)
 
 toolchain:
 	cd utils/toolchain/ && bash build.sh -j$(NCPUS)
@@ -110,6 +113,8 @@ clean:
 	rm -f $(ASM_OBJS) $(OBJS)
 	echo "   RM        *.a"
 	rm -f $(shell find -name "*.a")
+	echo "   RM        *.d"
+	rm -f $(shell find -name "*.d")
 	echo "   RM        $(MAP)"
 	rm -f $(MAP)
 	echo "   RM        serial.log"
@@ -133,15 +138,15 @@ iso: $(KERNEL) config
 
 run: $(KERNEL) iso
 	echo "   QMU       $(ISO)"
-	qemu-system-$(ARCH) -no-reboot -no-shutdown -cdrom $(ISO)
+	qemu-system-$(ARCH) $(QEMU_FLAGS) -cdrom $(ISO)
 
 serial: $(KERNEL) iso
 	echo "   SRL       $(ISO)"
-	qemu-system-$(ARCH) -no-reboot -no-shutdown -serial file:serial.log -cdrom $(ISO)
+	qemu-system-$(ARCH) $(QEMU_FLAGS) -serial file:serial.log -cdrom $(ISO)
 
 gdb: $(KERNEL) iso
 	echo "   GDB       $(ISO)"
-	qemu-system-$(ARCH) -no-reboot -no-shutdown -s -S -cdrom $(ISO)
+	qemu-system-$(ARCH) $(QEMU_FLAGS) -s -S -cdrom $(ISO)
 
 mrproper: clean
 	echo "   RM        $(KERNEL)"

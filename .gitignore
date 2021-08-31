@@ -2,6 +2,7 @@
 .cache/
 .gdb_history
 *.o
+*.d
 *.a
 *.elf
 *.iso

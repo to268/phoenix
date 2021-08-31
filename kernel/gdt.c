@@ -78,12 +78,8 @@ void gdt_init(void)
     debug("[GDT] Created Descriptors\n");
 
     /* Load GDT */
-    extern void gdt_load(void *);
-    gdt_load((void *)&gdt_ptr);
-
-    /* Reload GDT */
-    extern void gdt_flush(void);
-    gdt_flush();
+    extern void gdt_flush(uint64_t);
+    gdt_flush((uint64_t)&gdt_ptr);
 
     debug("[GDT] Loaded\n");
 }
