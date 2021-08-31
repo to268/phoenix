@@ -33,8 +33,7 @@ struct gdt_descriptor {
     uint8_t     base_mid;       /* The middle 8 bits of the base of the segment */
 
     uint8_t     access;         /* The 8 bits descriptor type */
-    uint8_t     limit_high: 4;  /* The high 4 bits of the limit of the segment */
-    uint8_t     flags: 4;       /* The 4 bits flags (Free, Long, Size, Gran) */
+    uint8_t     limit_flags;    /* The high 4 bits of the limit and The 4 bits flags */
     uint8_t     base_high;      /* The high 8 bits of the base of the segment */
 } __attribute__((packed));
 

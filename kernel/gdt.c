@@ -54,7 +54,7 @@ void create_descriptor(uint32_t base, uint32_t limit, uint16_t access,
 {
     /* Access */
     descriptor->access      =   (access & 0x00ff);
-    descriptor->flags       =   (access & 0xf000) >> 12;
+    descriptor->limit_flags =   (access & 0xf000) >> 12;
 
     /* Base bits */
     descriptor->base_low    =   (base & 0x0000ffff);        /* set base bits 15:0 */
@@ -63,7 +63,7 @@ void create_descriptor(uint32_t base, uint32_t limit, uint16_t access,
 
     /* Limit bits */
     descriptor->limit_low   =   (limit & 0x0ffff);          /* set limit bits 15:0 */
-    descriptor->limit_high  =   (limit & 0xf0000) >> 16;    /* set limit bits 19:16 */
+    descriptor->limit_flags =   (limit & 0xf0000) >> 16;    /* set limit bits 19:16 */
 }
 
 void gdt_init(void)
