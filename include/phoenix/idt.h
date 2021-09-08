@@ -23,13 +23,13 @@ extern "C" {
 #include <stdint.h>
 
 struct idt_descriptor{
-	uint16_t    isr_low;      /* The lower 16 bits of the ISR's address */
-	uint16_t    kernel_cs;    /* The GDT segment selector */
-	uint8_t	    ist;          /* The IST in the TSS */
-	uint8_t     attributes;   /* Type and attributes */
-	uint16_t    isr_mid;      /* The higher 16 bits of the lower 32 bits of the ISR's address */
-	uint32_t    isr_high;     /* The higher 32 bits of the ISR's address */
-	uint32_t    reserved;     /* Set to zero */
+	uint16_t    isr_low;        /* The lower 16 bits of the ISR's address */
+	uint16_t    selector;       /* The GDT segment selector */
+	uint8_t	    ist;            /* The IST in the TSS */
+	uint8_t     attributes;     /* Type and attributes */
+	uint16_t    isr_mid;        /* The higher 16 bits of the lower 32 bits of the ISR's address */
+	uint32_t    isr_high;       /* The higher 32 bits of the ISR's address */
+	uint32_t    reserved;       /* Set to zero */
 } __attribute__((packed));
 
 struct idt_pointer{

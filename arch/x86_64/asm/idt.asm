@@ -13,7 +13,10 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ;
 global isr_exception_stub_table
+global pit_handler_irq
 global keyboard_handler_irq
+global pic_send_eoi_master
+global pic_send_eoi_slave
 extern exception_handler
 
 ; Valid exception
@@ -73,6 +76,14 @@ isr_exception_stub_table:
 %assign i i+1
 %endrep
 
+; PIT handler IRQ stub
+pit_handler_irq:
+    ;pushaq
+    ;cld
+    ;call pit_handler
+    ;popaq
+    iretq
+
 ; Keyboard handler IRQ stub
 keyboard_handler_irq:
     ;pushaq
@@ -80,3 +91,14 @@ keyboard_handler_irq:
     ;call keyboard_handler
     ;popaq
     iretq
+
+pic_send_eoi_master:
+	mov al, 0x20
+	out 0x20, al
+	iretq
+
+pic_send_eoi_slave:
+	mov al, 0x20
+	out 0xa0, al
+	out 0x20, al
+	iretq

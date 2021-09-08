@@ -20,6 +20,9 @@ void panic(const char *msg)
 {
 	printk(KERN_FATAL, "Kernel Panic !\n");
     printk(KERN_FATAL, "%s", msg);
-	while (1);
+
+    extern void halt_cpu(void);
+    halt_cpu();
+
 	__builtin_unreachable();
 }

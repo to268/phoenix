@@ -50,9 +50,9 @@ extern "C" {
 #define IRQ(x)              (PIC_MASTER_OFFSET + x)
 
 void pic_remap(void);
-void pic_send_eoi(unsigned char irq);
-void pic_irq_set_mask(unsigned char irq);
-void pic_irq_clear_mask(unsigned char irq);
+void pic_send_eoi(uint8_t irq);
+void pic_irq_set_mask(uint8_t irq);
+void pic_irq_clear_mask(uint8_t irq);
 uint16_t pic_get_irr(void);
 uint16_t pic_get_isr(void);
 

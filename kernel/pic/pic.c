@@ -55,7 +55,7 @@ void pic_remap(void)
     debug("[PIC] IRQs have been remapped\n");
 }
 
-void pic_send_eoi(unsigned char irq)
+void pic_send_eoi(uint8_t irq)
 {
 	if(irq >= 8)
 		outb(PIC2_CMD, PIC_EOI);
@@ -63,7 +63,7 @@ void pic_send_eoi(unsigned char irq)
 	outb(PIC1_CMD, PIC_EOI);
 }
 
-void pic_irq_set_mask(unsigned char irq)
+void pic_irq_set_mask(uint8_t irq)
 {
     uint16_t port;
     uint8_t value;
@@ -79,7 +79,7 @@ void pic_irq_set_mask(unsigned char irq)
     outb(port, value);
 }
 
-void pic_irq_clear_mask(unsigned char irq)
+void pic_irq_clear_mask(uint8_t irq)
 {
     uint16_t port;
     uint8_t value;
