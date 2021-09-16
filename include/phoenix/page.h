@@ -13,12 +13,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/kernel.h>
-#include <stdint.h>
+#ifndef _PAGE_H_
+#define _PAGE_H_
 
-int puts(u8 severity, const char* string);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int puts(u8 severity, const char* string)
-{
-	return printk(severity, "%s\n", string);
+#define PAGE_SIZE 4096
+
+#define DIV_ROUNDUP(a,b) ({ \
+    typeof(a) _a = a;       \
+    typeof(b) _b = b;       \
+    (_a + (_b - 1)) / _b;   \
+})
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* _PAGE_H_ */

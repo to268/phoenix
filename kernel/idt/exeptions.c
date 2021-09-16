@@ -41,8 +41,8 @@ static char *exceptions[] = {
     [30] = "Security Exception"
 };
 
-__attribute__((noreturn))
-void exception_handler(uint64_t vector)
+NORETURN
+void exception_handler(u64 vector)
 {
     cli();
     panic(exceptions[vector]);

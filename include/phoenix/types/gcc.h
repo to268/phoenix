@@ -1,3 +1,4 @@
+
 /*
  * Copyright © 2021 Guillot Tony <tony.guillot@protonmail.com>
  * This program is free software: you can redistribute it and/or modify
@@ -13,12 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/kernel.h>
-#include <stdint.h>
+#ifndef _GCC_H_
+#define _GCC_H_
 
-int puts(u8 severity, const char* string);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int puts(u8 severity, const char* string)
-{
-	return printk(severity, "%s\n", string);
-}
+#define LIKELY(x)           __builtin_expect((x), 1)
+#define UNLIKELY(x)         __builtin_expect((x), 0)
+#define ALIGNED(x)          __attribute__((aligned(x)))
+#define SECTION(x)          __attribute__((section(x), used))
+#define PACKED              __attribute__((packed))
+#define NORETURN            __attribute__((noreturn))
+#define RANDOMIZE_LAYOUT    __attribute__((randomize_layout))
+
+#endif /* _GCC_H_ */

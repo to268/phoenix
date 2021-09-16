@@ -20,25 +20,14 @@
 extern "C" {
 #endif
 
+#include <phoenix/types.h>
+#include <phoenix/page.h>
 #include <stivale2.h>
 #include <stdint.h>
 
-#define LIMIT_SEGMENTS 64
-
-struct usable_memory {
-    uint64_t base;
-    uint64_t length;
-    uint32_t type;
-}__attribute((packed));
-
-struct usable_memory_hdr {
-    uint64_t entries;
-    uint64_t usable_memory;
-    uint64_t total_memory;
-    struct usable_memory segments[LIMIT_SEGMENTS];
-}__attribute((packed));
-
 void pmm_init(struct stivale2_struct* hdr);
+void* pmm_alloc(u64 length);
+void pmm_free(void* address, u64 pages);
 
 #ifdef __cplusplus
 }

@@ -48,9 +48,9 @@
 
 /* Initializing GDT structs */
 static struct gdt_descriptor gdt[5];
-static struct gdt_pointer gdt_ptr = {.base = (uint64_t)gdt, .limit = sizeof(gdt) - 1};
+static struct gdt_pointer gdt_ptr = {.base = (u64)gdt, .limit = sizeof(gdt) - 1};
 
-void create_descriptor(uint32_t base, uint32_t limit, uint16_t access,
+void create_descriptor(u32 base, uint32_t limit, u16 access,
                         struct gdt_descriptor* descriptor)
 {
     /* Access */
@@ -81,8 +81,8 @@ void gdt_init(void)
     debug("[GDT] Created Descriptors\n");
 
     /* Load GDT */
-    extern void gdt_flush(uint64_t);
-    gdt_flush((uint64_t)&gdt_ptr);
+    extern void gdt_flush(u64);
+    gdt_flush((u64)&gdt_ptr);
 
     debug("[GDT] Loaded\n");
 }

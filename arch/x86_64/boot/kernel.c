@@ -15,7 +15,7 @@
  */
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
-#include <phoenix/vga.h>
+#include <phoenix/mem.h>
 #include <cpuid.h>
 
 void kernel_main(void)

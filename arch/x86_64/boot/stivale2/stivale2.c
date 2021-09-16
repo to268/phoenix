@@ -16,14 +16,12 @@
 #include <phoenix/kernel.h>
 #include <phoenix/stivale2.h>
 #include <phoenix/serial.h>
-#include <phoenix/pmm.h>
-#include <phoenix/vga.h>
 #include <stivale2.h>
 #include <stdint.h>
 #include <stddef.h>
 
 /* Stack required by the stivale2 specifications */
-static uint8_t stack[4096];
+static u8 stack[4096];
 
 /*
 static struct stivale2_header_tag_framebuffer framebuffer_tag = {
@@ -41,20 +39,20 @@ static struct stivale2_header_tag_smp smp_tag = {
     .tag = {
         .identifier = STIVALE2_HEADER_TAG_SMP_ID,
         .next = 0,
-        //.next = (uint64_t)&framebuffer_tag,
+        //.next = (u64)&framebuffer_tag,
     },
     .flags = 0
 };
 */
 
 /* Base Stivale2 header */
-__attribute__((section(".stivale2hdr"), used))
+SECTION(".stivale2hdr")
 struct stivale2_header stivale_hdr = {
-    .entry_point = (uintptr_t)&init,
-    .stack = (uintptr_t)stack + sizeof(stack),
+    .entry_point = (uptr)&init,
+    .stack = (uptr)stack + sizeof(stack),
     .flags = 0,
     .tags = 0,
-    /*.tags = (uint64_t)&smp_tag, */
+    /*.tags = (u64)&smp_tag, */
 };
 
 void stivale2_print_fb_tag(struct stivale2_struct_tag_framebuffer* fb_tag)
@@ -94,7 +92,7 @@ void stivale2_print_smp_tag(struct stivale2_struct_tag_smp* smp_tag)
 void stivale2_print_memmap(struct stivale2_struct_tag_memmap* memmap_tag)
 {
     info("Memmap Entries: %d\n", memmap_tag->entries);
-    for (uint64_t i = 0; i < memmap_tag->entries; i++) {
+    for (u64 i = 0; i < memmap_tag->entries; i++) {
         struct stivale2_mmap_entry* current_entry = &memmap_tag->memmap[i];
         switch (current_entry->type) {
 
@@ -140,7 +138,7 @@ void stivale2_print_memmap(struct stivale2_struct_tag_memmap* memmap_tag)
     info("\n");
 }
 
-void* stivale2_get_tag(struct stivale2_struct* hdr, uint64_t id)
+void* stivale2_get_tag(struct stivale2_struct* hdr, u64 id)
 {
     struct stivale2_tag* current_tag = (void*)hdr->tags;
     for (;;) {
@@ -159,8 +157,8 @@ void* stivale2_get_tag(struct stivale2_struct* hdr, uint64_t id)
     }
 }
 
-struct usable_memory_hdr
-stivale2_get_usable_memory(struct stivale2_struct* hdr)
+struct free_memory_hdr
+stivale2_get_free_memory(struct stivale2_struct* hdr)
 {
     /* Get memmap tag */
     struct stivale2_struct_tag_memmap* memmap_tag;
@@ -172,39 +170,46 @@ stivale2_get_usable_memory(struct stivale2_struct* hdr)
         panic("No stivale2 memmap tag has been found !\n");
     }
 
-    /* Get Usable Entries */
-    struct usable_memory_hdr usable_hdr;
-    struct usable_memory entry;
-    usable_hdr.entries = 0;
-    uint64_t i;
-    for (i = 0; i < memmap_tag->entries; i++) {
+    /* Get free entries */
+    struct free_memory_hdr free_hdr;
+    struct free_memory entry;
+    uptr highest_memory = 0;
+    free_hdr.entries = 0;
+
+    for (u64 i = 0; i < memmap_tag->entries; i++) {
         struct stivale2_mmap_entry* current_entry = &memmap_tag->memmap[i];
 
-        usable_hdr.total_memory += entry.length;
+        free_hdr.total_memory += entry.length;
 
         if (current_entry->type == STIVALE2_MMAP_USABLE ||
             current_entry->type == STIVALE2_MMAP_KERNEL_AND_MODULES ||
-        current_entry->type == STIVALE2_MMAP_BOOTLOADER_RECLAIMABLE) {
+            current_entry->type == STIVALE2_MMAP_BOOTLOADER_RECLAIMABLE) {
 
             /* Found an Usable Entry */
             entry.base = current_entry->base;
             entry.length = current_entry->length;
-        entry.type = current_entry->type;
-            usable_hdr.segments[usable_hdr.entries] = entry;
+            entry.type = current_entry->type;
+            free_hdr.segments[free_hdr.entries] = entry;
 
-            debug("[STIVALE2_MEMMAP] Found an usable entry\n");
+            debug("[STIVALE2_MEMMAP] Stored a free memory entry\n");
 
-            usable_hdr.usable_memory += entry.length;
-            usable_hdr.entries++;
+            highest_memory = entry.base + entry.length;
+
+            /* Store the highest free memory */
+            if (highest_memory > free_hdr.highest_memory)
+                free_hdr.highest_memory = highest_memory;
+
+            free_hdr.free_memory += entry.length;
+            free_hdr.entries++;
         }
     }
 
     /* Panic if no entries are found */
-    if (usable_hdr.entries <= 0) {
-        panic("No usable memory has been found !\n");
+    if (free_hdr.entries <= 0) {
+        panic("No free memory has been found !\n");
     }
 
-    return usable_hdr;
+    return free_hdr;
 }
 
 char* stivale2_get_cmdline(struct stivale2_struct* hdr)

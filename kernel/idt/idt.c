@@ -20,11 +20,11 @@
 #include <phoenix/io.h>
 
 /* IDT static variables */
-__attribute__((aligned(0x10)))
+ALIGNED(0x10)
 static struct idt_descriptor idt[256];
 static struct idt_pointer idtr = {
-        .base = (uint64_t)&idt,
-        .limit = (uint16_t)sizeof(struct idt_descriptor) * IDT_MAX_DESCRIPTORS - 1
+        .base = (u64)&idt,
+        .limit = (u16)sizeof(struct idt_descriptor) * IDT_MAX_DESCRIPTORS - 1
 };
 
 /* Assembly symbols */
@@ -34,16 +34,16 @@ extern void* keyboard_handler_irq;
 extern void* pic_send_eoi_master;
 extern void* pic_send_eoi_slave;
 
-void idt_set_descriptor(uint8_t vector, void *isr, uint8_t flags)
+void idt_set_descriptor(u8 vector, void *isr, uint8_t flags)
 {
     struct idt_descriptor *descriptor = &idt[vector];
 
-    descriptor->isr_low         = (uint64_t)isr & 0xffff;
+    descriptor->isr_low         = (u64)isr & 0xffff;
     descriptor->selector        = 0x8;
     descriptor->ist             = 0;
     descriptor->attributes      = flags;
-    descriptor->isr_mid         = ((uint64_t)isr & 0xffff0000) >> 16;
-    descriptor->isr_high        = ((uint64_t)isr & 0xffffffff00000000) >> 32;
+    descriptor->isr_mid         = ((u64)isr & 0xffff0000) >> 16;
+    descriptor->isr_high        = ((u64)isr & 0xffffffff00000000) >> 32;
     descriptor->reserved        = 0;
 }
 
@@ -53,18 +53,18 @@ void idt_init(void)
     pic_remap();
 
     /* Map exceptions vectors */
-    for (uint8_t vector = 0; vector < 32; vector++)
+    for (u8 vector = 0; vector < 32; vector++)
         idt_set_descriptor(vector, isr_exception_stub_table[vector], IDT_INTERRUPT_GATE);
 
     /* Map IRQs */
-    idt_set_descriptor(IRQ(0), keyboard_handler_irq, IDT_INTERRUPT_GATE);
+    idt_set_descriptor(IRQ(0), pit_handler_irq, IDT_INTERRUPT_GATE);
     idt_set_descriptor(IRQ(1), keyboard_handler_irq, IDT_INTERRUPT_GATE);
 
-    for (uint8_t i = IRQ(2); i < IRQ(7); i++) {
+    for (u8 i = IRQ(2); i < IRQ(7); i++) {
         idt_set_descriptor(i, pic_send_eoi_master, IDT_INTERRUPT_GATE);
     }
 
-    for (uint8_t i = IRQ(7); i < IRQ(15); i++) {
+    for (u8 i = IRQ(7); i < IRQ(15); i++) {
         idt_set_descriptor(i, pic_send_eoi_slave, IDT_INTERRUPT_GATE);
     }
 

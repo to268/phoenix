@@ -23,12 +23,12 @@
 #define EOF (-1)
 #define INT_MAX 2147483647
 
-static int print(const char* data, size_t length, uint8_t severity);
-inline uintptr_t convert_to_mb(uintptr_t nb_bytes);
+static int print(const char* data, size_t length, u8 severity);
+inline uptr convert_to_mb(uintptr_t nb_bytes);
 int convert_int_to_char(int number, int base, char* buff);
-int printk(uint8_t severity, const char* restrict format, ...);
+int printk(u8 severity, const char* restrict format, ...);
 
-static int print(const char* data, size_t length, uint8_t severity)
+static int print(const char* data, size_t length, u8 severity)
 {
     const unsigned char* bytes = (const unsigned char*) data;
     for (size_t i = 0; i < length; i++)
@@ -37,7 +37,7 @@ static int print(const char* data, size_t length, uint8_t severity)
     return 1;
 }
 
-inline uintptr_t convert_to_mb(uintptr_t nb_bytes)
+inline uptr convert_to_mb(uintptr_t nb_bytes)
 {
     return nb_bytes / 1024 / 1024;
 }
@@ -49,7 +49,7 @@ int convert_int_to_char(int number, int base, char* buff)
     return len;
 }
 
-int printk(uint8_t severity, const char* restrict format, ...)
+int printk(u8 severity, const char* restrict format, ...)
 {
     va_list parameters;
     va_start(parameters, format);
@@ -137,11 +137,22 @@ int printk(uint8_t severity, const char* restrict format, ...)
                 written += len;
                 break;
 
+            case 'p':
+            case 'P':
+                format++;
+                uptr ptr = va_arg(parameters, uintptr_t);
+                /* Convert char to hexadecimal */
+                len = convert_int_to_char(ptr, 16, buff);
+                if (!print(buff, len, severity))
+                    return -1;
+                written += len;
+                break;
+
             case 'x':
             case 'X':
                 format++;
                 number = va_arg(parameters, int);
-                /* Convert char to Hexadecimal */
+                /* Convert pointer to hexadecimal */
                 len = convert_int_to_char(number, 16, buff);
                 if (!print(buff, len, severity))
                     return -1;

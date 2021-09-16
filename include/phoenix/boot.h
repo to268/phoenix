@@ -13,12 +13,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/kernel.h>
+#ifndef _BOOT_H_
+#define _BOOT_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <phoenix/stivale2.h>
+#include <phoenix/types.h>
+#include <stivale2.h>
 #include <stdint.h>
 
-int puts(u8 severity, const char* string);
+#define LIMIT_SEGMENTS 64
 
-int puts(u8 severity, const char* string)
-{
-	return printk(severity, "%s\n", string);
+struct free_memory {
+    u64 base;
+    u64 length;
+    u32 type;
+} PACKED;
+
+struct free_memory_hdr {
+    u64 entries;
+    u64 free_memory;
+    u64 total_memory;
+    uptr highest_memory;
+    struct free_memory segments[LIMIT_SEGMENTS];
+} PACKED;
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* _BOOT_H_ */

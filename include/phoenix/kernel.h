@@ -20,7 +20,8 @@
 extern "C" {
 #endif
 
-#include <stivale2.h>
+#include <phoenix/types.h>
+#include <phoenix/boot.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -33,10 +34,10 @@ extern "C" {
 #define INT_LENGTH 8
 
 /* Printing and Formating */
-int printk(uint8_t severity, const char* restrict format, ...);
-int putchar(int ic, uint8_t severity);
-int puts(uint8_t severity, const char* string);
-uintptr_t convert_to_mb(uintptr_t nb_bytes);
+int printk(u8 severity, const char* restrict format, ...);
+int putchar(int ic, u8 severity);
+int puts(u8 severity, const char* string);
+uptr convert_to_mb(uintptr_t nb_bytes);
 int convert_int_to_char(int number, int base, char* buff);
 
 /* Macros for printk */
@@ -49,7 +50,7 @@ int convert_int_to_char(int number, int base, char* buff);
 int abs(int x);
 int atoi(const char* nptr);
 char* itoa(int value, char* buffer, int base);
-__attribute__((__noreturn__))
+NORETURN
 void panic(const char *msg);
 
 /* Kernel entry points */

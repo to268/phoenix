@@ -20,6 +20,7 @@
 extern "C" {
 #endif
 
+#include <phoenix/types.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -46,21 +47,21 @@ void vga_init(void);
 void vga_clear(void);
 void vga_cursor_disable(void);
 void vga_cursor_enable(void);
-uint16_t vga_cursor_get_pos(void);
-void vga_cursor_set_pos(uint8_t x, uint8_t y);
-void vga_setcolor(uint8_t color);
+u16 vga_cursor_get_pos(void);
+void vga_cursor_set_pos(u8 x, uint8_t y);
+void vga_setcolor(u8 color);
 void vga_putchar(const char c);
 void vga_write(const char* data, size_t size);
 void vga_writestring(const char* string);
 
-static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg)
+static inline u8 vga_entry_color(enum vga_color fg, enum vga_color bg)
 {
 	return fg | bg << 4;
 }
 
-static inline uint16_t vga_entry(unsigned char uc, uint8_t color)
+static inline u16 vga_entry(unsigned char uc, u8 color)
 {
-	return (uint16_t) uc | (uint16_t) color << 8;
+	return (u16) uc | (uint16_t) color << 8;
 }
 
 #ifdef __cplusplus

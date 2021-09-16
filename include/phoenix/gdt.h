@@ -20,22 +20,23 @@
 extern "C" {
 #endif
 
+#include <phoenix/types.h>
 #include <stdint.h>
 
 struct gdt_pointer {
-    uint16_t    limit;
-    uint64_t    base;
-} __attribute__((packed));
+    u16 limit;
+    u64 base;
+} PACKED;
 
 struct gdt_descriptor {
-    uint16_t    limit_low;      /* The low 16 bits of the limit of the segment */
-    uint16_t    base_low;       /* The low 16 bits of the base of the segment */
-    uint8_t     base_mid;       /* The middle 8 bits of the base of the segment */
+    u16 limit_low;   /* The low 16 bits of the limit of the segment */
+    u16 base_low;    /* The low 16 bits of the base of the segment */
+    u8  base_mid;    /* The middle 8 bits of the base of the segment */
 
-    uint8_t     access;         /* The 8 bits descriptor type */
-    uint8_t     limit_flags;    /* The high 4 bits of the limit and The 4 bits flags */
-    uint8_t     base_high;      /* The high 8 bits of the base of the segment */
-} __attribute__((packed));
+    u8  access;      /* The 8 bits descriptor type */
+    u8  limit_flags; /* The high 4 bits of the limit and The 4 bits flags */
+    u8  base_high;   /* The high 8 bits of the base of the segment */
+} PACKED;
 
 void gdt_init(void);
 

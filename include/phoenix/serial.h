@@ -20,6 +20,7 @@
 extern "C" {
 #endif
 
+#include <phoenix/types.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -32,12 +33,12 @@ extern "C" {
 #define debug(string) serial_writestring(SERIAL_COM1, string)
 
 /* Serial Functions */
-int serial_init(const uint16_t serial_port, uint16_t baud_divisor);
-int serial_received(const uint16_t serial_port);
-char serial_read(const uint16_t serial_port);
-void serial_readstring(const uint16_t serial_port, char* buff, size_t size);
-void serial_write(const uint16_t serial_port, const char c);
-void serial_writestring(const uint16_t serial_port, const char* string);
+int serial_init(const u16 serial_port, uint16_t baud_divisor);
+int serial_received(const u16 serial_port);
+char serial_read(const u16 serial_port);
+void serial_readstring(const u16 serial_port, char* buff, size_t size);
+void serial_write(const u16 serial_port, const char c);
+void serial_writestring(const u16 serial_port, const char* string);
 
 #ifdef __cplusplus
 }

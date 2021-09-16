@@ -44,11 +44,11 @@ void init(struct stivale2_struct* hdr)
     /* Init GDT */
     gdt_init();
 
+    /* Init PMM */
+    pmm_init(hdr);
+
     /* Init IDT */
     //idt_init();
-
-    /* Init pmm */
-    pmm_init(hdr);
 
     /* Jump in kernel_main */
     kernel_main();

@@ -19,11 +19,11 @@
 #include <phoenix/io.h>
 #include <stddef.h>
 
-static int serial_port_check(const uint16_t serial_port);
-static uint8_t serial_initialized = 0;
+static int serial_port_check(const u16 serial_port);
+static u8 serial_initialized = 0;
 
 /* Initialize serial connexion */
-int serial_init(const uint16_t serial_port, uint16_t baud_divisor)
+int serial_init(const u16 serial_port, uint16_t baud_divisor)
 {
     /* Check is the serial port is supported */
     if (serial_port_check(serial_port)) return 1;
@@ -50,7 +50,7 @@ int serial_init(const uint16_t serial_port, uint16_t baud_divisor)
 }
 
 /* Check if a serial port is valid */
-static int serial_port_check(const uint16_t serial_port)
+static int serial_port_check(const u16 serial_port)
 {
     if (serial_port == SERIAL_COM1 || serial_port == SERIAL_COM2 ||
         serial_port == SERIAL_COM3 || serial_port == SERIAL_COM4) {
@@ -60,7 +60,7 @@ static int serial_port_check(const uint16_t serial_port)
 }
 
 /* Check if we can receive data */
-int serial_received(const uint16_t serial_port)
+int serial_received(const u16 serial_port)
 {
     /* Check is the serial port is supported */
     if (!serial_initialized || serial_port_check(serial_port)) return -1;
@@ -69,7 +69,7 @@ int serial_received(const uint16_t serial_port)
 }
 
 /* Read data thought serial */
-char serial_read(const uint16_t serial_port)
+char serial_read(const u16 serial_port)
 {
     /* Check is the serial port is supported */
     if (!serial_initialized || serial_port_check(serial_port)) return -1;
@@ -80,7 +80,7 @@ char serial_read(const uint16_t serial_port)
 }
 
 /* Read a string thought serial */
-void serial_readstring(const uint16_t serial_port, char* buff, size_t size)
+void serial_readstring(const u16 serial_port, char* buff, size_t size)
 {
     size_t i = 0;
     char c = serial_read(serial_port);
@@ -98,7 +98,7 @@ void serial_readstring(const uint16_t serial_port, char* buff, size_t size)
 }
 
 /* Check the end of the received data */
-static int serial_is_transmit_empty(const uint16_t serial_port)
+static int serial_is_transmit_empty(const u16 serial_port)
 {
     /* Check is the serial port is supported */
     if (!serial_initialized || serial_port_check(serial_port)) return -1;
@@ -107,7 +107,7 @@ static int serial_is_transmit_empty(const uint16_t serial_port)
 }
 
 /* Write a char thought serial */
-void serial_write(const uint16_t serial_port, const char c)
+void serial_write(const u16 serial_port, const char c)
 {
     /* Check is the serial port is supported */
     if (!serial_initialized || serial_port_check(serial_port)) return;
@@ -118,7 +118,7 @@ void serial_write(const uint16_t serial_port, const char c)
 }
 
 /* Write a string thought serial */
-void serial_writestring(const uint16_t serial_port, const char* string)
+void serial_writestring(const u16 serial_port, const char* string)
 {
     while (*string) {
         serial_write(serial_port, *(string++));

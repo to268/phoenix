@@ -20,6 +20,7 @@
 extern "C" {
 #endif
 
+#include <phoenix/types.h>
 #include <stdint.h>
 
 #define PIC1                0x20		/* Master PIC */
@@ -50,11 +51,11 @@ extern "C" {
 #define IRQ(x)              (PIC_MASTER_OFFSET + x)
 
 void pic_remap(void);
-void pic_send_eoi(uint8_t irq);
-void pic_irq_set_mask(uint8_t irq);
-void pic_irq_clear_mask(uint8_t irq);
-uint16_t pic_get_irr(void);
-uint16_t pic_get_isr(void);
+void pic_send_eoi(u8 irq);
+void pic_irq_set_mask(u8 irq);
+void pic_irq_clear_mask(u8 irq);
+u16 pic_get_irr(void);
+u16 pic_get_isr(void);
 
 #ifdef __cplusplus
 }

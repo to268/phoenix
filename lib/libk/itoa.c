@@ -26,6 +26,12 @@ char* itoa(int value, char* buffer, int base)
         return buffer;
     }
 
+    /* Set minus for negative decimals */
+    if (value < 0 && base == 10) {
+        memmove(buffer, "-", 1);
+        buffer++;
+    }
+
     /* Get absolute value */
     int n = abs(value);
 
@@ -44,10 +50,6 @@ char* itoa(int value, char* buffer, int base)
     /* Check if number is 0 */
     if (i == 0)
         buffer[i++] = '0';
-
-    /* Set minus for negative decimals */
-    if (value < 0 && base == 10)
-        memmove(buffer, "-", 1);
 
     /* Add NULL terminator */
     buffer[i] = '\0';

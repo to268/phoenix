@@ -1,3 +1,4 @@
+
 /*
  * Copyright © 2021 Guillot Tony <tony.guillot@protonmail.com>
  * This program is free software: you can redistribute it and/or modify
@@ -13,12 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/kernel.h>
-#include <stdint.h>
+#ifndef _TYPES_H_
+#define _TYPES_H_
 
-int puts(u8 severity, const char* string);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int puts(u8 severity, const char* string)
-{
-	return printk(severity, "%s\n", string);
-}
+#include <phoenix/types/gcc.h>
+#include <phoenix/types/int.h>
+#include <stdbool.h>
+
+#endif /* _TYPES_H_ */

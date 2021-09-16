@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <phoenix/serial.h>
+#include <phoenix/types.h>
 #include <phoenix/mem.h>
 #include <phoenix/vga.h>
 #include <phoenix/io.h>
@@ -24,12 +25,12 @@
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
 static const size_t TAB_LENGTH = 4;
-static uint16_t* const VGA_MEMORY = (uint16_t*) 0xB8000;
+static u16* const VGA_MEMORY = (u16*) 0xB8000;
 
 static size_t vga_row;
 static size_t vga_column;
-static uint8_t vga_color;
-static uint16_t* vga_buffer = VGA_MEMORY;
+static u8 vga_color;
+static u16* vga_buffer = VGA_MEMORY;
 
 void vga_cursor_enable(void)
 {
@@ -45,23 +46,23 @@ void vga_cursor_disable(void)
     outb(0x3d5, 0x20);
 }
 
-uint16_t vga_cursor_get_pos(void)
+u16 vga_cursor_get_pos(void)
 {
-    uint16_t pos = 0;
+    u16 pos = 0;
     outb(0x3d4, 0x0f);
     pos |= inb(0x3d5);
     outb(0x3d4, 0x0e);
-    pos |= ((uint16_t) inb(0x3d5)) << 8;
+    pos |= ((u16) inb(0x3d5)) << 8;
     return pos;
 }
 
-void vga_cursor_set_pos(uint8_t x, uint8_t y)
+void vga_cursor_set_pos(u8 x, uint8_t y)
 {
-    uint16_t pos = y * VGA_WIDTH + x;
+    u16 pos = y * VGA_WIDTH + x;
     outb(0x3d4, 0x0f);
-    outb(0x3d5, (uint8_t) (pos & 0xff));
+    outb(0x3d5, (u8) (pos & 0xff));
     outb(0x3d4, 0x0e);
-    outb(0x3d5, (uint8_t) ((pos >> 8) & 0xff));
+    outb(0x3d5, (u8) ((pos >> 8) & 0xff));
 }
 
 void vga_clear(void)
@@ -90,12 +91,12 @@ void vga_init(void)
     debug("[VGA] Initialized\n");
 }
 
-void vga_setcolor(uint8_t color)
+void vga_setcolor(u8 color)
 {
 	vga_color = color;
 }
 
-void vga_putentryat(unsigned char c, uint8_t color, size_t x, size_t y)
+void vga_putentryat(unsigned char c, u8 color, size_t x, size_t y)
 {
 	const size_t index = y * VGA_WIDTH + x;
 	vga_buffer[index] = vga_entry(c, color);

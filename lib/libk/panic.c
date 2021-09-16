@@ -15,7 +15,7 @@
  */
 #include <phoenix/kernel.h>
 
-__attribute__((__noreturn__))
+NORETURN
 void panic(const char *msg)
 {
 	printk(KERN_FATAL, "Kernel Panic !\n");

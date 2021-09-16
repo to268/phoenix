@@ -13,12 +13,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/kernel.h>
+#ifndef _INT_H_
+#define _INT_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
-int puts(u8 severity, const char* string);
+/* Unsigned int types */
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
 
-int puts(u8 severity, const char* string)
-{
-	return printk(severity, "%s\n", string);
-}
+/* Signed int types */
+typedef int8_t s8;
+typedef int16_t s16;
+typedef int32_t s32;
+typedef int64_t s64;
+
+typedef uintptr_t uptr;
+
+#endif /* _INT_H_ */

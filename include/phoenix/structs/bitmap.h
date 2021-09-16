@@ -13,12 +13,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/kernel.h>
+#ifndef _BITMAP_H_
+#define _BITMAP_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <phoenix/types.h>
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
-int puts(u8 severity, const char* string);
+typedef struct bitmap {
+    u8* bitmap;
+    size_t size;
+    uptr* base;
+} bitmap_t;
 
-int puts(u8 severity, const char* string)
-{
-	return printk(severity, "%s\n", string);
-}
+void bitmap_set(bitmap_t* bitmap, u64 bit);
+void bitmap_clear(bitmap_t* bitmap, u64 bit);
+bool bitmap_test(bitmap_t* bitmap, u64 bit);
+
+#endif /* _BITMAP_H_ */

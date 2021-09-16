@@ -20,22 +20,23 @@
 extern "C" {
 #endif
 
+#include <phoenix/types.h>
 #include <stdint.h>
 
 struct idt_descriptor{
-	uint16_t    isr_low;        /* The lower 16 bits of the ISR's address */
-	uint16_t    selector;       /* The GDT segment selector */
-	uint8_t	    ist;            /* The IST in the TSS */
-	uint8_t     attributes;     /* Type and attributes */
-	uint16_t    isr_mid;        /* The higher 16 bits of the lower 32 bits of the ISR's address */
-	uint32_t    isr_high;       /* The higher 32 bits of the ISR's address */
-	uint32_t    reserved;       /* Set to zero */
-} __attribute__((packed));
+	u16 isr_low;    /* The lower 16 bits of the ISR's address */
+	u16 selector;   /* The GDT segment selector */
+	u8  ist;        /* The IST in the TSS */
+	u8  attributes; /* Type and attributes */
+	u16 isr_mid;    /* The higher 16 bits of the lower 32 bits of the ISR's address */
+	u32 isr_high;   /* The higher 32 bits of the ISR's address */
+	u32 reserved;   /* Set to zero */
+} PACKED;
 
 struct idt_pointer{
-    uint16_t    limit;  /* The limit of the IDT */
-    uint64_t    base;   /* The base of the IDT */
-} __attribute__((packed));
+    u16 limit;  /* The limit of the IDT */
+    u64 base;   /* The base of the IDT */
+} PACKED;
 
 #define IDT_MAX_DESCRIPTORS 256
 
@@ -45,8 +46,8 @@ struct idt_pointer{
 #define IDT_TRAP_GATE       0x8f
 
 void idt_init(void);
-__attribute__((noreturn))
-void exception_handler(uint64_t vector);
+NORETURN
+void exception_handler(u64 vector);
 
 #ifdef __cplusplus
 }
