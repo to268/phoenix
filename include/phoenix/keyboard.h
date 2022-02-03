@@ -1,4 +1,3 @@
-
 /*
  * Copyright © 2022 Guillot Tony <tony.guillot@protonmail.com>
  * This program is free software: you can redistribute it and/or modify
@@ -14,15 +13,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _TYPES_H_
-#define _TYPES_H_
+#ifndef _KEYBOARD_H_
+#define _KEYBOARD_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <phoenix/types/gcc.h>
-#include <phoenix/types/int.h>
-#include <stdbool.h>
+#include <phoenix/kernel.h>
+#include <phoenix/pic.h>
+#include <stddef.h>
 
-#endif /* _TYPES_H_ */
+#define KEYBOARD_IRQ        1
+#define KEYBOARD_STATE_PORT 0x64
+#define KEYBOARD_DATA_PORT  0x60
+
+#define KEYBOARD_ACK        0xfa
+#define KEYBOARD_RESEND     0xfe
+
+void keyboard_handler(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* _KEYBOARD_H_*/

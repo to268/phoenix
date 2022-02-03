@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Guillot Tony <tony.guillot@protonmail.com>
+ * Copyright © 2022 Guillot Tony <tony.guillot@protonmail.com>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,13 @@
 
 void pic_remap(void)
 {
+    u8 mask1;
+    u8 mask2;
+
+    /* Save IRQ masks */
+    mask1 = inb(PIC1_DATA);
+	mask2 = inb(PIC2_DATA);
+
     /* Initialization sequence */
     outb(PIC1_CMD, ICW1_INIT | ICW1_ICW4);
     io_wait();
@@ -48,9 +55,9 @@ void pic_remap(void)
     outb(PIC2_DATA, ICW4_8086);
     io_wait();
 
-    /* Set IRQ masks at zero */
-    outb(PIC1_DATA, 0);
-    outb(PIC2_DATA, 0);
+    /* Restore IRQ masks */
+    outb(PIC1_DATA, mask1);
+    outb(PIC2_DATA, mask2);
 
     debug("[PIC] IRQs have been remapped\n");
 }

@@ -19,7 +19,7 @@ LIMINE_ELTORITO=utils/limine/limine-eltorito-efi.bin
 LIMINE_INSTALL=utils/limine/limine-install
 
 # Linker script
-LD_SCRIPT=arch/$(ARCH)/linkers/stivale2.ld
+LD_SCRIPT=arch/$(ARCH)/stivale2.ld
 
 ASM_FILES:=$(shell find -path ./utils -prune -false -o -name "*.asm")
 ASM_OBJS:=$(ASM_FILES:.asm=.o)
@@ -144,7 +144,7 @@ serial: $(KERNEL) iso
 	echo "   SRL       $(ISO)"
 	qemu-system-$(ARCH) $(QEMU_FLAGS) -serial file:serial.log -cdrom $(ISO)
 
-gdb: $(KERNEL) iso
+debug: $(KERNEL) iso
 	echo "   GDB       $(ISO)"
 	qemu-system-$(ARCH) $(QEMU_FLAGS) -s -S -cdrom $(ISO)
 
@@ -160,4 +160,4 @@ mrproper: clean
 		include/ share/ lib* x86_64-elf/
 
 .SILENT:
-.PHONY: all config iso run runv serial gdb toolchain clean mrproper
+.PHONY: all config iso run runv serial debug toolchain clean mrproper

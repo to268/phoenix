@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Guillot Tony <tony.guillot@protonmail.com>
+ * Copyright © 2022 Guillot Tony <tony.guillot@protonmail.com>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,9 +19,8 @@
 #include <phoenix/serial.h>
 #include <phoenix/mem.h>
 #include <phoenix/pmm.h>
-#include <stdint.h>
 
-static bitmap_t bitmap;
+static Bitmap bitmap;
 
 void pmm_init(struct stivale2_struct* hdr)
 {
@@ -74,7 +73,7 @@ void pmm_init(struct stivale2_struct* hdr)
     debug("[PMM] Initialized\n");
 }
 
-inline u64 pmm_get_index(void* address, bitmap_t* bitmap)
+inline u64 pmm_get_index(void* address, Bitmap* bitmap)
 {
     return (u64)((uptr*)address - bitmap->base) / PAGE_SIZE;
 }
@@ -103,7 +102,7 @@ void pmm_zero(void* address, u64 pages)
 int pmm_check_next_pages(u64 start_bit, uint64_t pages)
 {
     for (u64 bit = start_bit; bit < (start_bit + pages); bit++) {
-        if (bitmap_test(&bitmap, bit)) {
+        if (bitmap_check(&bitmap, bit)) {
             return 0;
         }
     }
@@ -115,13 +114,14 @@ void* pmm_alloc(u64 length)
     u64 pages_number = DIV_ROUNDUP(length, PAGE_SIZE);
     void* addr;
 
+    /* TODO: Enhance PMM by traking the first free chunk and the bitmap tail */
     for (u64 bit = 0; bit < bitmap.size * 8; bit++) {
         for (u64 page = 0; page < pages_number; page++) {
 
             /* Check if a page is already allocated */
-            if (bitmap_test(&bitmap, bit)) {
+            if (bitmap_check(&bitmap, bit)) {
                 break;
-            } else if (!bitmap_test(&bitmap, bit) && page == pages_number - 1) {
+            } else if (!bitmap_check(&bitmap, bit) && page == pages_number - 1) {
                 /* Check if we can allocate requested pages continuously */
                 if (!pmm_check_next_pages(bit, pages_number))
                     break;

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Guillot Tony <tony.guillot@protonmail.com>
+ * Copyright © 2022 Guillot Tony <tony.guillot@protonmail.com>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,12 +13,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <phoenix/kernel.h>
 #include <phoenix/serial.h>
-#include <phoenix/types.h>
 #include <phoenix/mem.h>
 #include <phoenix/vga.h>
 #include <phoenix/io.h>
-#include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
 

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Guillot Tony <tony.guillot@protonmail.com>
+ * Copyright © 2022 Guillot Tony <tony.guillot@protonmail.com>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,6 @@
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
 #include <phoenix/gdt.h>
-#include <stdint.h>
 
 /* Flags */
 #define GRANULARITY_BIT (1 << 0x0f)             /* Granularity (0: 1B - 1MB, 1: 4kB - 4GB) */

@@ -1,4 +1,4 @@
-; Copyright © 2021 Guillot Tony <tony.guillot@protonmail.com>
+; Copyright © 2022 Guillot Tony <tony.guillot@protonmail.com>
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
 ; the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +18,7 @@ global keyboard_handler_irq
 global pic_send_eoi_master
 global pic_send_eoi_slave
 extern exception_handler
+extern keyboard_handler
 
 ; Valid exception
 %macro isr_exception_stub 1
@@ -32,6 +33,41 @@ isr_stub_%+%1:
 %macro isr_none_stub 1
 isr_stub_%+%1:
     iretq
+%endmacro
+
+%macro pushaq 0
+    push rax
+    push rbx
+    push rcx
+    push rdx
+    push rbp
+    push rdi
+    push rsi
+    push r8
+    push r9
+    push r10
+    push r11
+    push r12
+    push r13
+    push r14
+    push r15
+%endmacro
+%macro popaq 0
+    pop r15
+    pop r14
+    pop r13
+    pop r12
+    pop r11
+    pop r10
+    pop r9
+    pop r8
+    pop rsi
+    pop rdi
+    pop rbp
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
 %endmacro
 
 ; Exceptions
@@ -86,10 +122,10 @@ pit_handler_irq:
 
 ; Keyboard handler IRQ stub
 keyboard_handler_irq:
-    ;pushaq
-    ;cld
-    ;call keyboard_handler
-    ;popaq
+    pushaq
+    cld
+    call keyboard_handler
+    popaq
     iretq
 
 pic_send_eoi_master:

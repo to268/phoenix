@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Guillot Tony <tony.guillot@protonmail.com>
+ * Copyright © 2022 Guillot Tony <tony.guillot@protonmail.com>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,17 +19,15 @@
 #include <phoenix/gdt.h>
 #include <phoenix/idt.h>
 #include <phoenix/pmm.h>
+#include <phoenix/vmm.h>
 #include <phoenix/vga.h>
-#include <stdint.h>
 #include <stddef.h>
 
 /* Kernel early entry point */
 void init(struct stivale2_struct* hdr)
 {
     /*  TODO list:
-     *  Init PMM
-     *  Init IDT
-     *  Load Keyboard Driver
+     *  Init VMM
      */
 
     /* Initialize serial */
@@ -44,11 +42,14 @@ void init(struct stivale2_struct* hdr)
     /* Init GDT */
     gdt_init();
 
+    /* Init IDT */
+    idt_init();
+
     /* Init PMM */
     pmm_init(hdr);
 
-    /* Init IDT */
-    //idt_init();
+    /* Init VMM */
+    //vmm_init(hdr);
 
     /* Jump in kernel_main */
     kernel_main();

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Guillot Tony <tony.guillot@protonmail.com>
+ * Copyright © 2022 Guillot Tony <tony.guillot@protonmail.com>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,19 +20,18 @@
 extern "C" {
 #endif
 
-#include <phoenix/types.h>
+#include <phoenix/kernel.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
-typedef struct bitmap {
+typedef struct {
     u8* bitmap;
     size_t size;
     uptr* base;
-} bitmap_t;
+} Bitmap;
 
-void bitmap_set(bitmap_t* bitmap, u64 bit);
-void bitmap_clear(bitmap_t* bitmap, u64 bit);
-bool bitmap_test(bitmap_t* bitmap, u64 bit);
+void bitmap_set(Bitmap* bitmap, u64 bit);
+void bitmap_clear(Bitmap* bitmap, u64 bit);
+bool bitmap_check(Bitmap* bitmap, u64 bit);
 
 #endif /* _BITMAP_H_ */

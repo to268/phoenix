@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Guillot Tony <tony.guillot@protonmail.com>
+ * Copyright © 2022 Guillot Tony <tony.guillot@protonmail.com>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,8 +20,7 @@
 extern "C" {
 #endif
 
-#include <phoenix/types.h>
-#include <stdint.h>
+#include <phoenix/kernel.h>
 
 static inline void cli(void);
 static inline void sti(void);

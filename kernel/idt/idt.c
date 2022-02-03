@@ -1,5 +1,5 @@
 /*
- * Copyright © 2021 Guillot Tony <tony.guillot@protonmail.com>
+ * Copyright © 2022 Guillot Tony <tony.guillot@protonmail.com>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,10 +18,11 @@
 #include <phoenix/pic.h>
 #include <phoenix/idt.h>
 #include <phoenix/io.h>
+#include <phoenix/keyboard.h>
 
 /* IDT static variables */
 ALIGNED(0x10)
-static struct idt_descriptor idt[256];
+static struct idt_descriptor idt[IDT_MAX_DESCRIPTORS];
 static struct idt_pointer idtr = {
         .base = (u64)&idt,
         .limit = (u16)sizeof(struct idt_descriptor) * IDT_MAX_DESCRIPTORS - 1
@@ -29,10 +30,10 @@ static struct idt_pointer idtr = {
 
 /* Assembly symbols */
 extern void* isr_exception_stub_table[];
-extern void* pit_handler_irq;
-extern void* keyboard_handler_irq;
-extern void* pic_send_eoi_master;
-extern void* pic_send_eoi_slave;
+extern void pit_handler_irq(void);
+extern void keyboard_handler_irq(void);
+extern void pic_send_eoi_master(void);
+extern void pic_send_eoi_slave(void);
 
 void idt_set_descriptor(u8 vector, void *isr, uint8_t flags)
 {
@@ -42,8 +43,8 @@ void idt_set_descriptor(u8 vector, void *isr, uint8_t flags)
     descriptor->selector        = 0x8;
     descriptor->ist             = 0;
     descriptor->attributes      = flags;
-    descriptor->isr_mid         = ((u64)isr & 0xffff0000) >> 16;
-    descriptor->isr_high        = ((u64)isr & 0xffffffff00000000) >> 32;
+    descriptor->isr_mid         = ((u64)isr >> 16) & 0xffff;
+    descriptor->isr_high        = ((u64)isr >> 32) & 0xffffffff;
     descriptor->reserved        = 0;
 }
 
@@ -58,7 +59,8 @@ void idt_init(void)
 
     /* Map IRQs */
     idt_set_descriptor(IRQ(0), pit_handler_irq, IDT_INTERRUPT_GATE);
-    idt_set_descriptor(IRQ(1), keyboard_handler_irq, IDT_INTERRUPT_GATE);
+    idt_set_descriptor(IRQ(1), (void*)&keyboard_handler_irq, IDT_INTERRUPT_GATE);
+    pic_irq_clear_mask(1);
 
     for (u8 i = IRQ(2); i < IRQ(7); i++) {
         idt_set_descriptor(i, pic_send_eoi_master, IDT_INTERRUPT_GATE);

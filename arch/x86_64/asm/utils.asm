@@ -1,4 +1,4 @@
-; Copyright © 2021 Guillot Tony <tony.guillot@protonmail.com>
+; Copyright © 2022 Guillot Tony <tony.guillot@protonmail.com>
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
 ; the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,6 @@
 BITS 64
 
 global halt_cpu
-global enable_pae
 
 section .text
 
@@ -23,10 +22,3 @@ section .text
 halt_cpu:
     hlt
     jmp halt_cpu
-
-; Enable the pae flags
-enable_pae:
-    mov rax, cr4
-    or rax, 1 << 5
-    mov cr4, rax
-    ret
