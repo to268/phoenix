@@ -15,8 +15,8 @@ ISO_DIR=isofiles
 LIMINE_CD=utils/limine/limine-cd.bin
 LIMINE_CFG=utils/limine/limine.cfg
 LIMINE_SYS=utils/limine/limine.sys
-LIMINE_ELTORITO=utils/limine/limine-eltorito-efi.bin
-LIMINE_INSTALL=utils/limine/limine-install
+LIMINE_EFI=utils/limine/limine-cd-efi.bin
+LIMINE_DEPLOY=utils/limine/limine-deploy
 
 # Linker script
 LD_SCRIPT=arch/$(ARCH)/stivale2.ld
@@ -127,14 +127,14 @@ iso: $(KERNEL) config
 	cp $(LIMINE_CFG) $(ISO_DIR)
 	cp $(LIMINE_SYS) $(ISO_DIR)
 	cp $(LIMINE_CD) $(ISO_DIR)
-	cp $(LIMINE_ELTORITO) $(ISO_DIR)
+	cp $(LIMINE_EFI) $(ISO_DIR)
 	$(MKISOFS) -b limine-cd.bin -no-emul-boot \
 			-boot-load-size 4 -boot-info-table \
-			--efi-boot limine-eltorito-efi.bin \
+			--efi-boot limine-cd-efi.bin \
 			-efi-boot-part --efi-boot-image \
 			--protective-msdos-label $(ISO_DIR) -o $(ISO)
 	rm -rf $(ISO_DIR)
-	$(LIMINE_INSTALL) $(ISO)
+	$(LIMINE_DEPLOY) $(ISO)
 
 run: $(KERNEL) iso
 	echo "   QMU       $(ISO)"
