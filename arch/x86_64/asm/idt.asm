@@ -18,6 +18,7 @@ global keyboard_handler_irq
 global pic_send_eoi_master
 global pic_send_eoi_slave
 extern exception_handler
+extern pit_handler
 extern keyboard_handler
 
 ; Valid exception
@@ -114,10 +115,9 @@ isr_exception_stub_table:
 
 ; PIT handler IRQ stub
 pit_handler_irq:
-    ;pushaq
-    ;cld
-    ;call pit_handler
-    ;popaq
+    pushaq
+    call pit_handler
+    popaq
     iretq
 
 ; Keyboard handler IRQ stub

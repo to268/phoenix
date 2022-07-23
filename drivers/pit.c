@@ -13,48 +13,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/stivale2.h>
 #include <phoenix/kernel.h>
-#include <phoenix/serial.h>
-#include <phoenix/gdt.h>
-#include <phoenix/idt.h>
+#include <phoenix/io.h>
+#include <phoenix/pic.h>
 #include <phoenix/pit.h>
-#include <phoenix/pmm.h>
-#include <phoenix/vmm.h>
-#include <phoenix/vga.h>
-#include <stddef.h>
+#include <phoenix/serial.h>
 
-/* Kernel early entry point */
-void init(struct stivale2_struct* hdr)
+static volatile u64 pit_timer_ticks = 0;
+
+void pit_init(u32 hz)
 {
-    /*  TODO list:
-     *  Init VMM
-     */
+    /* Calculate the divisor */
+    u32 divisor = 1193180 / hz;
 
-    /* Initialize serial */
-    serial_init(SERIAL_COM1, 1);
+    /* Apply divisor */
+    outb(0x43, 0x36);
+    outb(0x40, divisor & 0xff);
+    outb(0x40, divisor >> 8);
 
-    /* Initialize vga buffer */
-    vga_init();
+    serial_writestring(SERIAL_COM1, "[PIT] Initialized\n");
+}
 
-    /* Process Each supported tag */
-    stivale2_process_tags(hdr);
+void pit_handler(void)
+{
+    /* Increment ticks count when IRQ is triggered */
+    pit_timer_ticks++;
 
-    /* Init GDT */
-    gdt_init();
+    pic_send_eoi(PIT_IRQ);
+}
 
-    /* Init IDT */
-    idt_init();
-
-    /* Init PIT */
-    pit_init(1000);
-
-    /* Init PMM */
-    pmm_init(hdr);
-
-    /* Init VMM */
-    //vmm_init(hdr);
-
-    /* Jump in kernel_main */
-    kernel_main();
+void pit_sleep(u64 msec)
+{
+    u64 ticks = pit_timer_ticks + msec;
+    while (pit_timer_ticks < ticks);
 }

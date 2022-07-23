@@ -61,9 +61,6 @@ export CFLAGS =	-mcmodel=kernel -mno-red-zone -mno-mmx \
 export LDFLAGS = -n -nostdlib -static -z max-page-size=0x1000 \
 				 $(CONFIG_LDFLAGS)
 
-# Export default LIBS
-LIBS = -lk
-
 endif
 
 # If the Cross Compiler is provided, set Make variables
@@ -98,7 +95,7 @@ $(ASM_OBJS): $(ASM_FILES)
 # Process C Files
 $(OBJS): $(C_FILES)
 	echo "   CC        $*.o"
-	$(CC) $(CFLAGS) -c $*.c -o $@ $(LIBS)
+	$(CC) $(CFLAGS) -c $*.c -o $@
 
 # Libs
 lib/libk.a: $(wildcard lib/libk/*.c)
