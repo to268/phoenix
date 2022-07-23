@@ -24,7 +24,7 @@ static volatile u64 pit_timer_ticks = 0;
 void pit_init(u32 hz)
 {
     /* Calculate the divisor */
-    u32 divisor = 1193180 / hz;
+    u32 divisor = PIT_FREQ / hz;
 
     /* Apply divisor */
     outb(0x43, 0x36);

@@ -16,6 +16,7 @@
 #include <phoenix/stivale2.h>
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
+#include <phoenix/pcspk.h>
 #include <phoenix/gdt.h>
 #include <phoenix/idt.h>
 #include <phoenix/pit.h>
@@ -48,6 +49,9 @@ void init(struct stivale2_struct* hdr)
 
     /* Init PIT */
     pit_init(1000);
+
+    /* Init PCSPK */
+    pcspk_init();
 
     /* Init PMM */
     pmm_init(hdr);

@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _PIT_H_
-#define _PIT_H_
+#ifndef _PCSPK_H_
+#define _PCSPK_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,15 +22,13 @@ extern "C" {
 
 #include <phoenix/kernel.h>
 
-#define PIT_IRQ 0
-#define PIT_FREQ 1193180
-
-void pit_init(u32 hz);
-void pit_handler(void);
-void pit_sleep(u64 msec);
+void pcspk_init(void);
+void pcspk_play(u32 hz);
+void pcspk_stop(void);
+void pcspk_beep(u32 hz, u32 time);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _PIT_H_*/
+#endif /* _PCSPK_H_*/

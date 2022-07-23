@@ -13,24 +13,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _PIT_H_
-#define _PIT_H_
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <phoenix/kernel.h>
+#include <phoenix/io.h>
+#include <phoenix/pit.h>
+#include <phoenix/serial.h>
 
-#define PIT_IRQ 0
-#define PIT_FREQ 1193180
-
-void pit_init(u32 hz);
-void pit_handler(void);
-void pit_sleep(u64 msec);
-
-#ifdef __cplusplus
+void pcspk_init(void)
+{
+    outb(0x61, inb(0x61) | 0x1);
+    serial_writestring(SERIAL_COM1, "[PCSPK] Initialized\n");
 }
-#endif
 
-#endif /* _PIT_H_*/
+void pcspk_play(u32 hz)
+{
+    u32 div = PIT_FREQ / hz;
+
+    /* Set the PIT to the desired frequency */
+    cli();
+    outb(0x43, 0xb6);
+    outb(0x42, (u8)(div & 0xff));
+    outb(0x42, (u8)(div >> 8));
+    sti();
+
+    /* Play the sound with the PC speaker */
+    u32 tmp = inb(0x61);
+    if (tmp != (tmp | 3))
+        outb(0x61, tmp | 3);
+}
+
+void pcspk_stop(void)
+{
+    outb(0x61, inb(0x61) & 0xfc);
+}
+
+void pcspk_beep(u32 hz, u32 time)
+{
+    pcspk_play(hz);
+    pit_sleep(time);
+    pcspk_stop();
+}
