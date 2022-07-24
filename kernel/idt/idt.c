@@ -15,8 +15,9 @@
  */
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
-#include <phoenix/pic.h>
 #include <phoenix/idt.h>
+#include <phoenix/pic.h>
+#include <phoenix/nmi.h>
 #include <phoenix/io.h>
 #include <phoenix/keyboard.h>
 
@@ -76,4 +77,7 @@ void idt_init(void)
     asm volatile("lidt %0" : : "memory"(idtr));
     sti();
     debug("[IDT] Loaded\n");
+
+    /* Enable NMI */
+    nmi_enable();
 }

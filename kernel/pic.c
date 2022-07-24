@@ -25,7 +25,7 @@ void pic_remap(void)
 
     /* Save IRQ masks */
     mask1 = inb(PIC1_DATA);
-	mask2 = inb(PIC2_DATA);
+    mask2 = inb(PIC2_DATA);
 
     /* Initialization sequence */
     outb(PIC1_CMD, ICW1_INIT | ICW1_ICW4);
@@ -64,10 +64,10 @@ void pic_remap(void)
 
 void pic_send_eoi(u8 irq)
 {
-	if(irq >= 8)
-		outb(PIC2_CMD, PIC_EOI);
+    if(irq >= 8)
+        outb(PIC2_CMD, PIC_EOI);
 
-	outb(PIC1_CMD, PIC_EOI);
+    outb(PIC1_CMD, PIC_EOI);
 }
 
 void pic_irq_set_mask(u8 irq)
