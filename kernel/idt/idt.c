@@ -62,8 +62,8 @@ void idt_init(void)
     idt_set_descriptor(IRQ(0), (void*)&pit_handler_irq, IDT_INTERRUPT_GATE);
     idt_set_descriptor(IRQ(1), (void*)&keyboard_handler_irq, IDT_INTERRUPT_GATE);
 
-    pic_irq_clear_mask(0);
     pic_irq_clear_mask(1);
+    /* All others IRQ are unmasked when initialised */
 
     for (u8 i = IRQ(2); i < IRQ(7); i++) {
         idt_set_descriptor(i, pic_send_eoi_master, IDT_INTERRUPT_GATE);

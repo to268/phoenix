@@ -17,7 +17,6 @@
 #include <phoenix/io.h>
 #include <phoenix/pic.h>
 #include <phoenix/pit.h>
-#include <phoenix/serial.h>
 
 static volatile u64 pit_timer_ticks = 0;
 
@@ -31,7 +30,8 @@ void pit_init(u32 hz)
     outb(0x40, divisor & 0xff);
     outb(0x40, divisor >> 8);
 
-    serial_writestring(SERIAL_COM1, "[PIT] Initialized\n");
+    /* Unmask PIT IRQ */
+    pic_irq_clear_mask(PIT_IRQ);
 }
 
 void pit_handler(void)
