@@ -15,7 +15,6 @@
  */
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
-#include <phoenix/pit.h>
 #include <phoenix/mem.h>
 #include <phoenix/io.h>
 #include <cpuid.h>

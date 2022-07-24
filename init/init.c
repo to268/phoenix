@@ -20,6 +20,7 @@
 #include <phoenix/gdt.h>
 #include <phoenix/idt.h>
 #include <phoenix/pit.h>
+#include <phoenix/rtc.h>
 #include <phoenix/pmm.h>
 #include <phoenix/vmm.h>
 #include <phoenix/vga.h>
@@ -52,6 +53,9 @@ void init(struct stivale2_struct* hdr)
 
     /* Init PCSPK */
     pcspk_init();
+
+    /* Init RTC */
+    rtc_init();
 
     /* Init PMM */
     pmm_init(hdr);
