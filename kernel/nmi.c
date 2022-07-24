@@ -14,19 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <phoenix/kernel.h>
-#include <phoenix/serial.h>
+#include <phoenix/io.h>
 
-NORETURN
-void panic(const char *msg)
+void nmi_enable(void)
 {
-    serial_writestring(SERIAL_COM1, "Kernel Panic !\n");
-    serial_writestring(SERIAL_COM1, msg);
+    outb(0x70, inb(0x70) & 0x7f);
+    inb(0x71);
+}
 
-	printk(KERN_FATAL, "Kernel Panic !\n");
-    printk(KERN_FATAL, "%s", msg);
+void nmi_disable(void)
+{
+    outb(0x70, inb(0x70) | 0x80);
+    inb(0x71);
+}
 
-    extern void halt_cpu(void);
-    halt_cpu();
-
-	__builtin_unreachable();
+/* Store control port values with 16 bits where
+ * - bits 0-7: Control port A
+ * - bits 8-15: Control port B
+ */
+u16 nmi_get_control_ports(void)
+{
+    return (inb(0x61) << 8) | inb(0x92);
 }

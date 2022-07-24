@@ -15,6 +15,7 @@
  */
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
+#include <phoenix/pit.h>
 #include <phoenix/mem.h>
 #include <phoenix/io.h>
 #include <cpuid.h>
@@ -23,7 +24,6 @@ void kernel_main(void)
 {
     info("Welcome to Phoenix !\n");
 
-    while (1);
     /* Halt CPU */
     extern void halt_cpu(void);
     halt_cpu();

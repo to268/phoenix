@@ -28,6 +28,7 @@ extern "C" {
 void pit_init(u32 hz);
 void pit_handler(void);
 void pit_sleep(u64 msec);
+u64 pit_get_ticks(void);
 
 #ifdef __cplusplus
 }
