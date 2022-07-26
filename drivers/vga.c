@@ -146,3 +146,21 @@ void vga_writestring(const char* string)
 	vga_write(string, strlen(string));
     vga_cursor_set_pos(vga_column, vga_row);
 }
+
+void vga_remove_last_char(void)
+{
+    /* Check if the cursor is at the beginning of the row */
+    if (vga_column == 0) {
+        vga_row--;
+        vga_column = VGA_WIDTH - 1;
+    } else {
+        vga_column--;
+    }
+
+    /* Make sure to update the cursor */
+    vga_cursor_set_pos(vga_column, vga_row);
+
+    /* Clear the character */
+    size_t index = (vga_row * VGA_WIDTH) + vga_column;
+    vga_buffer[index] = vga_entry(' ', vga_color);
+}
