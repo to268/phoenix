@@ -22,13 +22,17 @@
 
 static struct keyboard_state kb_state;
 
+static void keyboard_send_command(u8 command, u8 value)
+{
+    outb(KEYBOARD_DATA_PORT, command);
+    while (inb(KEYBOARD_DATA_PORT) != KEYBOARD_ACK);
+    outb(KEYBOARD_DATA_PORT, value);
+}
+
 static void keybard_toggle_led(u8 led)
 {
     kb_state.leds ^= led;
-
-    outb(KEYBOARD_DATA_PORT, KEYBOARD_LED);
-    while (inb(KEYBOARD_DATA_PORT) != KEYBOARD_ACK);
-    outb(KEYBOARD_DATA_PORT, kb_state.leds);
+    keyboard_send_command(KEYBOARD_LED, kb_state.leds);
 }
 
 static void handle_function_keys(u8 scancode)
@@ -144,6 +148,12 @@ static void keyboard_handle_extended_scancode(u8 scancode, u8 keystate)
     kb_state.extended_scancode = 0;
 }
 
+void keyboard_change_repeating_delay(u8 repeat_rate, u8 delay)
+{
+    u8 data = (repeat_rate & 0x1f) | ((delay & 0x3) << 5);
+    keyboard_send_command(KEYBOARD_DELAY, data);
+}
+
 void keyboard_handler(void)
 {
     u8 state = inb(KEYBOARD_STATE_PORT);
@@ -173,4 +183,13 @@ void keyboard_handler(void)
 
 end:
     pic_send_eoi(KEYBOARD_IRQ);
+}
+
+void keyboard_init(void)
+{
+    /* Reset keyboard leds */
+    keyboard_send_command(KEYBOARD_LED, kb_state.leds);
+
+    /* Set keyboard repeating delay */
+    keyboard_change_repeating_delay(KEYBOARD_REPEAT_RATE(0), KEYBOARD_DELAY_FASTER);
 }

@@ -28,10 +28,20 @@ extern "C" {
 #define KEYBOARD_STATE_PORT     0x64
 #define KEYBOARD_DATA_PORT      0x60
 
+/* Commands */
 #define KEYBOARD_ACK            0xfa
 #define KEYBOARD_RESEND         0xfe
 #define KEYBOARD_LED            0xed
+#define KEYBOARD_DELAY          0xf3
 
+/* Repeating delays */
+#define KEYBOARD_DELAY_FASTER   0
+#define KEYBOARD_DELAY_FAST     0x1
+#define KEYBOARD_DELAY_SLOW     0x2
+#define KEYBOARD_DELAY_SLOWEST  0x3
+#define KEYBOARD_REPEAT_RATE(x) (x & 0x1f)
+
+/* Special keys */
 #define KEYBOARD_ESCAPE         0x1
 #define KEYBOARD_LCTRL          0x1d
 #define KEYBOARD_LSHIFT         0x2a
@@ -50,8 +60,8 @@ extern "C" {
 
 #define KEYBORAD_EXTENDED_CODE  0xe0
 
-#define KEYBOARD_NUMPAD_LED     (1 << 0)
-#define KEYBOARD_SCROLL_LED     (1 << 1)
+#define KEYBOARD_SCROLL_LED     (1 << 0)
+#define KEYBOARD_NUMPAD_LED     (1 << 1)
 #define KEYBOARD_CAPS_LED       (1 << 2)
 
 struct keyboard_state {
@@ -60,7 +70,9 @@ struct keyboard_state {
     u8 leds;
 };
 
+void keyboard_init(void);
 void keyboard_handler(void);
+void keyboard_change_repeating_delay(u8 repeat_rate, u8 delay);
 
 #ifdef __cplusplus
 }

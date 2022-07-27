@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <phoenix/stivale2.h>
+#include <phoenix/keyboard.h>
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
 #include <phoenix/pcspk.h>
@@ -47,6 +48,9 @@ void init(struct stivale2_struct* hdr)
 
     /* Init IDT */
     idt_init();
+
+    /* Init Keyboard */
+    keyboard_init();
 
     /* Init PIT */
     pit_init(1000);
