@@ -25,6 +25,12 @@ extern "C" {
 #include <stivale2.h>
 #include <stddef.h>
 
+enum video_driver {
+    VGA_DRIVER,
+    FRAMEBUFFER_DRIVER,
+};
+
+enum video_driver stivale2_get_video_driver();
 void* stivale2_get_tag(struct stivale2_struct* hdr, u64 id);
 void stivale2_print_fb_tag(struct stivale2_struct_tag_framebuffer* fb_tag);
 void stivale2_print_smp_tag(struct stivale2_struct_tag_smp* smp_tag);

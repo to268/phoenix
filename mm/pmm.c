@@ -33,6 +33,7 @@ void pmm_init(struct stivale2_struct* hdr)
     info("\n%d Mb is free\n", free_mem);
 
     /* Compute the size of the bitmap */
+    // FIXME: fix printing issues with gcc
     bitmap.size = DIV_ROUNDUP(free_hdr.highest_memory, PAGE_SIZE) / 8;
     info("bitmap size is %d bytes\n\n", bitmap.size);
 

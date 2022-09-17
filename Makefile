@@ -26,6 +26,10 @@ ASM_OBJS:=$(ASM_FILES:.asm=.o)
 C_FILES=$(shell find -path ./utils -prune -false -o -name "*.c")
 OBJS=$(C_FILES:.c=.o)
 
+# Font
+FONT=utils/font.psf
+FONT_OBJ=$(FONT:.psf=.o)
+
 # Suppress "Entering directory..."
 MAKEFLAGS+=--no-print-directory
 -include $(C_FILES:.c=.d)
@@ -48,8 +52,8 @@ ifneq ($(ARCH), x86_64)
 $(error Unknow Architecture $(ARCH))
 else
 # Export default CFLAGS
-export CFLAGS =	-mcmodel=kernel -mno-red-zone -mno-mmx \
-				-mno-sse -mno-sse2 -std=gnu18 -Wall -Wextra \
+export CFLAGS =	-mcmodel=large -mno-red-zone -mno-mmx \
+				-mno-sse -mno-sse2 -std=gnu17 -Wall -Wextra \
 				-O2 -ffreestanding -fno-common -fno-pic \
 				-pipe -fno-stack-protector -fno-exceptions \
 				-fno-non-call-exceptions -nostdlib -MMD \
@@ -72,6 +76,7 @@ export CC=$(CONFIG_CROSS_COMPILER_PREFIX)gcc
 export AR=$(CONFIG_CROSS_COMPILER_PREFIX)ar
 export NM=$(CONFIG_CROSS_COMPILER_PREFIX)nm
 export LD=$(CONFIG_CROSS_COMPILER_PREFIX)ld
+export OBJCPY=$(CONFIG_CROSS_COMPILER_PREFIX)objcopy
 # Only tested with nasm assembler
 export ASM=nasm
 
@@ -81,9 +86,9 @@ endif
 
 endif
 
-$(KERNEL): $(ASM_OBJS) $(OBJS) lib/libk.a config
+$(KERNEL): $(ASM_OBJS) $(OBJS) $(FONT_OBJ) lib/libk.a lib/libpsf.a config
 	echo "   LD        $(KERNEL)"
-	$(LD) $(LDFLAGS) -T $(LD_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(OBJS)
+	$(LD) $(LDFLAGS) -T $(LD_SCRIPT) -o $(KERNEL) $(ASM_OBJS) $(OBJS) $(FONT_OBJ)
 	echo "   NM        $(MAP)"
 	$(NM) -n $(KERNEL) > $(MAP)
 
@@ -102,12 +107,20 @@ lib/libk.a: $(wildcard lib/libk/*.c)
 	echo "   AR        $@"
 	$(AR) rcs $@ $(wildcard lib/libk/*.o)
 
+lib/libpsf.a: $(wildcard lib/libpsf/*.c)
+	echo "   AR        $@"
+	$(AR) rcs $@ $(wildcard lib/libpsf/*.o)
+
+$(FONT_OBJ): $(FONT)
+	echo "   OBJCPY    $@"
+	$(OBJCPY) -O elf64-x86-64 -B i386 -I binary $*.psf $@
+
 toolchain:
 	cd utils/toolchain/ && bash build.sh -j$(NCPUS)
 
 clean:
 	echo "   RM        *.o"
-	rm -f $(ASM_OBJS) $(OBJS)
+	rm -f $(ASM_OBJS) $(OBJS) $(FONT_OBJ)
 	echo "   RM        *.a"
 	rm -f $(shell find -name "*.a")
 	echo "   RM        *.d"

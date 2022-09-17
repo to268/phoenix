@@ -1,7 +1,10 @@
+OUTPUT_FORMAT(elf64-x86-64)
+OUTPUT_ARCH(i386:x86-64)
 ENTRY(init)
 
 SECTIONS {
     kernel_phys_offset = 0xffffffff80000000;
+
     kernel_start = .;
     . = kernel_phys_offset + 0x100000;
 

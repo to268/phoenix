@@ -114,12 +114,12 @@ void vga_putchar(const char c)
     }
 
     /* Check for special characters */
-    if (!strcmp(&c, "\n")) {
+    if (c == '\n') {
         vga_row++;
         vga_column = 0;
-    } else if (!strcmp(&c, "\t")) {
+    } else if (c == '\t') {
         vga_column += TAB_LENGTH;
-    } else if (!strcmp(&c, "\r")) {
+    } else if (c == '\r') {
         vga_column = 0;
     } else {
         vga_putentryat(uc, vga_color, vga_column, vga_row);

@@ -13,25 +13,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _BITMAP_H_
-#define _BITMAP_H_
+#ifndef _LIBPSF_H_
+#define _LIBPSF_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <phoenix/kernel.h>
-#include <stdbool.h>
-#include <stddef.h>
+
+#define PSF1_MAGIC0	        0x36
+#define PSF1_MAGIC1	        0x04
+
+#define PSF1_MODE512        0x01
+#define PSF1_MODEHASTAB     0x02
+#define PSF1_MODEHASSEQ     0x04
+#define PSF1_MAXMODE        0x05
+
+#define PSF1_SEPARATOR      0xFFFF
+#define PSF1_STARTSEQ       0xFFFE
+
+#define PSF1_MAGIC_OK(x)    ((x)[0] == PSF1_MAGIC0 && (x)[1] == PSF1_MAGIC1)
 
 typedef struct {
-    u8* bitmap;
-    u32 size;
-    uptr* base;
-} Bitmap;
+	unsigned char   magic[2];	    /* Magic number */
+	u8              mode;	        /* PSF font mode */
+	u8              charsize;	    /* Character size */
+} PSF1_header;
 
-void bitmap_set(Bitmap* bitmap, u64 bit);
-void bitmap_clear(Bitmap* bitmap, u64 bit);
-bool bitmap_check(Bitmap* bitmap, u64 bit);
+typedef struct {
+    PSF1_header*    header;
+    u8*             data;           /* Glyphs data */
+} PSF1_font;
 
-#endif /* _BITMAP_H_ */
+PSF1_font psf1_init(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* _LIBPSF_H_ */

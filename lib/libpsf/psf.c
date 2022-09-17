@@ -14,21 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <phoenix/kernel.h>
-#include <phoenix/pit.h>
-#include <phoenix/rtc.h>
+#include <phoenix/libpsf.h>
 #include <phoenix/serial.h>
-#include <phoenix/mem.h>
-#include <phoenix/io.h>
-#include <cpuid.h>
 
-void kernel_main(void)
+extern unsigned char _binary_utils_font_psf_start;
+extern unsigned char _binary_utils_font_psf_end;
+
+PSF1_font psf1_init(void)
 {
-    rtc_print_date_time();
-    info("Startup took %d msecs\n", pit_get_ticks());
-    info("\n");
-    info("Welcome to Phoenix !\n");
+    PSF1_font font;
 
-    /* Halt CPU */
-    extern void halt_cpu(void);
-    halt_cpu();
+    PSF1_header* volatile header = (PSF1_header*)&_binary_utils_font_psf_start;
+    font.header = header;
+    font.data = (u8*)header + sizeof(PSF1_header);
+
+    /* Check the header */
+    if (!PSF1_MAGIC_OK(header->magic))
+        panic("Invalid PSF font !");
+
+    if (header->mode & PSF1_MODE512)
+        serial_writestring(SERIAL_COM1, "[PSF] Font with 512 characters\n");
+
+    if (header->mode & PSF1_MODEHASTAB)
+        serial_writestring(SERIAL_COM1, "[PSF] Font with unicode characters\n");
+
+    serial_writestring(SERIAL_COM1, "[PSF] Loaded font\n");
+    return font;
 }

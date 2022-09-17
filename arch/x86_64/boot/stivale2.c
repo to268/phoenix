@@ -16,13 +16,15 @@
 #include <phoenix/kernel.h>
 #include <phoenix/stivale2.h>
 #include <phoenix/serial.h>
+#include <phoenix/framebuffer.h>
 #include <stivale2.h>
 #include <stddef.h>
+
+static enum video_driver video = VGA_DRIVER;
 
 /* Stack required by the stivale2 specifications */
 static u8 stack[4096];
 
-/*
 static struct stivale2_header_tag_framebuffer framebuffer_tag = {
     .tag = {
         .identifier = STIVALE2_HEADER_TAG_FRAMEBUFFER_ID,
@@ -34,6 +36,7 @@ static struct stivale2_header_tag_framebuffer framebuffer_tag = {
 };
 
 
+/*
 static struct stivale2_header_tag_smp smp_tag = {
     .tag = {
         .identifier = STIVALE2_HEADER_TAG_SMP_ID,
@@ -49,10 +52,14 @@ SECTION(".stivale2hdr")
 struct stivale2_header stivale_hdr = {
     .entry_point = (uptr)&init,
     .stack = (uptr)stack + sizeof(stack),
-    .flags = 0,
-    .tags = 0,
-    /*.tags = (u64)&smp_tag, */
+    .flags = (1 << 1) | (1 << 4),
+    .tags = (u64)&framebuffer_tag,
 };
+
+inline enum video_driver stivale2_get_video_driver()
+{
+    return video;
+}
 
 void stivale2_print_fb_tag(struct stivale2_struct_tag_framebuffer* fb_tag)
 {
@@ -68,7 +75,7 @@ void stivale2_print_fb_tag(struct stivale2_struct_tag_framebuffer* fb_tag)
     info("\tGreen mask size: %d\n", fb_tag->green_mask_size);
     info("\tGreen mask size: %d\n", fb_tag->green_mask_shift);
     info("\tBlue mask size:  %d\n", fb_tag->blue_mask_size);
-    info("\tBlue mask size:  %d\n", fb_tag->blue_mask_shift);
+    info("\tBlue mask size:  %d\n\n", fb_tag->blue_mask_shift);
 }
 
 void stivale2_print_smp_tag(struct stivale2_struct_tag_smp* smp_tag)
@@ -230,15 +237,11 @@ void stivale2_process_tags(struct stivale2_struct* hdr)
 {
     /* Tags */
     struct stivale2_tag* current_tag = (void*)hdr->tags;
-    struct stivale2_struct_tag_framebuffer* fb_tag_ptr;
-    struct stivale2_struct_tag_smp* smp_tag_ptr;
-    struct stivale2_struct_tag_cmdline* cmdline_tag_ptr;
-    struct stivale2_struct_tag_pxe_server_info* pxe_tag_ptr;
-    struct stivale2_struct_tag_memmap* memmap_tag_ptr;
-
-    /* Bootloader Info */
-    info("Bootloader brand:     %s\n",      hdr->bootloader_brand);
-    info("Bootloader version:   %s\n\n",    hdr->bootloader_version);
+    struct stivale2_struct_tag_framebuffer* fb_tag_ptr = NULL;
+    struct stivale2_struct_tag_smp* smp_tag_ptr = NULL;
+    struct stivale2_struct_tag_cmdline* cmdline_tag_ptr = NULL;
+    struct stivale2_struct_tag_pxe_server_info* pxe_tag_ptr = NULL;
+    struct stivale2_struct_tag_memmap* memmap_tag_ptr = NULL;
 
     /* Loop on all tags */
     for (;;) {
@@ -250,31 +253,28 @@ void stivale2_process_tags(struct stivale2_struct* hdr)
             /* Framebuffer Tag */
             case STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID:
                 fb_tag_ptr = (struct stivale2_struct_tag_framebuffer*)current_tag;
-                stivale2_print_fb_tag(fb_tag_ptr);
+                framebuffer_init(fb_tag_ptr);
+                video = FRAMEBUFFER_DRIVER;
                 break;
 
             /* SMP Tag */
             case STIVALE2_STRUCT_TAG_SMP_ID:
                 smp_tag_ptr = (struct stivale2_struct_tag_smp*)current_tag;
-                stivale2_print_smp_tag(smp_tag_ptr);
                 break;
 
             /* Cmdline Tag */
             case STIVALE2_STRUCT_TAG_CMDLINE_ID:
                 cmdline_tag_ptr = (struct stivale2_struct_tag_cmdline*)current_tag;
-                info("Cmdline: %s\n\n", (char*)cmdline_tag_ptr->cmdline);
                 break;
 
             /* PXE Tag */
             case STIVALE2_STRUCT_TAG_PXE_SERVER_INFO:
                 pxe_tag_ptr = (struct stivale2_struct_tag_pxe_server_info*)current_tag;
-                info("PXE IP: %d\n\n", pxe_tag_ptr->server_ip);
                 break;
 
             /* Memmap Tag */
             case STIVALE2_STRUCT_TAG_MEMMAP_ID:
                 memmap_tag_ptr = (struct stivale2_struct_tag_memmap*)current_tag;
-                stivale2_print_memmap(memmap_tag_ptr);
                 break;
 
             /* Tag not supported */
@@ -284,4 +284,23 @@ void stivale2_process_tags(struct stivale2_struct* hdr)
         /* Get Next Tag */
         current_tag = (void*)current_tag->next;
     }
+
+    /* Print tags info */
+    info("Bootloader brand:     %s\n",      hdr->bootloader_brand);
+    info("Bootloader version:   %s\n\n",    hdr->bootloader_version);
+
+    if (memmap_tag_ptr != NULL)
+        stivale2_print_memmap(memmap_tag_ptr);
+
+    if (fb_tag_ptr != NULL)
+        stivale2_print_fb_tag(fb_tag_ptr);
+
+    if (smp_tag_ptr != NULL)
+        stivale2_print_smp_tag(smp_tag_ptr);
+
+    if (pxe_tag_ptr != NULL)
+        info("PXE IP: %d\n\n", pxe_tag_ptr->server_ip);
+
+    if (cmdline_tag_ptr != NULL)
+        info("Cmdline: %s\n\n", (char*)cmdline_tag_ptr->cmdline);
 }

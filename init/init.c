@@ -37,11 +37,11 @@ void init(struct stivale2_struct* hdr)
     /* Initialize serial */
     serial_init(SERIAL_COM1, 1);
 
-    /* Initialize vga buffer */
-    vga_init();
-
     /* Process Each supported tag */
     stivale2_process_tags(hdr);
+
+    /* Initialize vga buffer */
+    //vga_init();
 
     /* Init GDT */
     gdt_init();
