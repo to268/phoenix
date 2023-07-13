@@ -21,16 +21,13 @@ extern "C" {
 #endif
 
 #include <phoenix/kernel.h>
-#include <phoenix/stivale2.h>
-#include <stivale2.h>
 
-#define LIMIT_SEGMENTS 64
+#define LIMIT_SEGMENTS 32
 
 struct free_memory {
     u64 base;
     u64 length;
-    u32 type;
-} PACKED;
+};
 
 struct free_memory_hdr {
     u64 entries;
@@ -38,7 +35,11 @@ struct free_memory_hdr {
     u64 total_memory;
     uptr highest_memory;
     struct free_memory segments[LIMIT_SEGMENTS];
-} PACKED;
+};
+
+struct boot_info {
+    struct free_memory_hdr free_memory_hdr;
+};
 
 #ifdef __cplusplus
 }

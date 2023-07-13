@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <phoenix/keyboard_layouts.h>
-#include <phoenix/stivale2.h>
+#include <phoenix/limine.h>
 #include <phoenix/framebuffer.h>
 #include <phoenix/kernel.h>
 #include <phoenix/keyboard.h>
@@ -78,11 +78,7 @@ static u8 keyboard_handle_special_press(u8 scancode)
             return 1;
 
         case KEYBOARD_BACKSPACE:
-            if (stivale2_get_video_driver() == FRAMEBUFFER_DRIVER) {
-                framebuffer_remove_last_char();
-            } else {
-                vga_remove_last_char();
-            }
+            framebuffer_remove_last_char();
             return 1;
 
         case KEYBORAD_EXTENDED_CODE:

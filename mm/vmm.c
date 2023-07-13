@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/stivale2.h>
+#include <phoenix/limine.h>
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
 #include <phoenix/mem.h>
@@ -62,8 +62,7 @@ void vmm_map(struct page_map* map, uptr virt_addr, uptr phys_addr, u64 flags)
     pml1[pml1_entry] = phys_addr | flags;
 }
 
-struct page_map
-vmm_new_pagemap(u8 lvl)
+struct page_map vmm_new_pagemap(u8 lvl)
 {
     struct page_map page_map;
     page_map.levels = lvl;
@@ -72,8 +71,10 @@ vmm_new_pagemap(u8 lvl)
     return page_map;
 }
 
-void vmm_init(struct stivale2_struct* hdr)
+void vmm_init(struct boot_info* boot_info)
 {
+    struct free_memory_hdr* memory_hdr = &boot_info->free_memory_hdr;
+
     /* Set page map level to 4 */
     /* TODO: Get if the processor supports 5 level paging */
     struct page_map page_map = vmm_new_pagemap(4);
@@ -87,26 +88,23 @@ void vmm_init(struct stivale2_struct* hdr)
     // }
 
     debug("[VMM] mapping free entries");
-    struct stivale2_struct_tag_memmap* memmap_tag;
-    memmap_tag = (struct stivale2_struct_tag_memmap*)
-                stivale2_get_tag(hdr, STIVALE2_STRUCT_TAG_MEMMAP_ID);
 
-    for (uptr i = 0; i < memmap_tag->entries; i++) {
-        uptr aligned_base = memmap_tag->memmap[i].base - memmap_tag->memmap[i].base % PAGE_SIZE;
-        uptr aligned_length = ((memmap_tag->memmap[i].length / PAGE_SIZE) + 1) * PAGE_SIZE;
+    for (uptr i = 0; i < memory_hdr->entries; i++) {
+        struct free_memory* segment = &memory_hdr->segments[i];
+        uptr aligned_base = segment->base - segment->base % PAGE_SIZE;
+        uptr aligned_length = ((segment->length / PAGE_SIZE) + 1) * PAGE_SIZE;
 
         for (uptr j = 0; j * PAGE_SIZE < aligned_length; j++) {
             uptr addr = aligned_base + j * PAGE_SIZE;
 
-            // vmm_map(&page_map, addr, MEM_ADDR + addr, VMM_PRESENT | VMM_WRITE);
+            vmm_map(&page_map, addr, MEM_ADDR + addr, VMM_PRESENT | VMM_WRITE);
 
-            if (memmap_tag->memmap[i].type == STIVALE2_MMAP_KERNEL_AND_MODULES) {
-                vmm_map(&page_map, addr, MEM_BASE + addr, VMM_PRESENT | VMM_WRITE | VMM_PRIV_S);
-            }
+            // if (segment->type == STIVALE2_MMAP_KERNEL_AND_MODULES) {
+            //     vmm_map(&page_map, addr, MEM_BASE + addr, VMM_PRESENT | VMM_WRITE | VMM_PRIV_S);
+            // }
         }
     }
 
-    info("done\n");
     asm volatile("mov %0, %%cr3" : : "a" ((uptr)page_map.top_lvl - MEM_BASE));
 }
 

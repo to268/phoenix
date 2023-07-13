@@ -21,6 +21,7 @@ extern "C" {
 #endif
 
 #include <phoenix/kernel.h>
+#include <limine.h>
 
 #define GET_BIT(x, x_target)    ((1 << 7) >> (x - x_target))
 
@@ -54,7 +55,7 @@ typedef struct {
 #define FRAMEBUFFER_COLOR_LIGHT_BROWN   FRAMEBUFFER_COLOR(0xbd, 0xae, 0x93)
 
 
-void framebuffer_init(struct stivale2_struct_tag_framebuffer* fb);
+void framebuffer_init(struct limine_framebuffer_request* fb_req);
 Color framebuffer_create_color(u8 red, u8 green, u8 blue);
 void framebuffer_draw_pixel(u32 x, u32 y, u32 color);
 void framebuffer_set_pos(u32 x, u32 y);

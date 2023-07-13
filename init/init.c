@@ -13,11 +13,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/stivale2.h>
+#include <phoenix/limine.h>
 #include <phoenix/keyboard.h>
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
 #include <phoenix/pcspk.h>
+#include <phoenix/boot.h>
 #include <phoenix/gdt.h>
 #include <phoenix/idt.h>
 #include <phoenix/pit.h>
@@ -27,46 +28,19 @@
 #include <phoenix/vga.h>
 #include <stddef.h>
 
-/* Kernel early entry point */
-void init(struct stivale2_struct* hdr)
+void init(void)
 {
-    /*  TODO list:
-     *  Init VMM
-     */
+    struct boot_info boot_info;
 
-    /* Initialize serial */
     serial_init(SERIAL_COM1, 1);
-
-    /* Process Each supported tag */
-    stivale2_process_tags(hdr);
-
-    /* Initialize vga buffer */
-    //vga_init();
-
-    /* Init GDT */
+    limine_handle_requests(&boot_info);
     gdt_init();
-
-    /* Init IDT */
     idt_init();
-
-    /* Init Keyboard */
     keyboard_init();
-
-    /* Init PIT */
     pit_init(1000);
-
-    /* Init PCSPK */
     pcspk_init();
-
-    /* Init RTC */
     rtc_init();
-
-    /* Init PMM */
-    pmm_init(hdr);
-
-    /* Init VMM */
-    //vmm_init(hdr);
-
-    /* Jump in kernel_main */
+    pmm_init(&boot_info);
+    /* vmm_init(&boot_info); */
     kernel_main();
 }

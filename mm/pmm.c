@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <phoenix/structs/bitmap.h>
-#include <phoenix/stivale2.h>
+#include <phoenix/limine.h>
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
 #include <phoenix/mem.h>
@@ -22,45 +22,32 @@
 
 static Bitmap bitmap;
 
-void pmm_init(struct stivale2_struct* hdr)
+void pmm_init(struct boot_info* boot_info)
 {
-    /* Get usable memory info */
-    struct free_memory_hdr free_hdr;
-    free_hdr = stivale2_get_free_memory(hdr);
+    struct free_memory_hdr* memory_hdr = &boot_info->free_memory_hdr;
 
-    /* Print free memory for now */
-    uptr free_mem = convert_to_mb(free_hdr.free_memory);
+    uptr free_mem = convert_to_mb(memory_hdr->free_memory);
     info("\n%d Mb is free\n", free_mem);
 
     /* Compute the size of the bitmap */
-    // FIXME: fix printing issues with gcc
-    bitmap.size = DIV_ROUNDUP(free_hdr.highest_memory, PAGE_SIZE) / 8;
+    bitmap.size = DIV_ROUNDUP(memory_hdr->highest_memory, PAGE_SIZE) / 8;
     info("bitmap size is %d bytes\n\n", bitmap.size);
 
     /* Find a place for the bitmap */
-    for (u64 entry = 0; entry < free_hdr.entries; entry++) {
-        if (free_hdr.entries < entry)
-            panic("No free segment has been found to store the bitmap");
-
-        struct free_memory* free_segment = &free_hdr.segments[entry];
+    for (u64 entry = 0; entry < memory_hdr->entries; entry++) {
+        struct free_memory* free_segment = &memory_hdr->segments[entry];
 
         if (free_segment->length >= bitmap.size) {
-            /* Set the start of the bitmap */
             bitmap.bitmap = (u8*)free_segment->base;
-            /* Fill the bitmap of zeroes */
-            memset(bitmap.bitmap, 0x00, bitmap.size);
-
+            memset(bitmap.bitmap, 0, bitmap.size);
             debug("[PMM] We found a place for the bitmap\n");
             break;
         }
     }
 
     /* Find the next segment to store pages */
-    for (uptr entry = 0; entry < free_hdr.entries; entry++) {
-        if (free_hdr.entries < entry)
-            panic("No free segment has been found to store pages");
-
-        struct free_memory* free_segment = &free_hdr.segments[entry];
+    for (uptr entry = 0; entry < memory_hdr->entries; entry++) {
+        struct free_memory* free_segment = &memory_hdr->segments[entry];
 
         /* Do no use the same segment of the bitmap */
         if (free_segment->base != (uptr)bitmap.bitmap) {
@@ -115,11 +102,10 @@ void* pmm_alloc(u64 length)
     u64 pages_number = DIV_ROUNDUP(length, PAGE_SIZE);
     void* addr;
 
-    /* TODO: Enhance PMM by traking the first free chunk and the bitmap tail */
+    /* TODO: Enhance PMM by tracking the first free chunk and the bitmap tail */
     for (u64 bit = 0; bit < bitmap.size * 8; bit++) {
         for (u64 page = 0; page < pages_number; page++) {
 
-            /* Check if a page is already allocated */
             if (bitmap_check(&bitmap, bit)) {
                 break;
             } else if (!bitmap_check(&bitmap, bit) && page == pages_number - 1) {
@@ -128,9 +114,7 @@ void* pmm_alloc(u64 length)
                     break;
 
                 addr = (void*)bitmap.base + (bit * PAGE_SIZE);
-                /* Set the page as used */
                 pmm_reserve_pages(addr, pages_number);
-                /* Fill page with zeroes */
                 pmm_zero(addr, pages_number);
                 return addr;
             }

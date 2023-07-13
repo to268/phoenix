@@ -16,22 +16,23 @@
 #include <phoenix/kernel.h>
 #include <phoenix/framebuffer.h>
 #include <phoenix/serial.h>
-#include <phoenix/stivale2.h>
+#include <phoenix/limine.h>
 #include <phoenix/libpsf.h>
+#include <limine.h>
 
-static struct stivale2_struct_tag_framebuffer* fb_tag;
+static struct limine_framebuffer* fb_base;
 static u32* fb_addr;
-static u32 x_pos;
-static u32 y_pos;
-static u32 fb_scroll;
-static u32 fb_size;
-static u32 fb_max_y;
+static u64 x_pos;
+static u64 y_pos;
+static u64 fb_scroll;
+static u64 fb_size;
+static u64 fb_max_y;
 static PSF1_font font;
 
 static Color bg;
 static Color fg;
 
-void framebuffer_init(struct stivale2_struct_tag_framebuffer* fb);
+void framebuffer_init(struct limine_framebuffer_request* fb_req);
 Color framebuffer_create_color(u8 red, u8 green, u8 blue);
 u32 framebuffer_to_color(Color* color);
 void framebuffer_draw_pixel(u32 x, u32 y, u32 color);
@@ -41,12 +42,13 @@ void framebuffer_write(char c);
 void framebuffer_writestring(char* str);
 void framebuffer_remove_last_char(void);
 
-void framebuffer_init(struct stivale2_struct_tag_framebuffer* fb)
+void framebuffer_init(struct limine_framebuffer_request* fb_req)
 {
     framebuffer_set_pos(0, 0);
-    fb_tag  = fb;
-    fb_addr = (u32*)fb_tag->framebuffer_addr;
-    fb_size = fb_tag->framebuffer_width * fb_tag->framebuffer_height;
+
+    fb_base = fb_req->response->framebuffers[0];
+    fb_addr = (u32*)fb_base->address;
+    fb_size = fb_base->width * fb_base->height;
 
     fg = FRAMEBUFFER_COLOR_WHITE;
     bg = FRAMEBUFFER_COLOR_DARK;
@@ -54,8 +56,8 @@ void framebuffer_init(struct stivale2_struct_tag_framebuffer* fb)
     framebuffer_clear(&bg);
     font = psf1_init();
 
-    fb_scroll = fb_size - (fb_tag->framebuffer_width * font.header->charsize);
-    fb_max_y = fb_tag->framebuffer_height - font.header->charsize;
+    fb_scroll = fb_size - (fb_base->width * font.header->charsize);
+    fb_max_y = fb_base->height - font.header->charsize;
 }
 
 Color framebuffer_create_color(u8 red, u8 green, u8 blue)
@@ -70,14 +72,14 @@ u32 framebuffer_to_color(Color* color)
 
 void framebuffer_draw_pixel(u32 x, u32 y, u32 color)
 {
-    u32 pixel = (fb_tag->framebuffer_pitch / sizeof(u32) * y) + x;
+    u32 pixel = (fb_base->pitch / sizeof(u32) * y) + x;
     fb_addr[pixel] = color;
 }
 
 void framebuffer_clear(Color* color)
 {
-    for (int y = 0; y < fb_tag->framebuffer_height; y++) {
-        for (int x = 0; x < fb_tag->framebuffer_width; x++) {
+    for (u64 y = 0; y < fb_base->height; y++) {
+        for (u64 x = 0; x < fb_base->width; x++) {
             framebuffer_draw_pixel(x, y, framebuffer_to_color(color));
         }
     }
@@ -94,22 +96,22 @@ void framebuffer_write(char c)
     /* Check if we are on the last line to auto scroll */
     if (x_pos * y_pos >= fb_scroll || y_pos >= fb_max_y) {
         for (u32 i = 0; i < font.header->charsize; i++) {
-            u32 j = fb_tag->framebuffer_width;
+            u32 j = fb_base->width;
             for (; j < fb_size; j++)
-                fb_addr[j - fb_tag->framebuffer_width] = fb_addr[j];
+                fb_addr[j - fb_base->width] = fb_addr[j];
         }
 
         /* Clear last row to avoid weird pixels */
-        u32 i = fb_size - (fb_tag->framebuffer_width * font.header->charsize);
+        u32 i = fb_size - (fb_base->width * font.header->charsize);
         for (; i < fb_size; i++) {
-            u32 x = i % fb_tag->framebuffer_width;
-            u32 y = i / fb_tag->framebuffer_width;
+            u32 x = i % fb_base->width;
+            u32 y = i / fb_base->width;
             framebuffer_draw_pixel(x, y, framebuffer_to_color(&bg));
         }
 
         x_pos = 0;
         y_pos = fb_max_y - font.header->charsize;
-    } else if (x_pos >= fb_tag->framebuffer_width) {
+    } else if (x_pos >= fb_base->width) {
         x_pos = 0;
         y_pos += font.header->charsize;
     }
@@ -119,7 +121,7 @@ void framebuffer_write(char c)
         y_pos += font.header->charsize;
         return;
     } else if (c == '\t') {
-        x_pos += (fb_tag->framebuffer_bpp / sizeof(u32) * 4);
+        x_pos += (fb_base->bpp / sizeof(u32) * 4);
         return;
     } else if (c == '\r') {
         x_pos = 0;
@@ -138,7 +140,7 @@ void framebuffer_write(char c)
         font_ptr++;
     }
 
-    x_pos += (fb_tag->framebuffer_bpp / sizeof(u32));
+    x_pos += (fb_base->bpp / sizeof(u32));
 }
 
 void framebuffer_writestring(char* str)
@@ -151,14 +153,14 @@ void framebuffer_writestring(char* str)
 void framebuffer_remove_last_char(void)
 {
     if (x_pos <= 0 && y_pos != 0) {
-        x_pos = fb_tag->framebuffer_width;
+        x_pos = fb_base->width;
         y_pos -= font.header->charsize;
     }
 
-    x_pos -= (fb_tag->framebuffer_bpp / sizeof(u32));
+    x_pos -= (fb_base->bpp / sizeof(u32));
 
     for (u32 y = y_pos; y < y_pos + font.header->charsize; y++) {
-        for (u32 x = x_pos; x < x_pos + (fb_tag->framebuffer_bpp / sizeof(u32)); x++) {
+        for (u32 x = x_pos; x < x_pos + (fb_base->bpp / sizeof(u32)); x++) {
             framebuffer_draw_pixel(x, y, framebuffer_to_color(&bg));
         }
     }

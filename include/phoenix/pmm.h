@@ -22,9 +22,9 @@ extern "C" {
 
 #include <phoenix/kernel.h>
 #include <phoenix/page.h>
-#include <stivale2.h>
+#include <limine.h>
 
-void pmm_init(struct stivale2_struct* hdr);
+void pmm_init(struct boot_info* boot_info);
 void* pmm_alloc(u64 length);
 void pmm_free(void* address, u64 pages);
 

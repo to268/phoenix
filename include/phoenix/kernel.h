@@ -53,7 +53,7 @@ NORETURN
 void panic(const char *msg);
 
 /* Kernel entry points */
-void init(struct stivale2_struct* hdr);
+void init(void);
 void kernel_main(void);
 
 #ifdef __cplusplus

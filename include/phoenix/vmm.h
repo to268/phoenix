@@ -21,6 +21,7 @@ extern "C" {
 #endif
 
 #include <phoenix/kernel.h>
+#include <limine.h>
 
 #define PT_PRESENT  (1 << 0)            /* Present flag */
 #define PT_WRITABLE (1 << 1)            /* Read Write flag */
@@ -48,7 +49,7 @@ struct page_map {
     uptr*   top_lvl;
 };
 
-void vmm_init(struct stivale2_struct* hdr);
+void vmm_init(struct boot_info* boot_info);
 
 #ifdef __cplusplus
 }

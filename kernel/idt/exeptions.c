@@ -20,7 +20,7 @@
 #include <phoenix/io.h>
 
 /* List of exceptions messages */
-static char *exceptions[] = {
+static const char *exceptions[] = {
     [0] = "Division by Zero",
     [1] = "Debug",
     [2] = "Non Maskable Interrupt",

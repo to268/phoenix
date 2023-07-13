@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <phoenix/framebuffer.h>
-#include <phoenix/stivale2.h>
+#include <phoenix/limine.h>
 #include <phoenix/kernel.h>
 #include <phoenix/vga.h>
 
@@ -25,59 +25,30 @@ int putchar(int ic, u8 severity) {
     /* Add color severity */
     switch (severity) {
         case KERN_VERBOSE:
-            if (stivale2_get_video_driver() == FRAMEBUFFER_DRIVER) {
-                framebuffer_set_color(FRAMEBUFFER_COLOR_GREY, FRAMEBUFFER_COLOR_DARK);
-            } else {
-                vga_setcolor(vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK));
-            }
+            framebuffer_set_color(FRAMEBUFFER_COLOR_GREY, FRAMEBUFFER_COLOR_DARK);
             break;
 
         case KERN_INFO:
-            if (stivale2_get_video_driver() == FRAMEBUFFER_DRIVER) {
-                framebuffer_set_color(FRAMEBUFFER_COLOR_WHITE, FRAMEBUFFER_COLOR_DARK);
-            } else {
-                vga_setcolor(vga_entry_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK));
-            }
+            framebuffer_set_color(FRAMEBUFFER_COLOR_WHITE, FRAMEBUFFER_COLOR_DARK);
             break;
 
         case KERN_WARN:
-            if (stivale2_get_video_driver() == FRAMEBUFFER_DRIVER) {
-                framebuffer_set_color(FRAMEBUFFER_COLOR_MAGENTA, FRAMEBUFFER_COLOR_DARK);
-            } else {
-                vga_setcolor(vga_entry_color(VGA_COLOR_LIGHT_MAGENTA, VGA_COLOR_BLACK));
-            }
+            framebuffer_set_color(FRAMEBUFFER_COLOR_MAGENTA, FRAMEBUFFER_COLOR_DARK);
             break;
 
         case KERN_ERROR:
-            if (stivale2_get_video_driver() == FRAMEBUFFER_DRIVER) {
-                framebuffer_set_color(FRAMEBUFFER_COLOR_ORANGE, FRAMEBUFFER_COLOR_DARK);
-            } else {
-                vga_setcolor(vga_entry_color(VGA_COLOR_LIGHT_RED, VGA_COLOR_BLACK));
-            }
+            framebuffer_set_color(FRAMEBUFFER_COLOR_ORANGE, FRAMEBUFFER_COLOR_DARK);
             break;
 
         case KERN_FATAL:
-            if (stivale2_get_video_driver() == FRAMEBUFFER_DRIVER) {
-                framebuffer_set_color(FRAMEBUFFER_COLOR_RED, FRAMEBUFFER_COLOR_DARK);
-            } else {
-                vga_setcolor(vga_entry_color(VGA_COLOR_RED, VGA_COLOR_BLACK));
-            }
+            framebuffer_set_color(FRAMEBUFFER_COLOR_RED, FRAMEBUFFER_COLOR_DARK);
             break;
 
         default:
-            if (stivale2_get_video_driver() == FRAMEBUFFER_DRIVER) {
-                framebuffer_set_color(FRAMEBUFFER_COLOR_WHITE, FRAMEBUFFER_COLOR_DARK);
-            } else {
-                vga_setcolor(vga_entry_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK));
-            }
+            framebuffer_set_color(FRAMEBUFFER_COLOR_WHITE, FRAMEBUFFER_COLOR_DARK);
             break;
     }
 
-    if (stivale2_get_video_driver() == FRAMEBUFFER_DRIVER) {
-        framebuffer_write(c);
-    } else {
-        vga_write(&c, sizeof(c));
-    }
-
+    framebuffer_write(c);
 	return ic;
 }

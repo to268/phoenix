@@ -2,7 +2,7 @@
 export ARCH?=$(shell uname -m)
 CONFIG_PATH=config
 NCPUS=$(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
-QEMU_FLAGS=-enable-kvm -cpu host -m 512M -no-reboot -no-shutdown
+QEMU_FLAGS=-enable-kvm -cpu host -m 2G -no-reboot -no-shutdown
 
 # Output files
 KERNEL_NAME=phoenix
@@ -12,14 +12,14 @@ MAP=$(KERNEL).map
 ISO_DIR=isofiles
 
 # Limine
-LIMINE_CD=utils/limine/limine-cd.bin
+LIMINE_UTILITY=utils/limine/limine
 LIMINE_CFG=utils/limine/limine.cfg
-LIMINE_SYS=utils/limine/limine.sys
-LIMINE_EFI=utils/limine/limine-cd-efi.bin
-LIMINE_DEPLOY=utils/limine/limine-deploy
+LIMINE_BIOS_CD=utils/limine/limine-bios-cd.bin
+LIMINE_BIOS_SYS=utils/limine/limine-bios.sys
+LIMINE_UEFI_CD=utils/limine/limine-uefi-cd.bin
 
 # Linker script
-LD_SCRIPT=arch/$(ARCH)/stivale2.ld
+LD_SCRIPT=arch/$(ARCH)/limine.ld
 
 ASM_FILES:=$(shell find -path ./utils -prune -false -o -name "*.asm")
 ASM_OBJS:=$(ASM_FILES:.asm=.o)
@@ -52,18 +52,35 @@ ifneq ($(ARCH), x86_64)
 $(error Unknow Architecture $(ARCH))
 else
 # Export default CFLAGS
-export CFLAGS =	-mcmodel=large -mno-red-zone -mno-mmx \
-				-mno-sse -mno-sse2 -std=gnu17 -Wall -Wextra \
-				-O2 -ffreestanding -fno-common -fno-pic \
-				-pipe -fno-stack-protector -fno-exceptions \
-				-fno-non-call-exceptions -nostdlib -MMD \
-				--sysroot=$(PWD) -isystem=/include \
-				-mabi=sysv $(CONFIG_CFLAGS)
-				#-fstack-protector-strong
+export CFLAGS = \
+    -Wall \
+    -Wextra \
+    -std=gnu17 \
+    -march=x86-64 \
+	-O2 \
+    -ffreestanding \
+    -fno-stack-protector \
+    -fno-stack-check \
+    -fno-lto \
+    -fno-PIE \
+    -fno-PIC \
+    -mno-80387 \
+    -mno-mmx \
+    -mno-sse \
+    -mno-sse2 \
+    -mno-red-zone \
+    -mcmodel=kernel \
+	--sysroot=$(PWD) \
+	-isystem=/include \
+	$(CONFIG_CFLAGS)
 
 # Export default LDFLAGS
-export LDFLAGS = -n -nostdlib -static -z max-page-size=0x1000 \
-				 $(CONFIG_LDFLAGS)
+export LDFLAGS = \
+    -nostdlib \
+    -static \
+    -m elf_x86_64 \
+    -z max-page-size=0x1000 \
+	 $(CONFIG_LDFLAGS)
 
 endif
 
@@ -129,22 +146,24 @@ clean:
 	rm -f $(MAP)
 	echo "   RM        serial.log"
 	rm -f serial.log
+	$(LIMINE_UTILITY) enroll-config --reset $(LIMINE_BIOS_SYS) --quiet
 
 iso: $(KERNEL) config
 	echo "   ISO       $(ISO)"
+	$(LIMINE_UTILITY) enroll-config --quiet $(LIMINE_BIOS_SYS) $(shell b2sum $(LIMINE_CFG) | cut -d' ' -f1)
 	mkdir $(ISO_DIR)
 	cp $(KERNEL) $(ISO_DIR)
 	cp $(LIMINE_CFG) $(ISO_DIR)
-	cp $(LIMINE_SYS) $(ISO_DIR)
-	cp $(LIMINE_CD) $(ISO_DIR)
-	cp $(LIMINE_EFI) $(ISO_DIR)
-	$(MKISOFS) -b limine-cd.bin -no-emul-boot \
+	cp $(LIMINE_BIOS_SYS) $(ISO_DIR)
+	cp $(LIMINE_BIOS_CD) $(ISO_DIR)
+	cp $(LIMINE_UEFI_CD) $(ISO_DIR)
+	$(MKISOFS) -b limine-bios-cd.bin -no-emul-boot \
 			-boot-load-size 4 -boot-info-table \
-			--efi-boot limine-cd-efi.bin \
+			--efi-boot limine-uefi-cd.bin \
 			-efi-boot-part --efi-boot-image \
 			--protective-msdos-label $(ISO_DIR) -o $(ISO)
 	rm -rf $(ISO_DIR)
-	$(LIMINE_DEPLOY) $(ISO)
+	$(LIMINE_UTILITY) bios-install $(ISO)
 
 run: $(KERNEL) iso
 	echo "   QMU       $(ISO)"

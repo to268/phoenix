@@ -14,13 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <phoenix/kernel.h>
+#include <phoenix/serial.h>
 #include <phoenix/mem.h>
 #include <phoenix/vga.h>
 #include <stddef.h>
 #include <stdarg.h>
+#include <limits.h>
 
 #define EOF (-1)
-#define INT_MAX 2147483647
 
 static int print(const char* data, size_t length, u8 severity);
 inline uptr convert_to_mb(uintptr_t nb_bytes);
