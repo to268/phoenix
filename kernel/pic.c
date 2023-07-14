@@ -64,7 +64,7 @@ void pic_remap(void)
 
 void pic_send_eoi(u8 irq)
 {
-    if(irq >= 8)
+    if (irq >= 8)
         outb(PIC2_CMD, PIC_EOI);
 
     outb(PIC1_CMD, PIC_EOI);
@@ -75,7 +75,7 @@ void pic_irq_set_mask(u8 irq)
     u16 port;
     u8 value;
 
-    if(irq < 8) {
+    if (irq < 8) {
         port = PIC1_DATA;
     } else {
         port = PIC2_DATA;
@@ -91,7 +91,7 @@ void pic_irq_clear_mask(u8 irq)
     u16 port;
     u8 value;
 
-    if(irq < 8) {
+    if (irq < 8) {
         port = PIC1_DATA;
     } else {
         port = PIC2_DATA;
@@ -114,13 +114,7 @@ u16 pic_get_irq_reg(int ocw3)
 }
 
 /* Get values of the PICs IRQ request register */
-u16 pic_get_irr(void)
-{
-    return pic_get_irq_reg(PIC_READ_IRR);
-}
+u16 pic_get_irr(void) { return pic_get_irq_reg(PIC_READ_IRR); }
 
 /* Get values of the PICs in-service register */
-u16 pic_get_isr(void)
-{
-    return pic_get_irq_reg(PIC_READ_ISR);
-}
+u16 pic_get_isr(void) { return pic_get_irq_reg(PIC_READ_ISR); }

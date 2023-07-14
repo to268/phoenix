@@ -21,12 +21,12 @@
 extern "C" {
 #endif
 
-#define LIKELY(x)           __builtin_expect((x), 1)
-#define UNLIKELY(x)         __builtin_expect((x), 0)
-#define ALIGNED(x)          __attribute__((aligned(x)))
-#define SECTION(x)          __attribute__((section(x), used))
-#define PACKED              __attribute__((packed))
-#define NORETURN            __attribute__((noreturn))
-#define RANDOMIZE_LAYOUT    __attribute__((randomize_layout))
+#define LIKELY(x)        __builtin_expect((x), 1)
+#define UNLIKELY(x)      __builtin_expect((x), 0)
+#define ALIGNED(x)       __attribute__((aligned(x)))
+#define SECTION(x)       __attribute__((section(x), used))
+#define PACKED           __attribute__((packed))
+#define NORETURN         __attribute__((noreturn))
+#define RANDOMIZE_LAYOUT __attribute__((randomize_layout))
 
 #endif /* _GCC_H_ */

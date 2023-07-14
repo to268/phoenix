@@ -25,10 +25,10 @@ extern "C" {
 #include <stddef.h>
 
 #define KERN_VERBOSE 4
-#define KERN_INFO 3
-#define KERN_WARN 2
-#define KERN_ERROR 1
-#define KERN_FATAL 0
+#define KERN_INFO    3
+#define KERN_WARN    2
+#define KERN_ERROR   1
+#define KERN_FATAL   0
 
 #define INT_LENGTH 8
 
@@ -40,17 +40,17 @@ uptr convert_to_mb(uintptr_t nb_bytes);
 int convert_int_to_char(int number, int base, char* buff);
 
 /* Macros for printk */
-#define verbose(...)    printk(KERN_VERBOSE, __VA_ARGS__)
-#define info(...)       printk(KERN_INFO, __VA_ARGS__)
-#define warn(...)       printk(KERN_WARN, __VA_ARGS__)
-#define error(...)      printk(KERN_ERROR, __VA_ARGS__)
+#define verbose(...) printk(KERN_VERBOSE, __VA_ARGS__)
+#define info(...)    printk(KERN_INFO, __VA_ARGS__)
+#define warn(...)    printk(KERN_WARN, __VA_ARGS__)
+#define error(...)   printk(KERN_ERROR, __VA_ARGS__)
 
 /* Basic Functions */
 int abs(int x);
 int atoi(const char* nptr);
 char* itoa(int value, char* buffer, int base);
 NORETURN
-void panic(const char *msg);
+void panic(const char* msg);
 
 /* Kernel entry points */
 void init(void);

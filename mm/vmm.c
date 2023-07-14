@@ -52,7 +52,7 @@ void vmm_map(struct page_map* map, uptr virt_addr, uptr phys_addr, u64 flags)
     uptr* pml1;
 
     info("pml4 = %d, pml3 = %d, pml2 = %d, pml1 = %d\n", pml4_entry, pml3_entry,
-                                                         pml2_entry, pml1_entry);
+         pml2_entry, pml1_entry);
     /* Get page map levels */
     pml4 = map->top_lvl;
     pml3 = vmm_get_next_level(pml4, pml4_entry);
@@ -84,7 +84,8 @@ void vmm_init(struct boot_info* boot_info)
     //     uptr addr = i * PAGE_SIZE;
     //
     //     vmm_map(&page_map, addr, addr, VMM_PRESENT | VMM_WRITE | VMM_PRIV_S);
-    //     vmm_map(&page_map, addr, MEM_BASE + addr, VMM_PRESENT | VMM_WRITE | VMM_PRIV_S);
+    //     vmm_map(&page_map, addr, MEM_BASE + addr, VMM_PRESENT | VMM_WRITE |
+    //     VMM_PRIV_S);
     // }
 
     debug("[VMM] mapping free entries");
@@ -100,15 +101,16 @@ void vmm_init(struct boot_info* boot_info)
             vmm_map(&page_map, addr, MEM_ADDR + addr, VMM_PRESENT | VMM_WRITE);
 
             // if (segment->type == STIVALE2_MMAP_KERNEL_AND_MODULES) {
-            //     vmm_map(&page_map, addr, MEM_BASE + addr, VMM_PRESENT | VMM_WRITE | VMM_PRIV_S);
+            //     vmm_map(&page_map, addr, MEM_BASE + addr, VMM_PRESENT |
+            //     VMM_WRITE | VMM_PRIV_S);
             // }
         }
     }
 
-    asm volatile("mov %0, %%cr3" : : "a" ((uptr)page_map.top_lvl - MEM_BASE));
+    asm volatile("mov %0, %%cr3" : : "a"((uptr)page_map.top_lvl - MEM_BASE));
 }
 
 void vmm_flush_tlb_entry(uptr addr)
 {
-    asm volatile("invlpg (%0)" : : "a" (addr));
+    asm volatile("invlpg (%0)" : : "a"(addr));
 }

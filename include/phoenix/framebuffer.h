@@ -23,7 +23,7 @@ extern "C" {
 #include <phoenix/kernel.h>
 #include <limine.h>
 
-#define GET_BIT(x, x_target)    ((1 << 7) >> (x - x_target))
+#define GET_BIT(x, x_target) ((1 << 7) >> (x - x_target))
 
 typedef struct {
     u8 red;
@@ -31,20 +31,20 @@ typedef struct {
     u8 blue;
 } Color;
 
-#define FRAMEBUFFER_COLOR(r, g, b)  framebuffer_create_color(r, g, b)
+#define FRAMEBUFFER_COLOR(r, g, b) framebuffer_create_color(r, g, b)
 
 /* Colorscheme */
-#define FRAMEBUFFER_COLOR_DARK          FRAMEBUFFER_COLOR(0x00, 0x00, 0x00)
-#define FRAMEBUFFER_COLOR_BLUE          FRAMEBUFFER_COLOR(0x80, 0x80, 0xff)
-#define FRAMEBUFFER_COLOR_GREEN         FRAMEBUFFER_COLOR(0x8e, 0xc0, 0x7c)
-#define FRAMEBUFFER_COLOR_CYAN          FRAMEBUFFER_COLOR(0x83, 0xa5, 0x98)
-#define FRAMEBUFFER_COLOR_RED           FRAMEBUFFER_COLOR(0xfb, 0x49, 0x34)
-#define FRAMEBUFFER_COLOR_MAGENTA       FRAMEBUFFER_COLOR(0xd3, 0x60, 0x9b)
-#define FRAMEBUFFER_COLOR_BROWN         FRAMEBUFFER_COLOR(0xb6, 0x4d, 0x0e)
-#define FRAMEBUFFER_COLOR_BLACK         FRAMEBUFFER_COLOR(0x28, 0x28, 0x28)
-#define FRAMEBUFFER_COLOR_GREY          FRAMEBUFFER_COLOR(0x50, 0x49, 0x45)
-#define FRAMEBUFFER_COLOR_ORANGE        FRAMEBUFFER_COLOR(0xfe, 0x80, 0x19)
-#define FRAMEBUFFER_COLOR_WHITE         FRAMEBUFFER_COLOR(0xfb, 0xf1, 0xc7)
+#define FRAMEBUFFER_COLOR_DARK    FRAMEBUFFER_COLOR(0x00, 0x00, 0x00)
+#define FRAMEBUFFER_COLOR_BLUE    FRAMEBUFFER_COLOR(0x80, 0x80, 0xff)
+#define FRAMEBUFFER_COLOR_GREEN   FRAMEBUFFER_COLOR(0x8e, 0xc0, 0x7c)
+#define FRAMEBUFFER_COLOR_CYAN    FRAMEBUFFER_COLOR(0x83, 0xa5, 0x98)
+#define FRAMEBUFFER_COLOR_RED     FRAMEBUFFER_COLOR(0xfb, 0x49, 0x34)
+#define FRAMEBUFFER_COLOR_MAGENTA FRAMEBUFFER_COLOR(0xd3, 0x60, 0x9b)
+#define FRAMEBUFFER_COLOR_BROWN   FRAMEBUFFER_COLOR(0xb6, 0x4d, 0x0e)
+#define FRAMEBUFFER_COLOR_BLACK   FRAMEBUFFER_COLOR(0x28, 0x28, 0x28)
+#define FRAMEBUFFER_COLOR_GREY    FRAMEBUFFER_COLOR(0x50, 0x49, 0x45)
+#define FRAMEBUFFER_COLOR_ORANGE  FRAMEBUFFER_COLOR(0xfe, 0x80, 0x19)
+#define FRAMEBUFFER_COLOR_WHITE   FRAMEBUFFER_COLOR(0xfb, 0xf1, 0xc7)
 
 #define FRAMEBUFFER_COLOR_LIGHT_GREY    FRAMEBUFFER_COLOR(0xeb, 0xdb, 0xb2)
 #define FRAMEBUFFER_COLOR_LIGHT_BLUE    FRAMEBUFFER_COLOR(0xab, 0xb8, 0xe6)
@@ -53,7 +53,6 @@ typedef struct {
 #define FRAMEBUFFER_COLOR_LIGHT_RED     FRAMEBUFFER_COLOR(0xff, 0x7f, 0x7f)
 #define FRAMEBUFFER_COLOR_LIGHT_MAGENTA FRAMEBUFFER_COLOR(0xd3, 0x86, 0x9b)
 #define FRAMEBUFFER_COLOR_LIGHT_BROWN   FRAMEBUFFER_COLOR(0xbd, 0xae, 0x93)
-
 
 void framebuffer_init(struct limine_framebuffer_request* fb_req);
 Color framebuffer_create_color(u8 red, u8 green, u8 blue);

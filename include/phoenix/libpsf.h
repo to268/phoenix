@@ -22,28 +22,28 @@ extern "C" {
 
 #include <phoenix/kernel.h>
 
-#define PSF1_MAGIC0	        0x36
-#define PSF1_MAGIC1	        0x04
+#define PSF1_MAGIC0 0x36
+#define PSF1_MAGIC1 0x04
 
-#define PSF1_MODE512        0x01
-#define PSF1_MODEHASTAB     0x02
-#define PSF1_MODEHASSEQ     0x04
-#define PSF1_MAXMODE        0x05
+#define PSF1_MODE512    0x01
+#define PSF1_MODEHASTAB 0x02
+#define PSF1_MODEHASSEQ 0x04
+#define PSF1_MAXMODE    0x05
 
-#define PSF1_SEPARATOR      0xFFFF
-#define PSF1_STARTSEQ       0xFFFE
+#define PSF1_SEPARATOR 0xFFFF
+#define PSF1_STARTSEQ  0xFFFE
 
-#define PSF1_MAGIC_OK(x)    ((x)[0] == PSF1_MAGIC0 && (x)[1] == PSF1_MAGIC1)
+#define PSF1_MAGIC_OK(x) ((x)[0] == PSF1_MAGIC0 && (x)[1] == PSF1_MAGIC1)
 
 typedef struct {
-	unsigned char   magic[2];	    /* Magic number */
-	u8              mode;	        /* PSF font mode */
-	u8              charsize;	    /* Character size */
+    unsigned char magic[2]; /* Magic number */
+    u8 mode;                /* PSF font mode */
+    u8 charsize;            /* Character size */
 } PSF1_header;
 
 typedef struct {
-    PSF1_header*    header;
-    u8*             data;           /* Glyphs data */
+    PSF1_header* header;
+    u8* data; /* Glyphs data */
 } PSF1_font;
 
 PSF1_font psf1_init(void);

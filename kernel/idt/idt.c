@@ -25,9 +25,8 @@
 ALIGNED(0x10)
 static struct idt_descriptor idt[IDT_MAX_DESCRIPTORS];
 static struct idt_pointer idtr = {
-        .base = (u64)&idt,
-        .limit = (u16)sizeof(struct idt_descriptor) * IDT_MAX_DESCRIPTORS - 1
-};
+    .base = (u64)&idt,
+    .limit = (u16)sizeof(struct idt_descriptor) * IDT_MAX_DESCRIPTORS - 1};
 
 /* Assembly symbols */
 extern void* isr_exception_stub_table[];
@@ -36,17 +35,17 @@ extern void keyboard_handler_irq(void);
 extern void pic_send_eoi_master(void);
 extern void pic_send_eoi_slave(void);
 
-void idt_set_descriptor(u8 vector, void *isr, uint8_t flags)
+void idt_set_descriptor(u8 vector, void* isr, uint8_t flags)
 {
-    struct idt_descriptor *descriptor = &idt[vector];
+    struct idt_descriptor* descriptor = &idt[vector];
 
-    descriptor->isr_low         = (u64)isr & 0xffff;
-    descriptor->selector        = 0x8;
-    descriptor->ist             = 0;
-    descriptor->attributes      = flags;
-    descriptor->isr_mid         = ((u64)isr >> 16) & 0xffff;
-    descriptor->isr_high        = ((u64)isr >> 32) & 0xffffffff;
-    descriptor->reserved        = 0;
+    descriptor->isr_low = (u64)isr & 0xffff;
+    descriptor->selector = 0x8;
+    descriptor->ist = 0;
+    descriptor->attributes = flags;
+    descriptor->isr_mid = ((u64)isr >> 16) & 0xffff;
+    descriptor->isr_high = ((u64)isr >> 32) & 0xffffffff;
+    descriptor->reserved = 0;
 }
 
 void idt_init(void)
@@ -56,11 +55,13 @@ void idt_init(void)
 
     /* Map exceptions vectors */
     for (u8 vector = 0; vector < 32; vector++)
-        idt_set_descriptor(vector, isr_exception_stub_table[vector], IDT_INTERRUPT_GATE);
+        idt_set_descriptor(vector, isr_exception_stub_table[vector],
+                           IDT_INTERRUPT_GATE);
 
     /* Map IRQs */
     idt_set_descriptor(IRQ(0), (void*)&pit_handler_irq, IDT_INTERRUPT_GATE);
-    idt_set_descriptor(IRQ(1), (void*)&keyboard_handler_irq, IDT_INTERRUPT_GATE);
+    idt_set_descriptor(IRQ(1), (void*)&keyboard_handler_irq,
+                       IDT_INTERRUPT_GATE);
 
     pic_irq_clear_mask(1);
     /* All others IRQ are unmasked when initialised */

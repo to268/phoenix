@@ -23,6 +23,7 @@
 #include <stddef.h>
 #include <limine.h>
 
+/* clang-format off */
 struct limine_bootloader_info_request bootloader_info_request = {
     .id = LIMINE_BOOTLOADER_INFO_REQUEST,
     .revision = 0,
@@ -40,6 +41,7 @@ struct limine_memmap_request memmap_request = {
     .revision = 0,
     .response = NULL
 };
+/* clang-format on */
 
 struct limine_module_request module_request = {
     .id = LIMINE_MODULE_REQUEST,
@@ -85,19 +87,19 @@ static void limine_get_free_memmap(struct free_memory_hdr* memory_hdr)
         struct free_memory* free_entry = &memory_hdr->segments[entries];
 
         switch (entry->type) {
-            case LIMINE_MEMMAP_USABLE:
-            case LIMINE_MEMMAP_KERNEL_AND_MODULES:
-            case LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE:
-            case LIMINE_MEMMAP_ACPI_RECLAIMABLE:
-                free_entry->base = entry->base;
-                free_entry->length = entry->length;
+        case LIMINE_MEMMAP_USABLE:
+        case LIMINE_MEMMAP_KERNEL_AND_MODULES:
+        case LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE:
+        case LIMINE_MEMMAP_ACPI_RECLAIMABLE:
+            free_entry->base = entry->base;
+            free_entry->length = entry->length;
 
-                uptr address = entry->base + entry->length;
-                if (address > highest_memory)
-                    highest_memory = address;
+            uptr address = entry->base + entry->length;
+            if (address > highest_memory)
+                highest_memory = address;
 
-                free_memory += entry->length;
-                entries++;
+            free_memory += entry->length;
+            entries++;
         }
         total_memory += entry->length;
     }
@@ -123,10 +125,9 @@ void limine_handle_requests(struct boot_info* boot_info)
     debug("[LIMINE] initialized framebuffer");
 
     info("Bootloader: %s, revision %d, version: %s\n",
-        bootloader_info_request.response->name,
-        bootloader_info_request.response->revision,
-        bootloader_info_request.response->version
-    );
+         bootloader_info_request.response->name,
+         bootloader_info_request.response->revision,
+         bootloader_info_request.response->version);
 
     info("Modules count: %d\n\n", module_request.internal_module_count);
 

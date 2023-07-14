@@ -23,12 +23,12 @@ extern "C" {
 #include <phoenix/kernel.h>
 
 /* System control port A flags */
-#define NMI_ALTERNATE_HOT_RESET     (1 << 0)
-#define NMI_ALTERNATE_GATE_A20      (1 << 1)
-#define NMI_SECURITY_LOCK           (1 << 3)
-#define NMI_WATCHDOG_TIMER_STATUS   (1 << 4)
-#define NMI_HDD_1_DRIVE_ACTIVITY    (1 << 6)
-#define NMI_HDD_2_DRIVE_ACTIVITY    (1 << 7)
+#define NMI_ALTERNATE_HOT_RESET   (1 << 0)
+#define NMI_ALTERNATE_GATE_A20    (1 << 1)
+#define NMI_SECURITY_LOCK         (1 << 3)
+#define NMI_WATCHDOG_TIMER_STATUS (1 << 4)
+#define NMI_HDD_1_DRIVE_ACTIVITY  (1 << 6)
+#define NMI_HDD_2_DRIVE_ACTIVITY  (1 << 7)
 
 /* System control port B flags */
 #define NMI_TIMER_2_TIED_TO_SPEAKER (1 << 8)

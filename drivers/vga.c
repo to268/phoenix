@@ -24,7 +24,7 @@
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
 static const size_t TAB_LENGTH = 4;
-static u16* const VGA_MEMORY = (u16*) 0xB8000;
+static u16* const VGA_MEMORY = (u16*)0xB8000;
 
 static size_t vga_row;
 static size_t vga_column;
@@ -51,7 +51,7 @@ u16 vga_cursor_get_pos(void)
     outb(0x3d4, 0x0f);
     pos |= inb(0x3d5);
     outb(0x3d4, 0x0e);
-    pos |= ((u16) inb(0x3d5)) << 8;
+    pos |= ((u16)inb(0x3d5)) << 8;
     return pos;
 }
 
@@ -59,28 +59,28 @@ void vga_cursor_set_pos(u8 x, uint8_t y)
 {
     u16 pos = y * VGA_WIDTH + x;
     outb(0x3d4, 0x0f);
-    outb(0x3d5, (u8) (pos & 0xff));
+    outb(0x3d5, (u8)(pos & 0xff));
     outb(0x3d4, 0x0e);
-    outb(0x3d5, (u8) ((pos >> 8) & 0xff));
+    outb(0x3d5, (u8)((pos >> 8) & 0xff));
 }
 
 void vga_clear(void)
 {
-	vga_row = 0;
-	vga_column = 0;
-	for (size_t y = 0; y < VGA_HEIGHT; y++) {
-		for (size_t x = 0; x < VGA_WIDTH; x++) {
-			const size_t index = y * VGA_WIDTH + x;
-			vga_buffer[index] = vga_entry(' ', vga_color);
-		}
-	}
+    vga_row = 0;
+    vga_column = 0;
+    for (size_t y = 0; y < VGA_HEIGHT; y++) {
+        for (size_t x = 0; x < VGA_WIDTH; x++) {
+            const size_t index = y * VGA_WIDTH + x;
+            vga_buffer[index] = vga_entry(' ', vga_color);
+        }
+    }
 }
 
 void vga_init(void)
 {
-	vga_row = 0;
-	vga_column = 0;
-	vga_color = vga_entry_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
+    vga_row = 0;
+    vga_column = 0;
+    vga_color = vga_entry_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
 
     /* Apply the selected color to the screen */
     vga_clear();
@@ -90,15 +90,12 @@ void vga_init(void)
     debug("[VGA] Initialized\n");
 }
 
-void vga_setcolor(u8 color)
-{
-	vga_color = color;
-}
+void vga_setcolor(u8 color) { vga_color = color; }
 
 void vga_putentryat(unsigned char c, u8 color, size_t x, size_t y)
 {
-	const size_t index = y * VGA_WIDTH + x;
-	vga_buffer[index] = vga_entry(c, color);
+    const size_t index = y * VGA_WIDTH + x;
+    vga_buffer[index] = vga_entry(c, color);
 }
 
 void vga_putchar(const char c)
@@ -108,7 +105,7 @@ void vga_putchar(const char c)
     if (vga_cursor_get_pos() >= VGA_WIDTH * (VGA_HEIGHT - 1)) {
         size_t i = VGA_WIDTH;
         for (; i < VGA_WIDTH * VGA_HEIGHT; i++)
-	        vga_buffer[i - VGA_WIDTH] = vga_buffer[i];
+            vga_buffer[i - VGA_WIDTH] = vga_buffer[i];
         vga_row--;
         vga_column = 0;
     }
@@ -136,14 +133,14 @@ void vga_putchar(const char c)
 
 void vga_write(const char* data, size_t size)
 {
-	for (size_t i = 0; i < size; i++)
-		vga_putchar(data[i]);
+    for (size_t i = 0; i < size; i++)
+        vga_putchar(data[i]);
     vga_cursor_set_pos(vga_column, vga_row);
 }
 
 void vga_writestring(const char* string)
 {
-	vga_write(string, strlen(string));
+    vga_write(string, strlen(string));
     vga_cursor_set_pos(vga_column, vga_row);
 }
 

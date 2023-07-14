@@ -47,7 +47,8 @@ static u8 rtc_is_updating()
 
 static u8 rtc_read(u8 reg)
 {
-    while (rtc_is_updating());
+    while (rtc_is_updating())
+        ;
 
     outb(0x70, reg);
     return inb(0x71);
@@ -61,10 +62,10 @@ void rtc_update_date_time(void)
     u8 year = rtc_read(0x9);
 
     /* Convert BCD date to binary */
-    date.day    = (day & 0xf) + ((day / 16) * 10);
-    date.month  = (month & 0xf) + ((month / 16) * 10);
-    date.year   = (year & 0xf) + ((year / 16) * 10);
-    date.year   += RT_FIRST_YEAR_OF_CENTURY;
+    date.day = (day & 0xf) + ((day / 16) * 10);
+    date.month = (month & 0xf) + ((month / 16) * 10);
+    date.year = (year & 0xf) + ((year / 16) * 10);
+    date.year += RT_FIRST_YEAR_OF_CENTURY;
 
     /* Read time */
     u8 hours = rtc_read(0x4);
@@ -72,15 +73,13 @@ void rtc_update_date_time(void)
     u8 seconds = rtc_read(0);
 
     /* Convert BCD time to binary */
-    date.time.hour      = ((hours & 0xf) + (((hours & 0x70) / 16) * 10)) | (hours & 0x80);
-    date.time.minute    = (minutes & 0xf) + ((minutes / 16) * 10);
-    date.time.second    = (seconds & 0xf) + ((seconds / 16) * 10);
+    date.time.hour =
+        ((hours & 0xf) + (((hours & 0x70) / 16) * 10)) | (hours & 0x80);
+    date.time.minute = (minutes & 0xf) + ((minutes / 16) * 10);
+    date.time.second = (seconds & 0xf) + ((seconds / 16) * 10);
 }
 
-struct date_time* rtc_get_date_time(void)
-{
-    return &date;
-}
+struct date_time* rtc_get_date_time(void) { return &date; }
 
 void rtc_print_date_time(void)
 {
@@ -88,6 +87,6 @@ void rtc_print_date_time(void)
     rtc_update_date_time();
 
     info("date: %d/%d/%d\n", date.day, date.month, date.year);
-    info("time: %d hour(s) %d minute(s) %d second(s) UTC\n",
-         date.time.hour, date.time.minute, date.time.second);
+    info("time: %d hour(s) %d minute(s) %d second(s) UTC\n", date.time.hour,
+         date.time.minute, date.time.second);
 }

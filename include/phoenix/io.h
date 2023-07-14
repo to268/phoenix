@@ -34,15 +34,9 @@ static inline void outb_p(u16 port, u8 val);
 static inline void outw_p(u16 port, uint16_t val);
 static inline void io_wait(void);
 
-static inline void cli(void)
-{
-    asm volatile("cli" ::);
-}
+static inline void cli(void) { asm volatile("cli" ::); }
 
-static inline void sti(void)
-{
-    asm volatile("sti" ::);
-}
+static inline void sti(void) { asm volatile("sti" ::); }
 
 static inline u8 inb(u16 port)
 {
@@ -91,7 +85,6 @@ static inline void outw_p(u16 port, uint16_t val)
 {
     asm volatile("outw %0, %1\noutb %%al,$0x80" : : "a"(val), "Nd"(port));
 }
-
 
 static inline void io_wait(void)
 {

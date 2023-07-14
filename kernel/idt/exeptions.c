@@ -20,7 +20,8 @@
 #include <phoenix/io.h>
 
 /* List of exceptions messages */
-static const char *exceptions[] = {
+/* clang-format off */
+static const char* exceptions[] = {
     [0] = "Division by Zero",
     [1] = "Debug",
     [2] = "Non Maskable Interrupt",
@@ -42,6 +43,7 @@ static const char *exceptions[] = {
     [20] = "Virtualization Exception",
     [30] = "Security Exception"
 };
+/* clang-format on */
 
 void handle_nmi(void);
 
@@ -52,9 +54,9 @@ void exception_handler(u64 vector)
 
     /* Handle the exception vector */
     switch (vector) {
-        case 2:
-            handle_nmi();
-            break;
+    case 2:
+        handle_nmi();
+        break;
     }
 
     panic(exceptions[vector]);
@@ -69,25 +71,26 @@ void handle_nmi(void)
 
     /* Check channel */
     if (control_ports & NMI_CHANNEL_CHECK_ENABLE &&
-        control_ports & NMI_CHANNEL_CHECK)
-    {
-        error("NMI failure on the bus probably caused by a peripheral device !\n");
-        serial_writestring(SERIAL_COM1, "[IVT] NMI failure on the bus probably caused by a peripheral device !\n");
+        control_ports & NMI_CHANNEL_CHECK) {
+        error("NMI failure on the bus probably caused by a peripheral device "
+              "!\n");
+        serial_writestring(SERIAL_COM1, "[IVT] NMI failure on the bus probably "
+                                        "caused by a peripheral device !\n");
     }
 
     /* Check parity */
     if (control_ports & NMI_PARITY_CHECK_ENABLE &&
-        control_ports & NMI_PARITY_CHECK)
-    {
+        control_ports & NMI_PARITY_CHECK) {
         error("NMI memory read or write failure !\n");
-        serial_writestring(SERIAL_COM1, "[IVT] NMI memory read or write failure !\n");
+        serial_writestring(SERIAL_COM1,
+                           "[IVT] NMI memory read or write failure !\n");
     }
 
     /* Check watchdog */
-    if (control_ports & NMI_WATCHDOG_TIMER_STATUS)
-    {
+    if (control_ports & NMI_WATCHDOG_TIMER_STATUS) {
         error("NMI watchdog timer, kernel lock up !\n");
-        serial_writestring(SERIAL_COM1, "[IVT] NMI watchdog timer, kernel lock up !\n");
+        serial_writestring(SERIAL_COM1,
+                           "[IVT] NMI watchdog timer, kernel lock up !\n");
     }
 
     /* We don't handle the rest of the NMIs for now

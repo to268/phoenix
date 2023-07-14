@@ -18,64 +18,65 @@
 #include <phoenix/gdt.h>
 
 /* Flags */
-#define GRANULARITY_BIT (1 << 0x0f)             /* Granularity (0: 1B - 1MB, 1: 4kB - 4GB) */
-#define SIZE_BIT        (1 << 0x0e)             /* Size (0: 16 bit, 1: 32 bit) */
-#define LONG_BIT        (1 << 0x0d)             /* Long mode */
-#define FREE_BIT        (1 << 0x0c)             /* Free to use */
-#define PRESENT_BIT     (1 << 0x07)             /* Present */
-#define PRIVILEGE(x)    ((x & 0x03) << 0x05)    /* Privilege level (0 - 3) */
-#define DESCRIPTOR_BIT  (1 << 0x04)             /* Descriptor type (0: system, 1: code/data) */
-#define EX_BIT          (1 << 0x03)             /* Executable bit */
-#define RW_BIT          (1 << 0x01)             /* Read/Write bit */
+#define GRANULARITY_BIT (1 << 0x0f)          /* Granularity */
+#define SIZE_BIT        (1 << 0x0e)          /* Size (16 or 32 bits) */
+#define LONG_BIT        (1 << 0x0d)          /* Long mode (64 bits) */
+#define FREE_BIT        (1 << 0x0c)          /* Free to use */
+#define PRESENT_BIT     (1 << 0x07)          /* Present */
+#define PRIVILEGE(x)    ((x & 0x03) << 0x05) /* Privilege level (0 - 3) */
+#define DESCRIPTOR_BIT  (1 << 0x04)          /* Descriptor type */
+#define EX_BIT          (1 << 0x03)          /* Executable bit */
+#define RW_BIT          (1 << 0x01)          /* Read/Write bit */
 
 /* Descriptors */
-#define KERNEL_CODE     (GRANULARITY_BIT  | LONG_BIT | \
-                        PRESENT_BIT | PRIVILEGE(0) | DESCRIPTOR_BIT | \
-                        RW_BIT | EX_BIT)
+#define KERNEL_CODE                                                            \
+    (GRANULARITY_BIT | LONG_BIT | PRESENT_BIT | PRIVILEGE(0) |                 \
+     DESCRIPTOR_BIT | RW_BIT | EX_BIT)
 
-#define KERNEL_DATA     (GRANULARITY_BIT  | SIZE_BIT | \
-                        PRESENT_BIT | PRIVILEGE(0) | DESCRIPTOR_BIT | \
-                        RW_BIT)
+#define KERNEL_DATA                                                            \
+    (GRANULARITY_BIT | SIZE_BIT | PRESENT_BIT | PRIVILEGE(0) |                 \
+     DESCRIPTOR_BIT | RW_BIT)
 
-#define USERSPACE_CODE  (GRANULARITY_BIT | LONG_BIT | \
-                        PRESENT_BIT | PRIVILEGE(3) | DESCRIPTOR_BIT | \
-                        RW_BIT | EX_BIT)
+#define USERSPACE_CODE                                                         \
+    (GRANULARITY_BIT | LONG_BIT | PRESENT_BIT | PRIVILEGE(3) |                 \
+     DESCRIPTOR_BIT | RW_BIT | EX_BIT)
 
-#define USERSPACE_DATA  (GRANULARITY_BIT | SIZE_BIT | \
-                        PRESENT_BIT | PRIVILEGE(3) | DESCRIPTOR_BIT | \
-                        RW_BIT)
+#define USERSPACE_DATA                                                         \
+    (GRANULARITY_BIT | SIZE_BIT | PRESENT_BIT | PRIVILEGE(3) |                 \
+     DESCRIPTOR_BIT | RW_BIT)
 
 /* Initializing GDT structs */
 static struct gdt_descriptor gdt[5];
-static struct gdt_pointer gdt_ptr = {.base = (u64)gdt, .limit = sizeof(gdt) - 1};
+static struct gdt_pointer gdt_ptr = {.base = (u64)gdt,
+                                     .limit = sizeof(gdt) - 1};
 
 void create_descriptor(u32 base, uint32_t limit, u16 access,
-                        struct gdt_descriptor* descriptor)
+                       struct gdt_descriptor* descriptor)
 {
     /* Access */
-    descriptor->access      =   (access & 0x00ff);
+    descriptor->access = (access & 0x00ff);
 
     /* Base bits */
-    descriptor->base_low    =   (base & 0x0000ffff);        /* set base bits 15:0 */
-    descriptor->base_mid    =   (base & 0x00ff0000) >> 16;  /* set base bits 23:16 */
-    descriptor->base_high   =   (base & 0xff000000) >> 24;  /* set base bits 31:24 */
+    descriptor->base_low = (base & 0x0000ffff);        /* from 0 to 15 */
+    descriptor->base_mid = (base & 0x00ff0000) >> 16;  /* from 16 to 23 */
+    descriptor->base_high = (base & 0xff000000) >> 24; /* from 23 to 31 */
 
     /* Limit bits */
-    descriptor->limit_low   =   (limit & 0x0ffff);          /* set limit bits 15:0 */
-    descriptor->limit_flags =   (limit & 0xf0000) >> 16;    /* set limit bits 19:16 */
+    descriptor->limit_low = (limit & 0x0ffff);         /* from 0 to 15 */
+    descriptor->limit_flags = (limit & 0xf0000) >> 16; /* from 16 to 19 */
 
     /* Flags */
-    descriptor->limit_flags |=   (access & 0xf000) >> 8;
+    descriptor->limit_flags |= (access & 0xf000) >> 8;
 }
 
 void gdt_init(void)
 {
     create_descriptor(0, 0, 0, &gdt[0]);
-    create_descriptor(0, 0xfffff, KERNEL_CODE,      &gdt[1]);
-    create_descriptor(0, 0xfffff, KERNEL_DATA,      &gdt[2]);
-    create_descriptor(0, 0xfffff, USERSPACE_CODE,   &gdt[3]);
-    create_descriptor(0, 0xfffff, USERSPACE_DATA,   &gdt[4]);
-    /* Add TSS descriptor here */
+    create_descriptor(0, 0xfffff, KERNEL_CODE, &gdt[1]);
+    create_descriptor(0, 0xfffff, KERNEL_DATA, &gdt[2]);
+    create_descriptor(0, 0xfffff, USERSPACE_CODE, &gdt[3]);
+    create_descriptor(0, 0xfffff, USERSPACE_DATA, &gdt[4]);
+    /* TODO: Add TSS descriptor here */
 
     debug("[GDT] Created Descriptors\n");
 

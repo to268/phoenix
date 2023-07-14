@@ -22,27 +22,27 @@ extern "C" {
 
 #include <phoenix/kernel.h>
 
-struct idt_descriptor{
-	u16 isr_low;    /* The lower 16 bits of the ISR's address */
-	u16 selector;   /* The GDT segment selector */
-	u8  ist;        /* The IST in the TSS */
-	u8  attributes; /* Type and attributes */
-	u16 isr_mid;    /* The higher 16 bits of the lower 32 bits of the ISR's address */
-	u32 isr_high;   /* The higher 32 bits of the ISR's address */
-	u32 reserved;   /* Set to zero */
+struct idt_descriptor {
+    u16 isr_low;   /* ISR address (from 0 to 15) */
+    u16 selector;  /* The GDT segment selector */
+    u8 ist;        /* The IST in the TSS */
+    u8 attributes; /* Type and attributes */
+    u16 isr_mid;   /* ISR address (from 16 to 23) */
+    u32 isr_high;  /* ISR address (from 24 to 31) */
+    u32 reserved;  /* Always zero */
 } PACKED;
 
-struct idt_pointer{
-    u16 limit;  /* The limit of the IDT */
-    u64 base;   /* The base of the IDT */
+struct idt_pointer {
+    u16 limit; /* The limit of the IDT */
+    u64 base;  /* The base of the IDT */
 } PACKED;
 
 #define IDT_MAX_DESCRIPTORS 256
 
 /* Gate types */
-#define IDT_INTERRUPT_GATE  0x8e
-#define IDT_TASK_GATE       0x8c
-#define IDT_TRAP_GATE       0x8f
+#define IDT_INTERRUPT_GATE 0x8e
+#define IDT_TASK_GATE      0x8c
+#define IDT_TRAP_GATE      0x8f
 
 void idt_init(void);
 NORETURN

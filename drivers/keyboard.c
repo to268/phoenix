@@ -27,7 +27,8 @@ static struct keyboard_state kb_state;
 static void keyboard_send_command(u8 command, u8 value)
 {
     outb(KEYBOARD_DATA_PORT, command);
-    while (inb(KEYBOARD_DATA_PORT) != KEYBOARD_ACK);
+    while (inb(KEYBOARD_DATA_PORT) != KEYBOARD_ACK)
+        ;
     outb(KEYBOARD_DATA_PORT, value);
 }
 
@@ -48,48 +49,47 @@ static void handle_function_keys(u8 scancode)
 static u8 keyboard_handle_special_press(u8 scancode)
 {
     switch (scancode) {
-        case KEYBOARD_ESCAPE:
-            info("<ESC>");
-            return 1;
+    case KEYBOARD_ESCAPE:
+        info("<ESC>");
+        return 1;
 
-        case KEYBOARD_LCTRL:
-            info("<LCTRL>");
-            return 1;
+    case KEYBOARD_LCTRL:
+        info("<LCTRL>");
+        return 1;
 
-        case KEYBOARD_LSHIFT:
-            kb_state.uppercase = !kb_state.uppercase;
-            return 1;
+    case KEYBOARD_LSHIFT:
+        kb_state.uppercase = !kb_state.uppercase;
+        return 1;
 
-        case KEYBOARD_LALT:
-            info("<LALT>");
-            return 1;
+    case KEYBOARD_LALT:
+        info("<LALT>");
+        return 1;
 
-        case KEYBOARD_NUM_LOCK:
-            keybard_toggle_led(KEYBOARD_NUMPAD_LED);
-            return 1;
+    case KEYBOARD_NUM_LOCK:
+        keybard_toggle_led(KEYBOARD_NUMPAD_LED);
+        return 1;
 
-        case KEYBOARD_SCROLL_LOCK:
-            keybard_toggle_led(KEYBOARD_SCROLL_LED);
-            return 1;
+    case KEYBOARD_SCROLL_LOCK:
+        keybard_toggle_led(KEYBOARD_SCROLL_LED);
+        return 1;
 
-        case KEYBOARD_CAPS_LOCK:
-            kb_state.uppercase = !kb_state.uppercase;
-            keybard_toggle_led(KEYBOARD_CAPS_LED);
-            return 1;
+    case KEYBOARD_CAPS_LOCK:
+        kb_state.uppercase = !kb_state.uppercase;
+        keybard_toggle_led(KEYBOARD_CAPS_LED);
+        return 1;
 
-        case KEYBOARD_BACKSPACE:
-            framebuffer_remove_last_char();
-            return 1;
+    case KEYBOARD_BACKSPACE:
+        framebuffer_remove_last_char();
+        return 1;
 
-        case KEYBORAD_EXTENDED_CODE:
-            kb_state.extended_scancode = 1;
-            return 1;
+    case KEYBORAD_EXTENDED_CODE:
+        kb_state.extended_scancode = 1;
+        return 1;
     }
 
     /* Check if it's a function key */
     if ((scancode >= KEYBOARD_F1 && scancode <= KEYBOARD_F10) ||
-        (scancode == KEYBOARD_F11 || scancode == KEYBOARD_F12))
-    {
+        (scancode == KEYBOARD_F11 || scancode == KEYBOARD_F12)) {
         handle_function_keys(scancode);
         return 1;
     }
@@ -100,26 +100,25 @@ static u8 keyboard_handle_special_press(u8 scancode)
 static u8 keyboard_handle_special_release(u8 scancode)
 {
     switch (scancode) {
-        case KEYBOARD_ESCAPE:
-        case KEYBOARD_LALT:
-        case KEYBOARD_BACKSPACE:
-        case KEYBOARD_CAPS_LOCK:
-        case KEYBOARD_NUM_LOCK:
-        case KEYBOARD_SCROLL_LOCK:
-            return 1;
+    case KEYBOARD_ESCAPE:
+    case KEYBOARD_LALT:
+    case KEYBOARD_BACKSPACE:
+    case KEYBOARD_CAPS_LOCK:
+    case KEYBOARD_NUM_LOCK:
+    case KEYBOARD_SCROLL_LOCK:
+        return 1;
 
-        case KEYBOARD_LCTRL:
-            info("<LCTRL>");
-            return 1;
+    case KEYBOARD_LCTRL:
+        info("<LCTRL>");
+        return 1;
 
-        case KEYBOARD_LSHIFT:
-            kb_state.uppercase = !kb_state.uppercase;
-            return 1;
+    case KEYBOARD_LSHIFT:
+        kb_state.uppercase = !kb_state.uppercase;
+        return 1;
     }
 
     return 0;
 }
-
 
 static u8 keyboard_handle_special(u8 scancode, u8 keystate)
 {
@@ -145,7 +144,8 @@ static void keyboard_handle_normal(u8 scancode, u8 keystate)
 static void keyboard_handle_extended_scancode(u8 scancode, u8 keystate)
 {
     /* TODO: Add extended scancodes support */
-    warn("extended scancode 0x%x with state %d is not supported\n", scancode, keystate);
+    warn("extended scancode 0x%x with state %d is not supported\n", scancode,
+         keystate);
     kb_state.extended_scancode = 0;
 }
 
@@ -192,5 +192,6 @@ void keyboard_init(void)
     keyboard_send_command(KEYBOARD_LED, kb_state.leds);
 
     /* Set keyboard repeating delay */
-    keyboard_change_repeating_delay(KEYBOARD_REPEAT_RATE(0), KEYBOARD_DELAY_FASTER);
+    keyboard_change_repeating_delay(KEYBOARD_REPEAT_RATE(0),
+                                    KEYBOARD_DELAY_FASTER);
 }

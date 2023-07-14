@@ -22,7 +22,7 @@ extern "C" {
 
 #include <phoenix/kernel.h>
 
-#define PIT_IRQ 0
+#define PIT_IRQ  0
 #define PIT_FREQ 1193180
 
 void pit_init(u32 hz);

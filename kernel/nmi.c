@@ -29,11 +29,9 @@ void nmi_disable(void)
     inb(0x71);
 }
 
-/* Store control port values with 16 bits where
+/*
+ * Store control port values with 16 bits where
  * - bits 0-7: Control port A
  * - bits 8-15: Control port B
  */
-u16 nmi_get_control_ports(void)
-{
-    return (inb(0x61) << 8) | inb(0x92);
-}
+u16 nmi_get_control_ports(void) { return (inb(0x61) << 8) | inb(0x92); }

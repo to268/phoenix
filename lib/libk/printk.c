@@ -30,17 +30,14 @@ int printk(u8 severity, const char* restrict format, ...);
 
 static int print(const char* data, size_t length, u8 severity)
 {
-    const unsigned char* bytes = (const unsigned char*) data;
+    const unsigned char* bytes = (const unsigned char*)data;
     for (size_t i = 0; i < length; i++)
         if (putchar(bytes[i], severity) == EOF)
             return 0;
     return 1;
 }
 
-inline uptr convert_to_mb(uintptr_t nb_bytes)
-{
-    return nb_bytes / 1024 / 1024;
-}
+inline uptr convert_to_mb(uintptr_t nb_bytes) { return nb_bytes / 1024 / 1024; }
 
 int convert_int_to_char(int number, int base, char* buff)
 {
@@ -78,100 +75,99 @@ int printk(u8 severity, const char* restrict format, ...)
         const char* format_begun_at = format++;
 
         switch (*format) {
-            case 'c':
-            case 'C':
-                format++;
-                char c = (char) va_arg(parameters, int /* char promotes to int */);
-                if (!maxrem) {
-                    return -1;
-                }
-                if (!print(&c, sizeof(c), severity))
-                    return -1;
-                written++;
-                break;
+        case 'c':
+        case 'C':
+            format++;
+            char c = (char)va_arg(parameters, int /* char promotes to int */);
+            if (!maxrem) {
+                return -1;
+            }
+            if (!print(&c, sizeof(c), severity))
+                return -1;
+            written++;
+            break;
 
-            case 's':
-            case 'S':
-                format++;
-                const char* str = va_arg(parameters, const char*);
-                size_t str_len = strlen(str);
-                if (maxrem < str_len) {
-                    return -1;
-                }
-                if (!print(str, str_len, severity))
-                    return -1;
-                written += str_len;
-                break;
+        case 's':
+        case 'S':
+            format++;
+            const char* str = va_arg(parameters, const char*);
+            size_t str_len = strlen(str);
+            if (maxrem < str_len) {
+                return -1;
+            }
+            if (!print(str, str_len, severity))
+                return -1;
+            written += str_len;
+            break;
 
-            case 'b':
-            case 'B':
-                format++;
-                int number = va_arg(parameters, int);
-                char buff[INT_LENGTH];
-                /* Convert char to binary */
-                int len = convert_int_to_char(number, 2, buff);
-                if (!print(buff, len, severity))
-                    return -1;
-                written += len;
-                break;
+        case 'b':
+        case 'B':
+            format++;
+            int number = va_arg(parameters, int);
+            char buff[INT_LENGTH];
+            /* Convert char to binary */
+            int len = convert_int_to_char(number, 2, buff);
+            if (!print(buff, len, severity))
+                return -1;
+            written += len;
+            break;
 
-            case 'o':
-            case 'O':
-                format++;
-                number = va_arg(parameters, int);
-                /* Convert char to octal base */
-                len = convert_int_to_char(number, 8, buff);
-                if (!print(buff, len, severity))
-                    return -1;
-                written += len;
-                break;
+        case 'o':
+        case 'O':
+            format++;
+            number = va_arg(parameters, int);
+            /* Convert char to octal base */
+            len = convert_int_to_char(number, 8, buff);
+            if (!print(buff, len, severity))
+                return -1;
+            written += len;
+            break;
 
-            case 'd':
-            case 'D':
-                format++;
-                number = va_arg(parameters, int);
-                /* Convert char to decimal */
-                len = convert_int_to_char(number, 10, buff);
-                if (!print(buff, len, severity))
-                    return -1;
-                written += len;
-                break;
+        case 'd':
+        case 'D':
+            format++;
+            number = va_arg(parameters, int);
+            /* Convert char to decimal */
+            len = convert_int_to_char(number, 10, buff);
+            if (!print(buff, len, severity))
+                return -1;
+            written += len;
+            break;
 
-            case 'p':
-            case 'P':
-                format++;
-                uptr ptr = va_arg(parameters, uintptr_t);
-                /* Convert char to hexadecimal */
-                len = convert_int_to_char(ptr, 16, buff);
-                if (!print(buff, len, severity))
-                    return -1;
-                written += len;
-                break;
+        case 'p':
+        case 'P':
+            format++;
+            uptr ptr = va_arg(parameters, uintptr_t);
+            /* Convert char to hexadecimal */
+            len = convert_int_to_char(ptr, 16, buff);
+            if (!print(buff, len, severity))
+                return -1;
+            written += len;
+            break;
 
-            case 'x':
-            case 'X':
-                format++;
-                number = va_arg(parameters, int);
-                /* Convert pointer to hexadecimal */
-                len = convert_int_to_char(number, 16, buff);
-                if (!print(buff, len, severity))
-                    return -1;
-                written += len;
-                break;
+        case 'x':
+        case 'X':
+            format++;
+            number = va_arg(parameters, int);
+            /* Convert pointer to hexadecimal */
+            len = convert_int_to_char(number, 16, buff);
+            if (!print(buff, len, severity))
+                return -1;
+            written += len;
+            break;
 
-            default:
-                format = format_begun_at;
-                str_len = strlen(format);
-                if (maxrem < str_len) {
-                    return -1;
-                }
-                if (!print(format, str_len, severity))
-                    return -1;
-                written += str_len;
-                format += str_len;
-                break;
+        default:
+            format = format_begun_at;
+            str_len = strlen(format);
+            if (maxrem < str_len) {
+                return -1;
+            }
+            if (!print(format, str_len, severity))
+                return -1;
+            written += str_len;
+            format += str_len;
+            break;
         }
-
     }
 
     va_end(parameters);

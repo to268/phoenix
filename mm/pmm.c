@@ -83,7 +83,7 @@ void pmm_reserve_pages(void* address, u64 pages)
 void pmm_zero(void* address, u64 pages)
 {
     for (uptr i = (uintptr_t)address; i < (pages * PAGE_SIZE); i++) {
-        memset(address, 0,(uptr)address + (i * PAGE_SIZE));
+        memset(address, 0, (uptr)address + (i * PAGE_SIZE));
     }
 }
 
@@ -105,10 +105,10 @@ void* pmm_alloc(u64 length)
     /* TODO: Enhance PMM by tracking the first free chunk and the bitmap tail */
     for (u64 bit = 0; bit < bitmap.size * 8; bit++) {
         for (u64 page = 0; page < pages_number; page++) {
-
             if (bitmap_check(&bitmap, bit)) {
                 break;
-            } else if (!bitmap_check(&bitmap, bit) && page == pages_number - 1) {
+            } else if (!bitmap_check(&bitmap, bit) &&
+                       page == pages_number - 1) {
                 /* Check if we can allocate requested pages continuously */
                 if (!pmm_check_next_pages(bit, pages_number))
                     break;

@@ -20,35 +20,37 @@
 
 int putchar(int ic, u8 severity);
 
-int putchar(int ic, u8 severity) {
-	char c = (char) ic;
+int putchar(int ic, u8 severity)
+{
+    char c = (char)ic;
     /* Add color severity */
     switch (severity) {
-        case KERN_VERBOSE:
-            framebuffer_set_color(FRAMEBUFFER_COLOR_GREY, FRAMEBUFFER_COLOR_DARK);
-            break;
+    case KERN_VERBOSE:
+        framebuffer_set_color(FRAMEBUFFER_COLOR_GREY, FRAMEBUFFER_COLOR_DARK);
+        break;
 
-        case KERN_INFO:
-            framebuffer_set_color(FRAMEBUFFER_COLOR_WHITE, FRAMEBUFFER_COLOR_DARK);
-            break;
+    case KERN_INFO:
+        framebuffer_set_color(FRAMEBUFFER_COLOR_WHITE, FRAMEBUFFER_COLOR_DARK);
+        break;
 
-        case KERN_WARN:
-            framebuffer_set_color(FRAMEBUFFER_COLOR_MAGENTA, FRAMEBUFFER_COLOR_DARK);
-            break;
+    case KERN_WARN:
+        framebuffer_set_color(FRAMEBUFFER_COLOR_MAGENTA,
+                              FRAMEBUFFER_COLOR_DARK);
+        break;
 
-        case KERN_ERROR:
-            framebuffer_set_color(FRAMEBUFFER_COLOR_ORANGE, FRAMEBUFFER_COLOR_DARK);
-            break;
+    case KERN_ERROR:
+        framebuffer_set_color(FRAMEBUFFER_COLOR_ORANGE, FRAMEBUFFER_COLOR_DARK);
+        break;
 
-        case KERN_FATAL:
-            framebuffer_set_color(FRAMEBUFFER_COLOR_RED, FRAMEBUFFER_COLOR_DARK);
-            break;
+    case KERN_FATAL:
+        framebuffer_set_color(FRAMEBUFFER_COLOR_RED, FRAMEBUFFER_COLOR_DARK);
+        break;
 
-        default:
-            framebuffer_set_color(FRAMEBUFFER_COLOR_WHITE, FRAMEBUFFER_COLOR_DARK);
-            break;
+    default:
+        framebuffer_set_color(FRAMEBUFFER_COLOR_WHITE, FRAMEBUFFER_COLOR_DARK);
+        break;
     }
 
     framebuffer_write(c);
-	return ic;
+    return ic;
 }

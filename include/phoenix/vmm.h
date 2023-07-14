@@ -23,13 +23,13 @@ extern "C" {
 #include <phoenix/kernel.h>
 #include <limine.h>
 
-#define PT_PRESENT  (1 << 0)            /* Present flag */
-#define PT_WRITABLE (1 << 1)            /* Read Write flag */
-#define PT_PRIV_S   (1 << 2)            /* Page Privilege flag, 0: User, 1: Supervisor */
-#define PT_WTHR     (1 << 3)            /* Write Thought flag  */
-#define PT_CD       (1 << 4)            /* Cache disabled flag */
-#define PT_ACCESED  (1 << 5)            /* Accesed flag (read only) */
-#define PT_HUGE     (1 << 7)            /* Page Size flag, 0: 4Kb, 1: 2Mb*/
+#define PT_PRESENT  (1 << 0) /* Present flag */
+#define PT_WRITABLE (1 << 1) /* Read Write flag */
+#define PT_PRIV_S   (1 << 2) /* Page Privilege flag, 0: User, 1: Supervisor */
+#define PT_WTHR     (1 << 3) /* Write Thought flag  */
+#define PT_CD       (1 << 4) /* Cache disabled flag */
+#define PT_ACCESED  (1 << 5) /* Accesed flag (read only) */
+#define PT_HUGE     (1 << 7) /* Page Size flag, 0: 4Kb, 1: 2Mb*/
 #define PT_SIZE     0x1000
 
 #define VMM_PRESENT (1 << 0)
@@ -37,16 +37,16 @@ extern "C" {
 #define VMM_PRIV_S  (1 << 2)
 
 #define BASE_MAP_AMOUNT 0x2000000
-#define MEM_BASE 0xffffffff80000000
-#define MEM_ADDR 0xffff800000000000
-#define FRAME_ADDR 0xfffffffffffff000
+#define MEM_BASE        0xffffffff80000000
+#define MEM_ADDR        0xffff800000000000
+#define FRAME_ADDR      0xfffffffffffff000
 
-#define PG_GET_PHYS_ADDR(x) ((x) & FRAME_ADDR)
+#define PG_GET_PHYS_ADDR(x) ((x)&FRAME_ADDR)
 
 /* TODO: Add support for huge pages (2 Mb and 1 Gb (probably) page size) */
 struct page_map {
-    u8      levels;
-    uptr*   top_lvl;
+    u8 levels;
+    uptr* top_lvl;
 };
 
 void vmm_init(struct boot_info* boot_info);

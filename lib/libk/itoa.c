@@ -58,8 +58,8 @@ char* itoa(int value, char* buffer, int base)
     int len = strlen(buffer);
     for (int i = 0; i < len / 2; i++) {
         char temp = buffer[i];
-        buffer[i] = buffer[len-1-i];
-        buffer[len-1-i] = temp;
+        buffer[i] = buffer[len - 1 - i];
+        buffer[len - 1 - i] = temp;
     }
     return buffer;
 }

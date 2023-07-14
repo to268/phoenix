@@ -41,10 +41,7 @@ void pcspk_play(u32 hz)
         outb(0x61, tmp | 3);
 }
 
-void pcspk_stop(void)
-{
-    outb(0x61, inb(0x61) & 0xfc);
-}
+void pcspk_stop(void) { outb(0x61, inb(0x61) & 0xfc); }
 
 void pcspk_beep(u32 hz, u32 time)
 {

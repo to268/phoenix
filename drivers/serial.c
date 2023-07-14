@@ -26,17 +26,18 @@ static u8 serial_initialized = 0;
 int serial_init(const u16 serial_port, uint16_t baud_divisor)
 {
     /* Check is the serial port is supported */
-    if (serial_port_check(serial_port)) return 1;
+    if (serial_port_check(serial_port))
+        return 1;
 
-    outb(serial_port + 1, 0x00);                         /* Disable all interrupts */
-    outb(serial_port + 3, 0x80);                         /* Enable DLAB (set baud rate divisor) */
-    outb(serial_port + 0, baud_divisor & 0xff);          /* Set divisor (low byte) */
-    outb(serial_port + 1, (baud_divisor & 0xff00) >> 8); /* Set divisor (high byte) */
-    outb(serial_port + 3, 0x03);                         /* 8 bits, no parity, one stop bit */
-    outb(serial_port + 2, 0xc7);                         /* Enable FIFO */
-    outb(serial_port + 4, 0x0b);                         /* IRQs enabled, RTS/DSR set */
-    outb(serial_port + 4, 0x1e);                         /* Set in loopback mode, test the serial chip */
-    outb(serial_port + 0, 0xae);                         /* Test serial chip */
+    outb(serial_port + 1, 0x00); /* Disable all interrupts */
+    outb(serial_port + 3, 0x80); /* Enable DLAB (set baud rate divisor) */
+    outb(serial_port + 0, baud_divisor & 0xff);          /* Set divisor Low */
+    outb(serial_port + 1, (baud_divisor & 0xff00) >> 8); /* Set divisor High */
+    outb(serial_port + 3, 0x03); /* 8 bits, no parity, one stop bit */
+    outb(serial_port + 2, 0xc7); /* Enable FIFO */
+    outb(serial_port + 4, 0x0b); /* IRQs enabled, RTS/DSR set */
+    outb(serial_port + 4, 0x1e); /* Set in loopback mode */
+    outb(serial_port + 0, 0xae); /* Test serial chip */
 
     /* Check if serial output is the same */
     if (inb(serial_port + 0) != 0xae) {
@@ -63,7 +64,8 @@ static int serial_port_check(const u16 serial_port)
 int serial_received(const u16 serial_port)
 {
     /* Check is the serial port is supported */
-    if (!serial_initialized || serial_port_check(serial_port)) return -1;
+    if (!serial_initialized || serial_port_check(serial_port))
+        return -1;
 
     return inb(serial_port + 5) & 1;
 }
@@ -72,9 +74,11 @@ int serial_received(const u16 serial_port)
 char serial_read(const u16 serial_port)
 {
     /* Check is the serial port is supported */
-    if (!serial_initialized || serial_port_check(serial_port)) return -1;
+    if (!serial_initialized || serial_port_check(serial_port))
+        return -1;
 
-    while (serial_received(serial_port) == 0);
+    while (serial_received(serial_port) == 0)
+        ;
 
     return inb(serial_port);
 }
@@ -85,12 +89,12 @@ void serial_readstring(const u16 serial_port, char* buff, size_t size)
     size_t i = 0;
     char c = serial_read(serial_port);
     while (c != -1 || c != '\n' || c != '\r') {
-    if (i >= (size - 1))
-        break;
+        if (i >= (size - 1))
+            break;
 
-    buff[i] = c;
-    c = serial_read(serial_port);
-    i++;
+        buff[i] = c;
+        c = serial_read(serial_port);
+        i++;
     }
 
     /* Add NULL terminator */
@@ -101,7 +105,8 @@ void serial_readstring(const u16 serial_port, char* buff, size_t size)
 static int serial_is_transmit_empty(const u16 serial_port)
 {
     /* Check is the serial port is supported */
-    if (!serial_initialized || serial_port_check(serial_port)) return -1;
+    if (!serial_initialized || serial_port_check(serial_port))
+        return -1;
 
     return inb(serial_port + 5) & 0x20;
 }
@@ -110,9 +115,11 @@ static int serial_is_transmit_empty(const u16 serial_port)
 void serial_write(const u16 serial_port, const char c)
 {
     /* Check is the serial port is supported */
-    if (!serial_initialized || serial_port_check(serial_port)) return;
+    if (!serial_initialized || serial_port_check(serial_port))
+        return;
 
-    while (serial_is_transmit_empty(serial_port) == 0);
+    while (serial_is_transmit_empty(serial_port) == 0)
+        ;
 
     outb(serial_port, c);
 }
