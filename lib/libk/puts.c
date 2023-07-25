@@ -17,7 +17,6 @@
 
 int puts(u8 severity, const char* string);
 
-int puts(u8 severity, const char* string)
-{
+int puts(u8 severity, const char* string) {
     return printk(severity, "%s\n", string);
 }

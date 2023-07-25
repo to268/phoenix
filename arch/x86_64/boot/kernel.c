@@ -21,8 +21,7 @@
 #include <phoenix/io.h>
 #include <cpuid.h>
 
-void kernel_main(void)
-{
+void kernel_main(void) {
     rtc_print_date_time();
     info("Startup took %d msecs\n", pit_get_ticks());
     info("\n");

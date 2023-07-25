@@ -19,8 +19,7 @@
 char* strcpy(char* dest, const char* src);
 char* strncpy(char* dest, const char* src, size_t n);
 
-char* strcpy(char* dest, const char* src)
-{
+char* strcpy(char* dest, const char* src) {
     size_t i = 0;
 
     while (src[i] != '\0') {
@@ -32,8 +31,7 @@ char* strcpy(char* dest, const char* src)
     return dest;
 }
 
-char* strncpy(char* dest, const char* src, size_t n)
-{
+char* strncpy(char* dest, const char* src, size_t n) {
     size_t i = 0;
 
     for (i = 0; i < n && src[i] != '\0'; i++)

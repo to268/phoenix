@@ -20,8 +20,7 @@
 
 static volatile u64 pit_timer_ticks = 0;
 
-void pit_init(u32 hz)
-{
+void pit_init(u32 hz) {
     /* Calculate the divisor */
     u32 divisor = PIT_FREQ / hz;
 
@@ -34,8 +33,7 @@ void pit_init(u32 hz)
     pic_irq_clear_mask(PIT_IRQ);
 }
 
-void pit_handler(void)
-{
+void pit_handler(void) {
     /* Increment ticks count when IRQ is triggered */
     pit_timer_ticks++;
 
@@ -44,8 +42,7 @@ void pit_handler(void)
 
 inline u64 pit_get_ticks(void) { return pit_timer_ticks; }
 
-void pit_sleep(u64 msec)
-{
+void pit_sleep(u64 msec) {
     u64 ticks = pit_timer_ticks + msec;
     while (pit_timer_ticks < ticks)
         ;

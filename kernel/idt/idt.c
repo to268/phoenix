@@ -35,8 +35,7 @@ extern void keyboard_handler_irq(void);
 extern void pic_send_eoi_master(void);
 extern void pic_send_eoi_slave(void);
 
-void idt_set_descriptor(u8 vector, void* isr, uint8_t flags)
-{
+void idt_set_descriptor(u8 vector, void* isr, uint8_t flags) {
     struct idt_descriptor* descriptor = &idt[vector];
 
     descriptor->isr_low = (u64)isr & 0xffff;
@@ -48,8 +47,7 @@ void idt_set_descriptor(u8 vector, void* isr, uint8_t flags)
     descriptor->reserved = 0;
 }
 
-void idt_init(void)
-{
+void idt_init(void) {
     /* Remap the PIC */
     pic_remap();
 

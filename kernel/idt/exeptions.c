@@ -20,7 +20,6 @@
 #include <phoenix/io.h>
 
 /* List of exceptions messages */
-/* clang-format off */
 static const char* exceptions[] = {
     [0] = "Division by Zero",
     [1] = "Debug",
@@ -41,15 +40,13 @@ static const char* exceptions[] = {
     [18] = "Machine check",
     [19] = "SIMD floating point Exception",
     [20] = "Virtualization Exception",
-    [30] = "Security Exception"
+    [30] = "Security Exception",
 };
-/* clang-format on */
 
 void handle_nmi(void);
 
 NORETURN
-void exception_handler(u64 vector)
-{
+void exception_handler(u64 vector) {
     cli();
 
     /* Handle the exception vector */
@@ -62,8 +59,7 @@ void exception_handler(u64 vector)
     panic(exceptions[vector]);
 }
 
-void handle_nmi(void)
-{
+void handle_nmi(void) {
     warn("NMI interrupt fired !\n");
     serial_writestring(SERIAL_COM1, "[IVT] NMI interrupt fired !\n");
 

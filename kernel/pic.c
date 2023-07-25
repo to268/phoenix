@@ -18,8 +18,7 @@
 #include <phoenix/pic.h>
 #include <phoenix/io.h>
 
-void pic_remap(void)
-{
+void pic_remap(void) {
     u8 mask1;
     u8 mask2;
 
@@ -62,16 +61,14 @@ void pic_remap(void)
     debug("[PIC] IRQs have been remapped\n");
 }
 
-void pic_send_eoi(u8 irq)
-{
+void pic_send_eoi(u8 irq) {
     if (irq >= 8)
         outb(PIC2_CMD, PIC_EOI);
 
     outb(PIC1_CMD, PIC_EOI);
 }
 
-void pic_irq_set_mask(u8 irq)
-{
+void pic_irq_set_mask(u8 irq) {
     u16 port;
     u8 value;
 
@@ -86,8 +83,7 @@ void pic_irq_set_mask(u8 irq)
     outb(port, value);
 }
 
-void pic_irq_clear_mask(u8 irq)
-{
+void pic_irq_clear_mask(u8 irq) {
     u16 port;
     u8 value;
 
@@ -103,8 +99,7 @@ void pic_irq_clear_mask(u8 irq)
 }
 
 /* Send an OCW3 command */
-u16 pic_get_irq_reg(int ocw3)
-{
+u16 pic_get_irq_reg(int ocw3) {
     /* Get register values */
     outb(PIC1_CMD, ocw3);
     outb(PIC2_CMD, ocw3);

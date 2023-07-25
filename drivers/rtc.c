@@ -21,8 +21,7 @@
 
 static struct date_time date;
 
-void rtc_init(void)
-{
+void rtc_init(void) {
     /* Disable interrupts and NMIs */
     nmi_disable();
     cli();
@@ -39,14 +38,12 @@ void rtc_init(void)
     rtc_update_date_time();
 }
 
-static u8 rtc_is_updating()
-{
+static u8 rtc_is_updating() {
     outb(0x70, 0x0a);
     return inb(0x71) & 0x80;
 }
 
-static u8 rtc_read(u8 reg)
-{
+static u8 rtc_read(u8 reg) {
     while (rtc_is_updating())
         ;
 
@@ -54,8 +51,7 @@ static u8 rtc_read(u8 reg)
     return inb(0x71);
 }
 
-void rtc_update_date_time(void)
-{
+void rtc_update_date_time(void) {
     /* Read date */
     u8 day = rtc_read(0x7);
     u8 month = rtc_read(0x8);
@@ -81,8 +77,7 @@ void rtc_update_date_time(void)
 
 struct date_time* rtc_get_date_time(void) { return &date; }
 
-void rtc_print_date_time(void)
-{
+void rtc_print_date_time(void) {
     /* Make sure to update the time */
     rtc_update_date_time();
 

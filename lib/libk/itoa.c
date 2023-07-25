@@ -18,8 +18,7 @@
 
 char* itoa(int value, char* buffer, int base);
 
-char* itoa(int value, char* buffer, int base)
-{
+char* itoa(int value, char* buffer, int base) {
     /* Check if the base is valid */
     if (base < 2 || base > 32) {
         *buffer = '\0';

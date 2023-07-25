@@ -18,14 +18,12 @@
 #include <phoenix/pit.h>
 #include <phoenix/serial.h>
 
-void pcspk_init(void)
-{
+void pcspk_init(void) {
     outb(0x61, inb(0x61) | 0x1);
     serial_writestring(SERIAL_COM1, "[PCSPK] Initialized\n");
 }
 
-void pcspk_play(u32 hz)
-{
+void pcspk_play(u32 hz) {
     u32 div = PIT_FREQ / hz;
 
     /* Set the PIT to the desired frequency */
@@ -43,8 +41,7 @@ void pcspk_play(u32 hz)
 
 void pcspk_stop(void) { outb(0x61, inb(0x61) & 0xfc); }
 
-void pcspk_beep(u32 hz, u32 time)
-{
+void pcspk_beep(u32 hz, u32 time) {
     pcspk_play(hz);
     pit_sleep(time);
     pcspk_stop();

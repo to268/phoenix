@@ -54,13 +54,11 @@ void vga_write(const char* data, size_t size);
 void vga_writestring(const char* string);
 void vga_remove_last_char(void);
 
-static inline u8 vga_entry_color(enum vga_color fg, enum vga_color bg)
-{
+static inline u8 vga_entry_color(enum vga_color fg, enum vga_color bg) {
     return fg | bg << 4;
 }
 
-static inline u16 vga_entry(unsigned char uc, u8 color)
-{
+static inline u16 vga_entry(unsigned char uc, u8 color) {
     return (u16)uc | (uint16_t)color << 8;
 }
 

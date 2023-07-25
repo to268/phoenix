@@ -20,8 +20,7 @@
 
 int putchar(int ic, u8 severity);
 
-int putchar(int ic, u8 severity)
-{
+int putchar(int ic, u8 severity) {
     char c = (char)ic;
     /* Add color severity */
     switch (severity) {

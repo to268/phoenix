@@ -28,8 +28,7 @@ inline uptr convert_to_mb(uintptr_t nb_bytes);
 int convert_int_to_char(int number, int base, char* buff);
 int printk(u8 severity, const char* restrict format, ...);
 
-static int print(const char* data, size_t length, u8 severity)
-{
+static int print(const char* data, size_t length, u8 severity) {
     const unsigned char* bytes = (const unsigned char*)data;
     for (size_t i = 0; i < length; i++)
         if (putchar(bytes[i], severity) == EOF)
@@ -39,15 +38,13 @@ static int print(const char* data, size_t length, u8 severity)
 
 inline uptr convert_to_mb(uintptr_t nb_bytes) { return nb_bytes / 1024 / 1024; }
 
-int convert_int_to_char(int number, int base, char* buff)
-{
+int convert_int_to_char(int number, int base, char* buff) {
     itoa(number, buff, base);
     int len = strlen(buff);
     return len;
 }
 
-int printk(u8 severity, const char* restrict format, ...)
-{
+int printk(u8 severity, const char* restrict format, ...) {
     va_list parameters;
     va_start(parameters, format);
 
@@ -63,10 +60,10 @@ int printk(u8 severity, const char* restrict format, ...)
             while (format[amount] && format[amount] != '%')
                 amount++;
             if (maxrem < amount) {
-                return -1;
+                goto error;
             }
             if (!print(format, amount, severity))
-                return -1;
+                goto error;
             format += amount;
             written += amount;
             continue;
@@ -80,10 +77,10 @@ int printk(u8 severity, const char* restrict format, ...)
             format++;
             char c = (char)va_arg(parameters, int /* char promotes to int */);
             if (!maxrem) {
-                return -1;
+                goto error;
             }
             if (!print(&c, sizeof(c), severity))
-                return -1;
+                goto error;
             written++;
             break;
 
@@ -93,10 +90,10 @@ int printk(u8 severity, const char* restrict format, ...)
             const char* str = va_arg(parameters, const char*);
             size_t str_len = strlen(str);
             if (maxrem < str_len) {
-                return -1;
+                goto error;
             }
             if (!print(str, str_len, severity))
-                return -1;
+                goto error;
             written += str_len;
             break;
 
@@ -108,7 +105,7 @@ int printk(u8 severity, const char* restrict format, ...)
             /* Convert char to binary */
             int len = convert_int_to_char(number, 2, buff);
             if (!print(buff, len, severity))
-                return -1;
+                goto error;
             written += len;
             break;
 
@@ -119,7 +116,7 @@ int printk(u8 severity, const char* restrict format, ...)
             /* Convert char to octal base */
             len = convert_int_to_char(number, 8, buff);
             if (!print(buff, len, severity))
-                return -1;
+                goto error;
             written += len;
             break;
 
@@ -130,7 +127,7 @@ int printk(u8 severity, const char* restrict format, ...)
             /* Convert char to decimal */
             len = convert_int_to_char(number, 10, buff);
             if (!print(buff, len, severity))
-                return -1;
+                goto error;
             written += len;
             break;
 
@@ -141,7 +138,7 @@ int printk(u8 severity, const char* restrict format, ...)
             /* Convert char to hexadecimal */
             len = convert_int_to_char(ptr, 16, buff);
             if (!print(buff, len, severity))
-                return -1;
+                goto error;
             written += len;
             break;
 
@@ -152,7 +149,7 @@ int printk(u8 severity, const char* restrict format, ...)
             /* Convert pointer to hexadecimal */
             len = convert_int_to_char(number, 16, buff);
             if (!print(buff, len, severity))
-                return -1;
+                goto error;
             written += len;
             break;
 
@@ -160,10 +157,10 @@ int printk(u8 severity, const char* restrict format, ...)
             format = format_begun_at;
             str_len = strlen(format);
             if (maxrem < str_len) {
-                return -1;
+                goto error;
             }
             if (!print(format, str_len, severity))
-                return -1;
+                goto error;
             written += str_len;
             format += str_len;
             break;
@@ -172,4 +169,8 @@ int printk(u8 severity, const char* restrict format, ...)
 
     va_end(parameters);
     return written;
+
+error:
+    va_end(parameters);
+    return -1;
 }

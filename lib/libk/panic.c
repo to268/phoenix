@@ -17,8 +17,7 @@
 #include <phoenix/serial.h>
 
 NORETURN
-void panic(const char* msg)
-{
+void panic(const char* msg) {
     serial_writestring(SERIAL_COM1, "Kernel Panic !\n");
     serial_writestring(SERIAL_COM1, msg);
 

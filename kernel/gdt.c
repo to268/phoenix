@@ -47,12 +47,13 @@
 
 /* Initializing GDT structs */
 static struct gdt_descriptor gdt[5];
-static struct gdt_pointer gdt_ptr = {.base = (u64)gdt,
-                                     .limit = sizeof(gdt) - 1};
+static struct gdt_pointer gdt_ptr = {
+    .base = (u64)gdt,
+    .limit = sizeof(gdt) - 1,
+};
 
 void create_descriptor(u32 base, uint32_t limit, u16 access,
-                       struct gdt_descriptor* descriptor)
-{
+                       struct gdt_descriptor* descriptor) {
     /* Access */
     descriptor->access = (access & 0x00ff);
 
@@ -69,8 +70,7 @@ void create_descriptor(u32 base, uint32_t limit, u16 access,
     descriptor->limit_flags |= (access & 0xf000) >> 8;
 }
 
-void gdt_init(void)
-{
+void gdt_init(void) {
     create_descriptor(0, 0, 0, &gdt[0]);
     create_descriptor(0, 0xfffff, KERNEL_CODE, &gdt[1]);
     create_descriptor(0, 0xfffff, KERNEL_DATA, &gdt[2]);

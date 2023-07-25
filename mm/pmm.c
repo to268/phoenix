@@ -22,8 +22,7 @@
 
 static Bitmap bitmap;
 
-void pmm_init(struct boot_info* boot_info)
-{
+void pmm_init(struct boot_info* boot_info) {
     struct free_memory_hdr* memory_hdr = &boot_info->free_memory_hdr;
 
     uptr free_mem = convert_to_mb(memory_hdr->free_memory);
@@ -61,34 +60,29 @@ void pmm_init(struct boot_info* boot_info)
     debug("[PMM] Initialized\n");
 }
 
-inline u64 pmm_get_index(void* address, Bitmap* bitmap)
-{
+inline u64 pmm_get_index(void* address, Bitmap* bitmap) {
     return (u64)((uptr*)address - bitmap->base) / PAGE_SIZE;
 }
 
-void pmm_reserve_page(u64 index)
-{
+void pmm_reserve_page(u64 index) {
     bitmap_set(&bitmap, index);
     debug("[PMM] reseved page\n");
 }
 
-void pmm_reserve_pages(void* address, u64 pages)
-{
+void pmm_reserve_pages(void* address, u64 pages) {
     for (u64 i = 0; i < pages; i++) {
         u64 index = pmm_get_index(address + (i * PAGE_SIZE), &bitmap);
         pmm_reserve_page(index);
     }
 }
 
-void pmm_zero(void* address, u64 pages)
-{
+void pmm_zero(void* address, u64 pages) {
     for (uptr i = (uintptr_t)address; i < (pages * PAGE_SIZE); i++) {
         memset(address, 0, (uptr)address + (i * PAGE_SIZE));
     }
 }
 
-int pmm_check_next_pages(u64 start_bit, uint64_t pages)
-{
+int pmm_check_next_pages(u64 start_bit, uint64_t pages) {
     for (u64 bit = start_bit; bit < (start_bit + pages); bit++) {
         if (bitmap_check(&bitmap, bit)) {
             return 0;
@@ -97,13 +91,12 @@ int pmm_check_next_pages(u64 start_bit, uint64_t pages)
     return 1;
 }
 
-void* pmm_alloc(u64 length)
-{
+void* pmm_alloc(u64 length) {
     u64 pages_number = DIV_ROUNDUP(length, PAGE_SIZE);
     void* addr;
 
     /* TODO: Enhance PMM by tracking the first free chunk and the bitmap tail */
-    for (u64 bit = 0; bit < bitmap.size * 8; bit++) {
+    for (u64 bit = 0; bit < (u64)(bitmap.size) * 8; bit++) {
         for (u64 page = 0; page < pages_number; page++) {
             if (bitmap_check(&bitmap, bit)) {
                 break;
@@ -124,8 +117,7 @@ void* pmm_alloc(u64 length)
     return NULL;
 }
 
-void pmm_free(void* address, u64 pages)
-{
+void pmm_free(void* address, u64 pages) {
     for (u64 i = 0; i < pages; i++) {
         u64 index = pmm_get_index(address + (i * PAGE_SIZE), &bitmap);
         bitmap_clear(&bitmap, index);

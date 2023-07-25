@@ -19,8 +19,7 @@
 char* strcat(char* dest, const char* src);
 char* strncat(char* dest, const char* src, size_t n);
 
-char* strcat(char* dest, const char* src)
-{
+char* strcat(char* dest, const char* src) {
     size_t dest_len = strlen(dest);
     size_t i = 0;
     while (src[i] != '\0') {
@@ -32,8 +31,7 @@ char* strcat(char* dest, const char* src)
     return dest;
 }
 
-char* strncat(char* dest, const char* src, size_t n)
-{
+char* strncat(char* dest, const char* src, size_t n) {
     size_t dest_len = strlen(dest);
     size_t i = 0;
     for (i = 0; i < n && src[i] != '\0'; i++)

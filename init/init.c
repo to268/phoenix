@@ -28,8 +28,7 @@
 #include <phoenix/vga.h>
 #include <stddef.h>
 
-void init(void)
-{
+void init(void) {
     struct boot_info boot_info;
 
     serial_init(SERIAL_COM1, 1);

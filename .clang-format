@@ -4,17 +4,14 @@ BasedOnStyle: LLVM
 AccessModifierOffset: -4
 AlignConsecutiveMacros: true
 AlwaysBreakTemplateDeclarations: true
-BreakBeforeBraces: Custom
-BraceWrapping:
-  AfterFunction: true
+AlwaysBreakAfterReturnType: None
+AlwaysBreakAfterDefinitionReturnType: None
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 IndentWidth: 4
-KeepEmptyLinesAtTheStartOfBlocks: false
 PointerAlignment: Left
 SortIncludes: false
 StatementMacros:
 ForEachMacros:
   - foreach
-  - Q_UNUSED
 ...
