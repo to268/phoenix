@@ -16,9 +16,8 @@
 #include <phoenix/kernel.h>
 #include <phoenix/mem.h>
 
-char* itoa(int value, char* buffer, int base);
-
-char* itoa(int value, char* buffer, int base) {
+MAYBE_UNUSED NONNULL RETURNS_NONNULL char* itoa(int value, char* buffer,
+                                                int base) {
     /* Check if the base is valid */
     if (base < 2 || base > 32) {
         *buffer = '\0';

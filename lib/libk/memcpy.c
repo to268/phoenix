@@ -13,15 +13,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/mem.h>
+#include <phoenix/types.h>
 #include <stddef.h>
 
-void* memcpy(void* __restrict dstptr, const void* __restrict srcptr,
-             size_t size);
-
+DIAGNOSE_AS_BUILTIN(__builtin_memcpy, 1, 2, 3)
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-void* memcpy(void* __restrict dstptr, const void* __restrict srcptr,
-             size_t size) {
+NODISCARD NONNULL RETURNS_NONNULL void*
+memcpy(void* __restrict dstptr, const void* __restrict srcptr, size_t size) {
     unsigned char* dst = (unsigned char*)dstptr;
     const unsigned char* src = (const unsigned char*)srcptr;
     for (size_t i = 0; i < size; i++)

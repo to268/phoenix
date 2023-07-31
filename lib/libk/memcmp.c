@@ -13,12 +13,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/mem.h>
+#include <phoenix/types.h>
 #include <stddef.h>
 
-int memcmp(const void* aptr, const void* bptr, size_t size);
-
-int memcmp(const void* aptr, const void* bptr, size_t size) {
+DIAGNOSE_AS_BUILTIN(__builtin_memcmp, 1, 2, 3)
+NODISCARD NONNULL int memcmp(const void* aptr, const void* bptr, size_t size) {
     const unsigned char* a = (const unsigned char*)aptr;
     const unsigned char* b = (const unsigned char*)bptr;
     for (size_t i = 0; i < size; i++) {

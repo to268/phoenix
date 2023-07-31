@@ -43,7 +43,7 @@ static void handle_function_keys(u8 scancode) {
         info("<F%d>", (scancode - KEYBOARD_F11) + 11);
 }
 
-static u8 keyboard_handle_special_press(u8 scancode) {
+NODISCARD static u8 keyboard_handle_special_press(u8 scancode) {
     switch (scancode) {
     case KEYBOARD_ESCAPE:
         info("<ESC>");
@@ -93,7 +93,7 @@ static u8 keyboard_handle_special_press(u8 scancode) {
     return 0;
 }
 
-static u8 keyboard_handle_special_release(u8 scancode) {
+NODISCARD static u8 keyboard_handle_special_release(u8 scancode) {
     switch (scancode) {
     case KEYBOARD_ESCAPE:
     case KEYBOARD_LALT:
@@ -115,7 +115,7 @@ static u8 keyboard_handle_special_release(u8 scancode) {
     return 0;
 }
 
-static u8 keyboard_handle_special(u8 scancode, u8 keystate) {
+NODISCARD static u8 keyboard_handle_special(u8 scancode, u8 keystate) {
     /* info("scancode %x state %d\n", scancode, keystate); */
 
     /* TODO: Handle function keys */

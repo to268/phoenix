@@ -13,13 +13,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/mem.h>
+#include <phoenix/types.h>
 #include <stddef.h>
 
 void* memset(void* bufptr, int value, size_t size);
 
+DIAGNOSE_AS_BUILTIN(__builtin_memset, 1, 2, 3)
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-void* memset(void* bufptr, int value, size_t size) {
+MAYBE_UNUSED NONNULL RETURNS_NONNULL void* memset(void* bufptr, int value,
+                                                  size_t size) {
     unsigned char* buf = (unsigned char*)bufptr;
     for (size_t i = 0; i < size; i++)
         buf[i] = (unsigned char)value;

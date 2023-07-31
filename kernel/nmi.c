@@ -32,4 +32,6 @@ void nmi_disable(void) {
  * - bits 0-7: Control port A
  * - bits 8-15: Control port B
  */
-u16 nmi_get_control_ports(void) { return (inb(0x61) << 8) | inb(0x92); }
+NODISCARD u16 nmi_get_control_ports(void) {
+    return (inb(0x61) << 8) | inb(0x92);
+}

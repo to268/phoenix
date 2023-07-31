@@ -19,16 +19,12 @@
 #include <phoenix/vga.h>
 #include <stddef.h>
 #include <stdarg.h>
-#include <limits.h>
 
 #define EOF (-1)
 
-static int print(const char* data, size_t length, u8 severity);
-inline uptr convert_to_mb(uintptr_t nb_bytes);
-int convert_int_to_char(int number, int base, char* buff);
-int printk(u8 severity, const char* restrict format, ...);
-
-static int print(const char* data, size_t length, u8 severity) {
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+MAYBE_UNUSED NONNULL static int print(const char* data, size_t length,
+                                      u8 severity) {
     const unsigned char* bytes = (const unsigned char*)data;
     for (size_t i = 0; i < length; i++)
         if (putchar(bytes[i], severity) == EOF)
@@ -36,22 +32,25 @@ static int print(const char* data, size_t length, u8 severity) {
     return 1;
 }
 
-inline uptr convert_to_mb(uintptr_t nb_bytes) { return nb_bytes / 1024 / 1024; }
+NODISCARD inline uptr convert_to_mb(uintptr_t nb_bytes) {
+    return nb_bytes / 1024 / 1024;
+}
 
-int convert_int_to_char(int number, int base, char* buff) {
+MAYBE_UNUSED NONNULL int convert_int_to_char(int number, int base, char* buff) {
     itoa(number, buff, base);
     int len = strlen(buff);
     return len;
 }
 
-int printk(u8 severity, const char* restrict format, ...) {
+DIAGNOSE_AS_BUILTIN(__builtin_printf, 2)
+MAYBE_UNUSED NONNULL int printk(u8 severity, const char* restrict format, ...) {
     va_list parameters;
     va_start(parameters, format);
 
     int written = 0;
 
     while (*format != '\0') {
-        size_t maxrem = INT_MAX - written;
+        size_t maxrem = __INT_MAX__ - written;
 
         if (format[0] != '%' || format[1] == '%') {
             if (format[0] == '%')

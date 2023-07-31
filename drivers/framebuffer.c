@@ -32,17 +32,17 @@ static PSF1_font font;
 static Color bg;
 static Color fg;
 
-void framebuffer_init(struct limine_framebuffer_request* fb_req);
-Color framebuffer_create_color(u8 red, u8 green, u8 blue);
-u32 framebuffer_to_color(Color* color);
+NONNULL void framebuffer_init(struct limine_framebuffer_request* fb_req);
+NODISCARD Color framebuffer_create_color(u8 red, u8 green, u8 blue);
+NODISCARD u32 framebuffer_to_color(Color* color);
 void framebuffer_draw_pixel(u32 x, u32 y, u32 color);
-void framebuffer_clear(Color* color);
+NONNULL void framebuffer_clear(Color* color);
 void framebuffer_set_pos(u32 x, u32 y);
 void framebuffer_write(char c);
 void framebuffer_writestring(char* str);
 void framebuffer_remove_last_char(void);
 
-void framebuffer_init(struct limine_framebuffer_request* fb_req) {
+NONNULL void framebuffer_init(struct limine_framebuffer_request* fb_req) {
     framebuffer_set_pos(0, 0);
 
     fb_base = fb_req->response->framebuffers[0];
@@ -59,11 +59,11 @@ void framebuffer_init(struct limine_framebuffer_request* fb_req) {
     fb_max_y = fb_base->height - font.header->charsize;
 }
 
-Color framebuffer_create_color(u8 red, u8 green, u8 blue) {
+NODISCARD Color framebuffer_create_color(u8 red, u8 green, u8 blue) {
     return (Color){red, green, blue};
 }
 
-u32 framebuffer_to_color(Color* color) {
+NODISCARD u32 framebuffer_to_color(Color* color) {
     return (color->red << 16) + (color->green << 8) + color->blue;
 }
 
@@ -72,7 +72,7 @@ void framebuffer_draw_pixel(u32 x, u32 y, u32 color) {
     fb_addr[pixel] = color;
 }
 
-void framebuffer_clear(Color* color) {
+NONNULL void framebuffer_clear(Color* color) {
     for (u64 y = 0; y < fb_base->height; y++) {
         for (u64 x = 0; x < fb_base->width; x++) {
             framebuffer_draw_pixel(x, y, framebuffer_to_color(color));

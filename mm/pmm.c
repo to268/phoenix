@@ -22,7 +22,7 @@
 
 static Bitmap bitmap;
 
-void pmm_init(struct boot_info* boot_info) {
+NONNULL void pmm_init(struct boot_info* boot_info) {
     struct free_memory_hdr* memory_hdr = &boot_info->free_memory_hdr;
 
     uptr free_mem = convert_to_mb(memory_hdr->free_memory);
@@ -91,7 +91,7 @@ int pmm_check_next_pages(u64 start_bit, uint64_t pages) {
     return 1;
 }
 
-void* pmm_alloc(u64 length) {
+NODISCARD RETURNS_NONNULL void* pmm_alloc(u64 length) {
     u64 pages_number = DIV_ROUNDUP(length, PAGE_SIZE);
     void* addr;
 
@@ -114,10 +114,10 @@ void* pmm_alloc(u64 length) {
         }
     }
 
-    return NULL;
+    panic("cannot allocate more memory");
 }
 
-void pmm_free(void* address, u64 pages) {
+NONNULL void pmm_free(void* address, u64 pages) {
     for (u64 i = 0; i < pages; i++) {
         u64 index = pmm_get_index(address + (i * PAGE_SIZE), &bitmap);
         bitmap_clear(&bitmap, index);

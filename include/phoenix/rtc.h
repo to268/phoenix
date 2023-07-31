@@ -39,7 +39,7 @@ struct date_time {
 
 void rtc_init(void);
 void rtc_update_date_time(void);
-struct date_time* rtc_get_date_time(void);
+NODISCARD struct date_time* rtc_get_date_time(void);
 void rtc_print_date_time(void);
 
 #ifdef __cplusplus

@@ -38,12 +38,12 @@ void rtc_init(void) {
     rtc_update_date_time();
 }
 
-static u8 rtc_is_updating() {
+NODISCARD static u8 rtc_is_updating() {
     outb(0x70, 0x0a);
     return inb(0x71) & 0x80;
 }
 
-static u8 rtc_read(u8 reg) {
+NODISCARD static u8 rtc_read(u8 reg) {
     while (rtc_is_updating())
         ;
 
@@ -75,7 +75,9 @@ void rtc_update_date_time(void) {
     date.time.second = (seconds & 0xf) + ((seconds / 16) * 10);
 }
 
-struct date_time* rtc_get_date_time(void) { return &date; }
+NODISCARD RETURNS_NONNULL struct date_time* rtc_get_date_time(void) {
+    return &date;
+}
 
 void rtc_print_date_time(void) {
     /* Make sure to update the time */

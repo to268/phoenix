@@ -45,8 +45,7 @@ static const char* exceptions[] = {
 
 void handle_nmi(void);
 
-NORETURN
-void exception_handler(u64 vector) {
+NORETURN void exception_handler(u64 vector) {
     cli();
 
     /* Handle the exception vector */

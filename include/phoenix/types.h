@@ -21,8 +21,8 @@
 extern "C" {
 #endif
 
-#include <phoenix/types/gcc.h>
-#include <phoenix/types/int.h>
+#include <phoenix/types/compiler_builtins.h>
+#include <phoenix/types/integers.h>
 #include <stdbool.h>
 
 #endif /* _TYPES_H_ */

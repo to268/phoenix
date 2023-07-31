@@ -3,7 +3,7 @@
 set -ex
 
 # Reset values to make sure to have clean env variables
-export CC=gcc
+export CC=cc
 export LD=ld
 export AR=ar
 export NM=nm
@@ -11,14 +11,14 @@ export CFLAGS="-O2 -pipe"
 export LDFLAGS=
 
 BINUTILSVERSION=2.40
-GCCVERSION=13.1.0
+GCCVERSION=13.2.0
 
 PREFIX="$(pwd)"
 TARGET=x86_64-elf
 export PATH="$PREFIX/bin:$PATH"
 
 JOBS="$1"
-EXT=".tar.gz"
+EXT=".tar.xz"
 
 if [ ! -f binutils-$BINUTILSVERSION$EXT ]; then
     wget https://ftp.gnu.org/gnu/binutils/binutils-$BINUTILSVERSION$EXT
@@ -29,8 +29,8 @@ fi
 
 rm -rf bin/ gcc-$GCCVERSION/ binutils-$BINUTILSVERSION/ include/ share/ lib* build-* x86_64-elf/
 
-tar -zxf binutils-$BINUTILSVERSION$EXT
-tar -zxf gcc-$GCCVERSION$EXT
+tar -xf binutils-$BINUTILSVERSION$EXT
+tar -xf gcc-$GCCVERSION$EXT
 
 mkdir build-binutils
 cd build-binutils

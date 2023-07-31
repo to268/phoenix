@@ -19,11 +19,7 @@
 #define BYTE_INDEX(bit) ((bit / 8))
 #define BIT_INDEX(bit)  ((bit % 8))
 
-void bitmap_set(Bitmap* bitmap, u64 bit);
-void bitmap_clear(Bitmap* bitmap, u64 bit);
-bool bitmap_check(Bitmap* bitmap, u64 bit);
-
-void bitmap_set(Bitmap* bitmap, u64 bit) {
+NONNULL void bitmap_set(Bitmap* bitmap, u64 bit) {
     if (bit > bitmap->size)
         return;
 
@@ -33,7 +29,7 @@ void bitmap_set(Bitmap* bitmap, u64 bit) {
     bitmap->bitmap[byte_index] |= (1 << bit_index);
 }
 
-void bitmap_clear(Bitmap* bitmap, u64 bit) {
+NONNULL void bitmap_clear(Bitmap* bitmap, u64 bit) {
     if (bit > bitmap->size)
         return;
 
@@ -43,7 +39,7 @@ void bitmap_clear(Bitmap* bitmap, u64 bit) {
     bitmap->bitmap[byte_index] &= ~(1 << bit_index);
 }
 
-bool bitmap_check(Bitmap* bitmap, u64 bit) {
+NODISCARD NONNULL bool bitmap_check(Bitmap* bitmap, u64 bit) {
     if (bit > bitmap->size)
         return NULL;
 

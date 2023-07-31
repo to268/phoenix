@@ -49,7 +49,7 @@ struct page_map {
     uptr* top_lvl;
 };
 
-void vmm_init(struct boot_info* boot_info);
+NONNULL void vmm_init(struct boot_info* boot_info);
 
 #ifdef __cplusplus
 }

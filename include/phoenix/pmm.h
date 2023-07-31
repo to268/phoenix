@@ -24,9 +24,9 @@ extern "C" {
 #include <phoenix/page.h>
 #include <limine.h>
 
-void pmm_init(struct boot_info* boot_info);
-void* pmm_alloc(u64 length);
-void pmm_free(void* address, u64 pages);
+NONNULL void pmm_init(struct boot_info* boot_info);
+NODISCARD RETURNS_NONNULL void* pmm_alloc(u64 length);
+NONNULL void pmm_free(void* address, u64 pages);
 
 #ifdef __cplusplus
 }

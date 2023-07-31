@@ -13,13 +13,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/mem.h>
+#include <phoenix/types.h>
 #include <stddef.h>
 
-char* strcpy(char* dest, const char* src);
-char* strncpy(char* dest, const char* src, size_t n);
-
-char* strcpy(char* dest, const char* src) {
+DIAGNOSE_AS_BUILTIN(__builtin_strcpy, 1, 2)
+MAYBE_UNUSED NONNULL RETURNS_NONNULL char* strcpy(char* dest, const char* src) {
     size_t i = 0;
 
     while (src[i] != '\0') {
@@ -31,7 +29,9 @@ char* strcpy(char* dest, const char* src) {
     return dest;
 }
 
-char* strncpy(char* dest, const char* src, size_t n) {
+DIAGNOSE_AS_BUILTIN(__builtin_strncpy, 1, 2, 3)
+MAYBE_UNUSED NONNULL RETURNS_NONNULL char* strncpy(char* dest, const char* src,
+                                                   size_t n) {
     size_t i = 0;
 
     for (i = 0; i < n && src[i] != '\0'; i++)

@@ -26,7 +26,6 @@
 #include <phoenix/pmm.h>
 #include <phoenix/vmm.h>
 #include <phoenix/vga.h>
-#include <stddef.h>
 
 void init(void) {
     struct boot_info boot_info;

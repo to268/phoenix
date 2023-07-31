@@ -13,12 +13,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/mem.h>
+#include <phoenix/types.h>
 #include <stddef.h>
 
-int strcmp(const char* s1, const char* s2);
-
-int strcmp(const char* s1, const char* s2) {
+DIAGNOSE_AS_BUILTIN(__builtin_strcmp, 1, 2)
+NODISCARD NONNULL int strcmp(const char* s1, const char* s2) {
     while (*s1 && (*s1 == *s2))
         s1++, s2++;
     return *(const unsigned char*)s1 - *(const unsigned char*)s2;

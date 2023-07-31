@@ -22,7 +22,6 @@ extern "C" {
 
 #include <phoenix/kernel.h>
 #include <phoenix/pic.h>
-#include <stddef.h>
 
 #define KEYBOARD_IRQ        1
 #define KEYBOARD_STATE_PORT 0x64

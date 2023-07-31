@@ -1,11 +1,26 @@
 ## Basic Options
 
+# Target architecture
 ARCH=x86_64
-CONFIG_CROSS_COMPILER_PREFIX=utils/toolchain/bin/x86_64-elf-
-KEYBOARD=QWERTY
+# Machine architecture
+MARCH=x86-64
+# Target triple
+TRIPLE=$(ARCH)-elf
 
-# CFLAGS to add
-CONFIG_CFLAGS=-DKEYBOARD_$(KEYBOARD)
+# Which compiler to use, possible values: gcc, llvm
+CONFIG_COMPILER=gcc
+# Path to the GCC cross compiler binaries with triple prefix
+CONFIG_GCC_PREFIX=utils/toolchain/bin/$(TRIPLE)-
+# Path to the LLVM toolchain installation (optional)
+#CONFIG_LLVM_PREFIX=
 
-# LDFLAGS to add
+# CFLAGS to add (optional)
+#CONFIG_CFLAGS=
+
+# LDFLAGS to add (optional)
 #CONFIG_LDFLAGS=
+
+## Features Options
+
+# Which keyboad layout to use, possible values: QWERTY, AZERTY, DVORAK
+CONFIG_KEYBOARD=QWERTY

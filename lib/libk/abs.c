@@ -13,11 +13,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/kernel.h>
+#include <phoenix/types.h>
 
-int abs(int x);
-
-int abs(int x) {
+DIAGNOSE_AS_BUILTIN(__builtin_abs, 1)
+NODISCARD int abs(int x) {
     /* t is -1 if x in negative otherwise t is 0 */
     int t = x >> 31;
 

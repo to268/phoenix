@@ -22,9 +22,8 @@ extern "C" {
 
 #include <phoenix/kernel.h>
 #include <phoenix/pmm.h>
-#include <stddef.h>
 
-void limine_handle_requests(struct boot_info* boot_info);
+NONNULL void limine_handle_requests(struct boot_info* boot_info);
 
 #ifdef __cplusplus
 }

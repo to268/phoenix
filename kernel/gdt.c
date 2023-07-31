@@ -52,8 +52,9 @@ static struct gdt_pointer gdt_ptr = {
     .limit = sizeof(gdt) - 1,
 };
 
-void create_descriptor(u32 base, uint32_t limit, u16 access,
-                       struct gdt_descriptor* descriptor) {
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+NONNULL void create_descriptor(u32 base, u32 limit, u16 access,
+                               struct gdt_descriptor* descriptor) {
     /* Access */
     descriptor->access = (access & 0x00ff);
 

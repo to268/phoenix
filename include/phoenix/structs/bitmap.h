@@ -30,8 +30,8 @@ typedef struct {
     uptr* base;
 } Bitmap;
 
-void bitmap_set(Bitmap* bitmap, u64 bit);
-void bitmap_clear(Bitmap* bitmap, u64 bit);
-bool bitmap_check(Bitmap* bitmap, u64 bit);
+NONNULL void bitmap_set(Bitmap* bitmap, u64 bit);
+NONNULL void bitmap_clear(Bitmap* bitmap, u64 bit);
+NODISCARD NONNULL bool bitmap_check(Bitmap* bitmap, u64 bit);
 
 #endif /* _BITMAP_H_ */

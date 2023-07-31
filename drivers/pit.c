@@ -40,7 +40,7 @@ void pit_handler(void) {
     pic_send_eoi(PIT_IRQ);
 }
 
-inline u64 pit_get_ticks(void) { return pit_timer_ticks; }
+NODISCARD inline u64 pit_get_ticks(void) { return pit_timer_ticks; }
 
 void pit_sleep(u64 msec) {
     u64 ticks = pit_timer_ticks + msec;

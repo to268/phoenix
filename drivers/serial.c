@@ -23,7 +23,7 @@ static int serial_port_check(const u16 serial_port);
 static u8 serial_initialized = 0;
 
 /* Initialize serial connexion */
-int serial_init(const u16 serial_port, uint16_t baud_divisor) {
+MAYBE_UNUSED int serial_init(const u16 serial_port, uint16_t baud_divisor) {
     /* Check is the serial port is supported */
     if (serial_port_check(serial_port))
         return 1;
@@ -59,7 +59,7 @@ static int serial_port_check(const u16 serial_port) {
 }
 
 /* Check if we can receive data */
-int serial_received(const u16 serial_port) {
+MAYBE_UNUSED int serial_received(const u16 serial_port) {
     /* Check is the serial port is supported */
     if (!serial_initialized || serial_port_check(serial_port))
         return -1;
@@ -68,7 +68,7 @@ int serial_received(const u16 serial_port) {
 }
 
 /* Read data thought serial */
-char serial_read(const u16 serial_port) {
+NODISCARD char serial_read(const u16 serial_port) {
     /* Check is the serial port is supported */
     if (!serial_initialized || serial_port_check(serial_port))
         return -1;

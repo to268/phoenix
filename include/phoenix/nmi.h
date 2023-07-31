@@ -42,7 +42,7 @@ extern "C" {
 
 void nmi_enable(void);
 void nmi_disable(void);
-u16 nmi_get_control_ports(void);
+NODISCARD u16 nmi_get_control_ports(void);
 
 #ifdef __cplusplus
 }

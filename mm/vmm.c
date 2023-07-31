@@ -20,7 +20,7 @@
 #include <phoenix/pmm.h>
 #include <phoenix/vmm.h>
 
-uptr* vmm_get_next_level(uptr* current_lvl, u8 entry) {
+NONNULL RETURNS_NONNULL uptr* vmm_get_next_level(uptr* current_lvl, u8 entry) {
     uptr* ret = 0;
 
     /* Check for the present flag */
@@ -38,7 +38,8 @@ uptr* vmm_get_next_level(uptr* current_lvl, u8 entry) {
     return ret;
 }
 
-void vmm_map(struct page_map* map, uptr virt_addr, uptr phys_addr, u64 flags) {
+NONNULL void vmm_map(struct page_map* map, uptr virt_addr, uptr phys_addr,
+                     u64 flags) {
     uptr pml4_entry = (virt_addr & ((u64)0x1ff << 39)) >> 39;
     uptr pml3_entry = (virt_addr & ((u64)0x1ff << 30)) >> 30;
     uptr pml2_entry = (virt_addr & ((u64)0x1ff << 21)) >> 21;
@@ -68,7 +69,7 @@ struct page_map vmm_new_pagemap(u8 lvl) {
     return page_map;
 }
 
-void vmm_init(struct boot_info* boot_info) {
+NONNULL void vmm_init(struct boot_info* boot_info) {
     struct free_memory_hdr* memory_hdr = &boot_info->free_memory_hdr;
 
     /* Set page map level to 4 */
@@ -103,9 +104,11 @@ void vmm_init(struct boot_info* boot_info) {
         }
     }
 
-    asm volatile("mov %0, %%cr3" : : "a"((uptr)page_map.top_lvl - MEM_BASE));
+    __asm__ volatile("mov %0, %%cr3"
+                     :
+                     : "a"((uptr)page_map.top_lvl - MEM_BASE));
 }
 
 void vmm_flush_tlb_entry(uptr addr) {
-    asm volatile("invlpg (%0)" : : "a"(addr));
+    __asm__ volatile("invlpg (%0)" : : "a"(addr));
 }

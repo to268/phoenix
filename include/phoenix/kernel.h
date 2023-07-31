@@ -22,7 +22,6 @@ extern "C" {
 
 #include <phoenix/types.h>
 #include <phoenix/boot.h>
-#include <stddef.h>
 
 #define KERN_VERBOSE 4
 #define KERN_INFO    3
@@ -33,11 +32,11 @@ extern "C" {
 #define INT_LENGTH 8
 
 /* Printing and Formating */
-int printk(u8 severity, const char* restrict format, ...);
-int putchar(int ic, u8 severity);
-int puts(u8 severity, const char* string);
-uptr convert_to_mb(uintptr_t nb_bytes);
-int convert_int_to_char(int number, int base, char* buff);
+MAYBE_UNUSED NONNULL int printk(u8 severity, const char* restrict format, ...);
+MAYBE_UNUSED int putchar(int ic, u8 severity);
+MAYBE_UNUSED NONNULL int puts(u8 severity, const char* string);
+NODISCARD uptr convert_to_mb(uintptr_t nb_bytes);
+MAYBE_UNUSED NONNULL int convert_int_to_char(int number, int base, char* buff);
 
 /* Macros for printk */
 #define verbose(...) printk(KERN_VERBOSE, __VA_ARGS__)
@@ -46,11 +45,11 @@ int convert_int_to_char(int number, int base, char* buff);
 #define error(...)   printk(KERN_ERROR, __VA_ARGS__)
 
 /* Basic Functions */
-int abs(int x);
-int atoi(const char* nptr);
-char* itoa(int value, char* buffer, int base);
-NORETURN
-void panic(const char* msg);
+NODISCARD int abs(int x);
+NODISCARD NONNULL int atoi(const char* nptr);
+MAYBE_UNUSED NONNULL RETURNS_NONNULL char* itoa(int value, char* buffer,
+                                                int base);
+NORETURN void panic(const char* msg);
 
 /* Kernel entry points */
 void init(void);

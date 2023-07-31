@@ -35,7 +35,7 @@ extern void keyboard_handler_irq(void);
 extern void pic_send_eoi_master(void);
 extern void pic_send_eoi_slave(void);
 
-void idt_set_descriptor(u8 vector, void* isr, uint8_t flags) {
+NONNULL void idt_set_descriptor(u8 vector, void* isr, uint8_t flags) {
     struct idt_descriptor* descriptor = &idt[vector];
 
     descriptor->isr_low = (u64)isr & 0xffff;
@@ -73,7 +73,7 @@ void idt_init(void) {
     }
 
     /* Load IDT and enable interrupts */
-    asm volatile("lidt %0" : : "memory"(idtr));
+    __asm__ volatile("lidt %0" : : "memory"(idtr));
     sti();
     debug("[IDT] Loaded\n");
 

@@ -22,7 +22,7 @@ extern unsigned char _binary_utils_font_psf_start;
 extern unsigned char _binary_utils_font_psf_end;
 // NOLINTEND(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
 
-PSF1_font psf1_init(void) {
+NODISCARD PSF1_font psf1_init(void) {
     PSF1_font font;
 
     PSF1_header* volatile header = (PSF1_header*)&_binary_utils_font_psf_start;

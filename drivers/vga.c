@@ -43,7 +43,7 @@ void vga_cursor_disable(void) {
     outb(0x3d5, 0x20);
 }
 
-u16 vga_cursor_get_pos(void) {
+NODISCARD u16 vga_cursor_get_pos(void) {
     u16 pos = 0;
     outb(0x3d4, 0x0f);
     pos |= inb(0x3d5);

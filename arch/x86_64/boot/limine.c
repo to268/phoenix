@@ -19,29 +19,28 @@
 #include <phoenix/framebuffer.h>
 #include <phoenix/boot.h>
 #include <phoenix/mem.h>
-#include <phoenix/types/gcc.h>
 #include <stddef.h>
 #include <limine.h>
 
-struct limine_bootloader_info_request bootloader_info_request = {
+USED struct limine_bootloader_info_request bootloader_info_request = {
     .id = LIMINE_BOOTLOADER_INFO_REQUEST,
     .revision = 0,
     .response = NULL,
 };
 
-struct limine_framebuffer_request framebuffer_request = {
+USED struct limine_framebuffer_request framebuffer_request = {
     .id = LIMINE_FRAMEBUFFER_REQUEST,
     .revision = 0,
     .response = NULL,
 };
 
-struct limine_memmap_request memmap_request = {
+USED struct limine_memmap_request memmap_request = {
     .id = LIMINE_MEMMAP_REQUEST,
     .revision = 0,
     .response = NULL,
 };
 
-struct limine_module_request module_request = {
+USED struct limine_module_request module_request = {
     .id = LIMINE_MODULE_REQUEST,
     .revision = 1,
     .response = NULL,
@@ -49,7 +48,7 @@ struct limine_module_request module_request = {
     .internal_modules = NULL,
 };
 
-extern void halt_cpu();
+NORETURN extern void halt_cpu();
 
 static const char* memmap_type[] = {
     [0] = "USABLE",
@@ -72,7 +71,7 @@ static void limine_print_memmap(void) {
     }
 }
 
-static void limine_get_free_memmap(struct free_memory_hdr* memory_hdr) {
+NONNULL static void limine_get_free_memmap(struct free_memory_hdr* memory_hdr) {
     u8 entries = 0;
     u64 free_memory = 0;
     u64 total_memory = 0;
@@ -110,7 +109,7 @@ static void limine_get_free_memmap(struct free_memory_hdr* memory_hdr) {
     debug("[LIMINE] built free segment memmap");
 }
 
-void limine_handle_requests(struct boot_info* boot_info) {
+NONNULL void limine_handle_requests(struct boot_info* boot_info) {
     debug("[LIMINE] handling requests");
 
     if (framebuffer_request.response->framebuffer_count < 1)

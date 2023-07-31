@@ -99,7 +99,7 @@ void pic_irq_clear_mask(u8 irq) {
 }
 
 /* Send an OCW3 command */
-u16 pic_get_irq_reg(int ocw3) {
+NODISCARD u16 pic_get_irq_reg(int ocw3) {
     /* Get register values */
     outb(PIC1_CMD, ocw3);
     outb(PIC2_CMD, ocw3);
@@ -109,7 +109,7 @@ u16 pic_get_irq_reg(int ocw3) {
 }
 
 /* Get values of the PICs IRQ request register */
-u16 pic_get_irr(void) { return pic_get_irq_reg(PIC_READ_IRR); }
+NODISCARD u16 pic_get_irr(void) { return pic_get_irq_reg(PIC_READ_IRR); }
 
 /* Get values of the PICs in-service register */
-u16 pic_get_isr(void) { return pic_get_irq_reg(PIC_READ_ISR); }
+NODISCARD u16 pic_get_isr(void) { return pic_get_irq_reg(PIC_READ_ISR); }

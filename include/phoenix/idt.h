@@ -22,7 +22,7 @@ extern "C" {
 
 #include <phoenix/kernel.h>
 
-struct idt_descriptor {
+struct PACKED idt_descriptor {
     u16 isr_low;   /* ISR address (from 0 to 15) */
     u16 selector;  /* The GDT segment selector */
     u8 ist;        /* The IST in the TSS */
@@ -30,12 +30,12 @@ struct idt_descriptor {
     u16 isr_mid;   /* ISR address (from 16 to 23) */
     u32 isr_high;  /* ISR address (from 24 to 31) */
     u32 reserved;  /* Always zero */
-} PACKED;
+};
 
-struct idt_pointer {
+struct PACKED idt_pointer {
     u16 limit; /* The limit of the IDT */
     u64 base;  /* The base of the IDT */
-} PACKED;
+};
 
 #define IDT_MAX_DESCRIPTORS 256
 
@@ -45,8 +45,7 @@ struct idt_pointer {
 #define IDT_TRAP_GATE      0x8f
 
 void idt_init(void);
-NORETURN
-void exception_handler(u64 vector);
+NORETURN void exception_handler(u64 vector);
 
 #ifdef __cplusplus
 }

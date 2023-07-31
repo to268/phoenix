@@ -28,6 +28,6 @@ void kernel_main(void) {
     info("Welcome to Phoenix !\n");
 
     /* Halt CPU */
-    extern void halt_cpu(void);
+    NORETURN extern void halt_cpu(void);
     halt_cpu();
 }

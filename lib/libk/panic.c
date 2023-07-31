@@ -16,16 +16,13 @@
 #include <phoenix/kernel.h>
 #include <phoenix/serial.h>
 
-NORETURN
-void panic(const char* msg) {
+NORETURN void panic(const char* msg) {
     serial_writestring(SERIAL_COM1, "Kernel Panic !\n");
     serial_writestring(SERIAL_COM1, msg);
 
     printk(KERN_FATAL, "Kernel Panic !\n");
     printk(KERN_FATAL, "%s", msg);
 
-    extern void halt_cpu(void);
+    NORETURN extern void halt_cpu(void);
     halt_cpu();
-
-    __builtin_unreachable();
 }

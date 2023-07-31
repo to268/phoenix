@@ -15,12 +15,9 @@
  */
 #include <phoenix/framebuffer.h>
 #include <phoenix/limine.h>
-#include <phoenix/kernel.h>
 #include <phoenix/vga.h>
 
-int putchar(int ic, u8 severity);
-
-int putchar(int ic, u8 severity) {
+MAYBE_UNUSED int putchar(int ic, u8 severity) {
     char c = (char)ic;
     /* Add color severity */
     switch (severity) {

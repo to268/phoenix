@@ -32,9 +32,9 @@ extern "C" {
 #define debug(string) serial_writestring(SERIAL_COM1, string)
 
 /* Serial Functions */
-int serial_init(const u16 serial_port, uint16_t baud_divisor);
-int serial_received(const u16 serial_port);
-char serial_read(const u16 serial_port);
+MAYBE_UNUSED int serial_init(const u16 serial_port, uint16_t baud_divisor);
+MAYBE_UNUSED int serial_received(const u16 serial_port);
+NODISCARD char serial_read(const u16 serial_port);
 void serial_readstring(const u16 serial_port, char* buff, size_t size);
 void serial_write(const u16 serial_port, const char c);
 void serial_writestring(const u16 serial_port, const char* string);

@@ -46,7 +46,7 @@ typedef struct {
     u8* data; /* Glyphs data */
 } PSF1_font;
 
-PSF1_font psf1_init(void);
+NODISCARD PSF1_font psf1_init(void);
 
 #ifdef __cplusplus
 }

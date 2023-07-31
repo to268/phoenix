@@ -9,7 +9,7 @@ KERNEL_NAME=phoenix
 KERNEL=$(KERNEL_NAME).elf
 ISO=$(KERNEL_NAME)-$(ARCH).iso
 MAP=$(KERNEL).map
-ISO_DIR=isofiles
+ISO_DIR=iso_files
 
 # Limine
 LIMINE_UTILITY=utils/limine/limine
@@ -26,7 +26,7 @@ ASM_OBJS:=$(ASM_FILES:.asm=.o)
 C_FILES=$(shell find -path ./utils -prune -false -o -name "*.c")
 OBJS=$(C_FILES:.c=.o)
 
-# Font
+# Console font
 FONT=utils/font.psf
 FONT_OBJ=$(FONT:.psf=.o)
 
@@ -37,10 +37,10 @@ MAKEFLAGS+=--no-print-directory
 all: config $(KERNEL)
 
 config:
-# Check if config file exists
-ifeq ("$(wildcard $(CONFIG_PATH))", "")
+	# Check if config file exists
+	ifeq ("$(wildcard $(CONFIG_PATH))", "")
 	cp -f arch/$(ARCH)/default-config config
-	echo "$(ARCH) default config copied, type make to start compiling now"
+	$(info $(ARCH) default config copied, refer to the documentation if nessesary)
 	exit -1
 else
 
@@ -49,59 +49,93 @@ include $(CONFIG_PATH)
 
 # Only x86_64 is supported at this time
 ifneq ($(ARCH), x86_64)
-$(error Unknow Architecture $(ARCH))
+	$(error Unknow Architecture $(ARCH))
 else
 # Export default CFLAGS
 export CFLAGS = \
-    -Wall \
-    -Wextra \
-    -std=gnu17 \
-    -march=x86-64 \
+	-Wall \
+	-Wextra \
+	-Wimplicit-fallthrough \
+	-Wunused \
+	-std=c2x \
+	-march=$(MARCH) \
 	-O2 \
-    -ffreestanding \
-    -fno-stack-protector \
-    -fno-stack-check \
-    -fno-lto \
-    -fno-PIE \
-    -fno-PIC \
-    -mno-80387 \
-    -mno-mmx \
-    -mno-sse \
-    -mno-sse2 \
-    -mno-red-zone \
-    -mcmodel=kernel \
+	-ffreestanding \
+	-fno-stack-protector \
+	-fno-stack-check \
+	-fno-PIE \
+	-fno-PIC \
+	-mno-80387 \
+	-mno-mmx \
+	-mno-sse \
+	-mno-sse2 \
+	-mno-red-zone \
+	-mcmodel=kernel \
 	--sysroot=$(PWD) \
 	-isystem=/include \
+	-DKEYBOARD_$(CONFIG_KEYBOARD) \
 	$(CONFIG_CFLAGS)
 
 # Export default LDFLAGS
 export LDFLAGS = \
-    -nostdlib \
-    -static \
-    -m elf_x86_64 \
-    -z max-page-size=0x1000 \
-	 $(CONFIG_LDFLAGS)
+	-nostdlib \
+	-static \
+	-m elf_$(ARCH) \
+	-z max-page-size=0x1000 \
+	$(CONFIG_LDFLAGS)
 
 endif
 
-# If the Cross Compiler is provided, set Make variables
-ifndef CONFIG_CROSS_COMPILER_PREFIX
-$(error The Cross Compiler Prefix is needed, Native Compiler is unsupported)
+ifeq ($(CONFIG_COMPILER),gcc)
+
+# Check if the GCC cross compiler prefix is provided
+ifndef CONFIG_GCC_PREFIX
+	$(error The GCC compiler prefix is needed, the native compiler is unsupported)
+endif
+
+export CFLAGS += \
+	-fno-lto
+
+export CC=$(CONFIG_GCC_PREFIX)gcc
+export AR=$(CONFIG_GCC_PREFIX)ar
+export NM=$(CONFIG_GCC_PREFIX)nm
+export LD=$(CONFIG_GCC_PREFIX)ld
+export OBJCPY=$(CONFIG_GCC_PREFIX)objcopy
+
+else ifeq ($(CONFIG_COMPILER),llvm)
+
+export CFLAGS += \
+	-flto \
+	-I $(PWD)/include \
+	--target=$(TRIPLE)
+
+ifndef CONFIG_LLVM_BIN_PREFIX
+
+export CC=clang
+export AR=llvm-ar
+export NM=llvm-nm
+export LD=ld.lld
+export OBJCPY=llvm-objcopy
+
 else
-# Make variables
-export CC=$(CONFIG_CROSS_COMPILER_PREFIX)gcc
-export AR=$(CONFIG_CROSS_COMPILER_PREFIX)ar
-export NM=$(CONFIG_CROSS_COMPILER_PREFIX)nm
-export LD=$(CONFIG_CROSS_COMPILER_PREFIX)ld
-export OBJCPY=$(CONFIG_CROSS_COMPILER_PREFIX)objcopy
+
+export CC=$(CONFIG_LLVM_PREFIX)/bin/clang
+export AR=$(CONFIG_LLVM_PREFIX)/bin/llvm-ar
+export NM=$(CONFIG_LLVM_PREFIX)/bin/llvm-nm
+export LD=$(CONFIG_LLVM_PREFIX)/bin/ld.lld
+export OBJCPY=$(CONFIG_LLVM_PREFIX)/bin/llvm-objcopy
+
+endif
+
+else
+	$(error The compiler \($(CONFIG_COMPILER)\) is unknown or not supported)
+endif
+
+endif
+
 # Only tested with nasm assembler
 export ASM=nasm
-
 export MKISOFS=xorriso -as mkisofs
-
-endif
-
-endif
 
 $(KERNEL): $(ASM_OBJS) $(OBJS) $(FONT_OBJ) lib/libk.a lib/libpsf.a config
 	echo "   LD        $(KERNEL)"
@@ -133,11 +167,15 @@ $(FONT_OBJ): $(FONT)
 	$(OBJCPY) -O elf64-x86-64 -B i386 -I binary $*.psf $@
 
 toolchain:
+	ifneq ($(CONFIG_COMPILER),llvm)
 	cd utils/toolchain/ && bash build.sh -j$(NCPUS)
+else
+	$(error You do not need to compile the cross compiler with LLVM)
+endif
 
 clean:
 	echo "   RM        *.o"
-	rm -f $(ASM_OBJS) $(OBJS) $(FONT_OBJ)
+	rm -f $(ASM_OBJS) $(OBJS)
 	echo "   RM        *.a"
 	rm -f $(shell find -name "*.a")
 	echo "   RM        *.d"
@@ -158,10 +196,10 @@ iso: $(KERNEL) config
 	cp $(LIMINE_BIOS_CD) $(ISO_DIR)
 	cp $(LIMINE_UEFI_CD) $(ISO_DIR)
 	$(MKISOFS) -b limine-bios-cd.bin -no-emul-boot \
-			-boot-load-size 4 -boot-info-table \
-			--efi-boot limine-uefi-cd.bin \
-			-efi-boot-part --efi-boot-image \
-			--protective-msdos-label $(ISO_DIR) -o $(ISO)
+		-boot-load-size 4 -boot-info-table \
+		--efi-boot limine-uefi-cd.bin \
+		-efi-boot-part --efi-boot-image \
+		--protective-msdos-label $(ISO_DIR) -o $(ISO)
 	rm -rf $(ISO_DIR)
 	$(LIMINE_UTILITY) bios-install $(ISO)
 
@@ -169,10 +207,12 @@ run: $(KERNEL) iso
 	echo "   QMU       $(ISO)"
 	qemu-system-$(ARCH) $(QEMU_FLAGS) -cdrom $(ISO)
 
+serial: CFLAGS += -fno-lto
 serial: $(KERNEL) iso
 	echo "   SRL       $(ISO)"
 	qemu-system-$(ARCH) $(QEMU_FLAGS) -serial file:serial.log -cdrom $(ISO)
 
+debug: CFLAGS += -fno-lto
 debug: $(KERNEL) iso
 	echo "   GDB       $(ISO)"
 	qemu-system-$(ARCH) $(QEMU_FLAGS) -s -S -cdrom $(ISO)
@@ -189,4 +229,5 @@ mrproper: clean
 		include/ share/ lib* x86_64-elf/
 
 .SILENT:
+.ONESHELL:
 .PHONY: all config iso run runv serial debug toolchain clean mrproper
