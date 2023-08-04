@@ -10,7 +10,7 @@ export NM=nm
 export CFLAGS="-O2 -pipe"
 export LDFLAGS=
 
-BINUTILSVERSION=2.40
+BINUTILSVERSION=2.41
 GCCVERSION=13.2.0
 
 PREFIX="$(pwd)"
