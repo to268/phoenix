@@ -24,13 +24,6 @@ extern "C" {
 
 #define PAGE_SIZE 4096
 
-#define DIV_ROUNDUP(a, b)                                                      \
-    ({                                                                         \
-        typeof(a) _a = a;                                                      \
-        typeof(b) _b = b;                                                      \
-        (_a + (_b - 1)) / _b;                                                  \
-    })
-
 #ifdef __cplusplus
 }
 #endif

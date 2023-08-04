@@ -38,7 +38,7 @@ all: config $(KERNEL)
 
 config:
 	# Check if config file exists
-	ifeq ("$(wildcard $(CONFIG_PATH))", "")
+ifeq ("$(wildcard $(CONFIG_PATH))", "")
 	cp -f arch/$(ARCH)/default-config config
 	$(info $(ARCH) default config copied, refer to the documentation if nessesary)
 	exit -1
@@ -109,7 +109,7 @@ export CFLAGS += \
 	-I $(PWD)/include \
 	--target=$(TRIPLE)
 
-ifndef CONFIG_LLVM_BIN_PREFIX
+ifndef CONFIG_LLVM_PREFIX
 
 export CC=clang
 export AR=llvm-ar
@@ -167,7 +167,7 @@ $(FONT_OBJ): $(FONT)
 	$(OBJCPY) -O elf64-x86-64 -B i386 -I binary $*.psf $@
 
 toolchain:
-	ifneq ($(CONFIG_COMPILER),llvm)
+ifneq ($(CONFIG_COMPILER),llvm)
 	cd utils/toolchain/ && bash build.sh -j$(NCPUS)
 else
 	$(error You do not need to compile the cross compiler with LLVM)

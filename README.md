@@ -4,11 +4,13 @@ The prebuild iso file is available in the Release tab.
 
 ## Dependencies
 In order to build it you need to install the following dependencies:
-`GNU Make`, `nasm`, `xorriso`.
+`GNU Make`, `nasm`, `xorriso`,
+and these additional dependencies when using GCC:
+`bison`, `flex`, `gmp`, `mpc`, `mpfr`, `texinfo`.
 
 Furthermore, you need at least a supported compiler:
 - `GCC` >= 10 (arguably a GCC version capable of compiling Binutils and GCC)
-- `LLVM Clang` >= 9 is required.
+- `LLVM Clang, LLD` >= 9 is required.
 
 ## Build
 In order to build it you need to:
