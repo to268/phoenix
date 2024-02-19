@@ -21,10 +21,10 @@ JOBS="$1"
 EXT=".tar.xz"
 
 if [ ! -f binutils-$BINUTILSVERSION$EXT ]; then
-    wget https://ftp.gnu.org/gnu/binutils/binutils-$BINUTILSVERSION$EXT
+    curl -O https://ftp.gnu.org/gnu/binutils/binutils-$BINUTILSVERSION$EXT
 fi
 if [ ! -f gcc-$GCCVERSION$EXT ]; then
-    wget https://ftp.gnu.org/gnu/gcc/gcc-$GCCVERSION/gcc-$GCCVERSION$EXT
+    curl -O https://ftp.gnu.org/gnu/gcc/gcc-$GCCVERSION/gcc-$GCCVERSION$EXT
 fi
 
 rm -rf bin/ gcc-$GCCVERSION/ binutils-$BINUTILSVERSION/ include/ share/ lib* build-* x86_64-elf/
