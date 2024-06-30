@@ -24,19 +24,19 @@
 
 USED struct limine_bootloader_info_request bootloader_info_request = {
     .id = LIMINE_BOOTLOADER_INFO_REQUEST,
-    .revision = 0,
+    .revision = 1,
     .response = NULL,
 };
 
 USED struct limine_framebuffer_request framebuffer_request = {
     .id = LIMINE_FRAMEBUFFER_REQUEST,
-    .revision = 0,
+    .revision = 1,
     .response = NULL,
 };
 
 USED struct limine_memmap_request memmap_request = {
     .id = LIMINE_MEMMAP_REQUEST,
-    .revision = 0,
+    .revision = 1,
     .response = NULL,
 };
 
@@ -48,28 +48,15 @@ USED struct limine_module_request module_request = {
     .internal_modules = NULL,
 };
 
-NORETURN extern void halt_cpu();
-
-static const char* memmap_type[] = {
-    [0] = "USABLE",
-    [1] = "RESERVED",
-    [2] = "ACPI_RECLAIMABLE",
-    [3] = "ACPI_NVS",
-    [4] = "BAD_MEMORY",
-    [5] = "BOOTLOADER_RECLAIMABLE",
-    [6] = "KERNEL_AND_MODULES",
-    [7] = "FRAMEBUFFER",
+USED struct limine_paging_mode_request paging_request = {
+    .id = LIMINE_PAGING_MODE_REQUEST,
+    .revision = 1,
+    .response = NULL,
+    .mode = LIMINE_PAGING_MODE_MAX,
+    .flags = 0,
 };
 
-static void limine_print_memmap(void) {
-    info("Memmap:\n");
-    for (u64 i = 0; i < memmap_request.response->entry_count; i++) {
-        struct limine_memmap_entry* entry = memmap_request.response->entries[i];
-
-        info("\t[0x%x + 0x%x] -> ", entry->base, entry->length);
-        info("%s\n", memmap_type[entry->type]);
-    }
-}
+NORETURN extern void halt_cpu();
 
 NONNULL static void limine_get_free_memmap(struct free_memory_hdr* memory_hdr) {
     u8 entries = 0;
@@ -123,8 +110,11 @@ NONNULL void limine_handle_requests(struct boot_info* boot_info) {
          bootloader_info_request.response->revision,
          bootloader_info_request.response->version);
 
-    info("Modules count: %d\n\n", module_request.internal_module_count);
+    if (paging_request.response == NULL)
+        panic("No paging available");
 
-    limine_print_memmap();
+    info("paging mode: LVL%d\n", paging_request.mode ? 5 : 4);
+    info("Modules count: %d\n", module_request.internal_module_count);
+
     limine_get_free_memmap(&boot_info->free_memory_hdr);
 }

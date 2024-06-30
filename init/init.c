@@ -32,6 +32,7 @@ void init(void) {
 
     serial_init(SERIAL_COM1, 1);
     limine_handle_requests(&boot_info);
+
     gdt_init();
     idt_init();
     keyboard_init();
@@ -39,6 +40,6 @@ void init(void) {
     pcspk_init();
     rtc_init();
     pmm_init(&boot_info);
-    /* vmm_init(&boot_info); */
+    vmm_init(&boot_info);
     kernel_main();
 }
