@@ -41,7 +41,7 @@ extern "C" {
 #define MEM_ADDR        0xffff800000000000
 #define FRAME_ADDR      0xfffffffffffff000
 
-#define PG_GET_PHYS_ADDR(x) ((x)&FRAME_ADDR)
+#define PG_GET_PHYS_ADDR(x) ((x) & FRAME_ADDR)
 
 /* TODO: Add support for huge pages (2 Mb and 1 Gb (probably) page size) */
 struct page_map {

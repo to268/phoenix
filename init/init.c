@@ -40,6 +40,6 @@ void init(void) {
     pcspk_init();
     rtc_init();
     pmm_init(&boot_info);
-    vmm_init(&boot_info);
+    // vmm_init(&boot_info);
     kernel_main();
 }
