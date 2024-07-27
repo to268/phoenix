@@ -16,9 +16,9 @@
 #include <phoenix/kernel.h>
 
 NODISCARD NONNULL int atoi(const char* nptr) {
-    int res = 0;
+    auto res = 0;
 
-    for (int i = 0; nptr[i] != '\0'; i++)
+    for (auto i = 0; nptr[i] != '\0'; i++)
         res = res * 10 + nptr[i] - '0';
 
     return res;

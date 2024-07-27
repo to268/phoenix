@@ -76,7 +76,7 @@ NODISCARD char serial_read(const u16 serial_port) {
     while (serial_received(serial_port) == 0)
         ;
 
-    return inb(serial_port);
+    return (char)inb(serial_port);
 }
 
 /* Read a string thought serial */

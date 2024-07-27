@@ -147,6 +147,6 @@ void vga_remove_last_char(void) {
     vga_cursor_set_pos(vga_column, vga_row);
 
     /* Clear the character */
-    size_t index = (vga_row * VGA_WIDTH) + vga_column;
+    auto index = (vga_row * VGA_WIDTH) + vga_column;
     vga_buffer[index] = vga_entry(' ', vga_color);
 }

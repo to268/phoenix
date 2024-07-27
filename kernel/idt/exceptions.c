@@ -53,6 +53,11 @@ NORETURN void exception_handler(u64 vector) {
     case 2:
         handle_nmi();
         break;
+
+    case 14:
+        /* Load paging error code into r10 */
+        __asm__ volatile("movq (%%rsp), %%r10\n" : : : "r10");
+        break;
     }
 
     panic(exceptions[vector]);
@@ -62,7 +67,7 @@ void handle_nmi(void) {
     warn("NMI interrupt fired !\n");
     serial_writestring(SERIAL_COM1, "[IVT] NMI interrupt fired !\n");
 
-    u16 control_ports = nmi_get_control_ports();
+    auto control_ports = nmi_get_control_ports();
 
     /* Check channel */
     if (control_ports & NMI_CHANNEL_CHECK_ENABLE &&

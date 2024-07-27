@@ -31,9 +31,9 @@ MAYBE_UNUSED NONNULL RETURNS_NONNULL char* itoa(int value, char* buffer,
     }
 
     /* Get absolute value */
-    int n = abs(value);
+    auto n = abs(value);
 
-    int i = 0;
+    auto i = 0;
     while (n) {
         int r = n % base;
 
@@ -53,11 +53,12 @@ MAYBE_UNUSED NONNULL RETURNS_NONNULL char* itoa(int value, char* buffer,
     buffer[i] = '\0';
 
     /* reverse the string */
-    int len = strlen(buffer);
+    int len = (int)strlen(buffer);
     for (int i = 0; i < len / 2; i++) {
         char temp = buffer[i];
         buffer[i] = buffer[len - 1 - i];
         buffer[len - 1 - i] = temp;
     }
+
     return buffer;
 }

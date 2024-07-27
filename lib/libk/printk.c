@@ -25,21 +25,23 @@
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 MAYBE_UNUSED NONNULL static int print(const char* data, size_t length,
                                       u8 severity) {
-    const unsigned char* bytes = (const unsigned char*)data;
+    auto bytes = (const unsigned char*)data;
+
     for (size_t i = 0; i < length; i++)
         if (putchar(bytes[i], severity) == EOF)
             return 0;
+
     return 1;
 }
 
-NODISCARD inline uptr convert_to_mb(uintptr_t nb_bytes) {
+NODISCARD ALWAYS_INLINE uptr convert_to_mb(uintptr_t nb_bytes) {
     return nb_bytes / 1024 / 1024;
 }
 
 MAYBE_UNUSED NONNULL int convert_int_to_char(int number, int base, char* buff) {
     itoa(number, buff, base);
-    int len = strlen(buff);
-    return len;
+    auto len = strlen(buff);
+    return (int)len;
 }
 
 DIAGNOSE_AS_BUILTIN(__builtin_printf, 2)
@@ -47,7 +49,7 @@ MAYBE_UNUSED NONNULL int printk(u8 severity, const char* restrict format, ...) {
     va_list parameters;
     va_start(parameters, format);
 
-    int written = 0;
+    auto written = 0;
 
     while (*format != '\0') {
         size_t maxrem = __INT_MAX__ - written;
@@ -55,16 +57,20 @@ MAYBE_UNUSED NONNULL int printk(u8 severity, const char* restrict format, ...) {
         if (format[0] != '%' || format[1] == '%') {
             if (format[0] == '%')
                 format++;
+
             size_t amount = 1;
             while (format[amount] && format[amount] != '%')
                 amount++;
+
             if (maxrem < amount) {
                 goto error;
             }
+
             if (!print(format, amount, severity))
                 goto error;
+
             format += amount;
-            written += amount;
+            written += (int)amount;
             continue;
         }
 
@@ -74,37 +80,47 @@ MAYBE_UNUSED NONNULL int printk(u8 severity, const char* restrict format, ...) {
         case 'c':
         case 'C':
             format++;
-            char c = (char)va_arg(parameters, int /* char promotes to int */);
+
+            auto c = (char)va_arg(parameters, int /* char promotes to int */);
+
             if (!maxrem) {
                 goto error;
             }
+
             if (!print(&c, sizeof(c), severity))
                 goto error;
+
             written++;
             break;
 
         case 's':
         case 'S':
             format++;
-            const char* str = va_arg(parameters, const char*);
-            size_t str_len = strlen(str);
+
+            auto str = va_arg(parameters, const char*);
+            auto str_len = strlen(str);
+
             if (maxrem < str_len) {
                 goto error;
             }
+
             if (!print(str, str_len, severity))
                 goto error;
-            written += str_len;
+
+            written += (int)str_len;
             break;
 
         case 'b':
         case 'B':
             format++;
-            int number = va_arg(parameters, int);
+            auto number = va_arg(parameters, int);
             char buff[INT_LENGTH];
+
             /* Convert char to binary */
-            int len = convert_int_to_char(number, 2, buff);
+            auto len = convert_int_to_char(number, 2, buff);
             if (!print(buff, len, severity))
                 goto error;
+
             written += len;
             break;
 
@@ -112,10 +128,12 @@ MAYBE_UNUSED NONNULL int printk(u8 severity, const char* restrict format, ...) {
         case 'O':
             format++;
             number = va_arg(parameters, int);
+
             /* Convert char to octal base */
             len = convert_int_to_char(number, 8, buff);
             if (!print(buff, len, severity))
                 goto error;
+
             written += len;
             break;
 
@@ -123,6 +141,7 @@ MAYBE_UNUSED NONNULL int printk(u8 severity, const char* restrict format, ...) {
         case 'D':
             format++;
             number = va_arg(parameters, int);
+
             /* Convert char to decimal */
             len = convert_int_to_char(number, 10, buff);
             if (!print(buff, len, severity))
@@ -133,11 +152,13 @@ MAYBE_UNUSED NONNULL int printk(u8 severity, const char* restrict format, ...) {
         case 'p':
         case 'P':
             format++;
-            uptr ptr = va_arg(parameters, uintptr_t);
+            auto ptr = va_arg(parameters, uintptr_t);
+
             /* Convert char to hexadecimal */
-            len = convert_int_to_char(ptr, 16, buff);
+            len = convert_int_to_char((int)ptr, 16, buff);
             if (!print(buff, len, severity))
                 goto error;
+
             written += len;
             break;
 
@@ -145,6 +166,7 @@ MAYBE_UNUSED NONNULL int printk(u8 severity, const char* restrict format, ...) {
         case 'X':
             format++;
             number = va_arg(parameters, int);
+
             /* Convert pointer to hexadecimal */
             len = convert_int_to_char(number, 16, buff);
             if (!print(buff, len, severity))
@@ -155,12 +177,15 @@ MAYBE_UNUSED NONNULL int printk(u8 severity, const char* restrict format, ...) {
         default:
             format = format_begun_at;
             str_len = strlen(format);
+
             if (maxrem < str_len) {
                 goto error;
             }
+
             if (!print(format, str_len, severity))
                 goto error;
-            written += str_len;
+
+            written += (int)str_len;
             format += str_len;
             break;
         }

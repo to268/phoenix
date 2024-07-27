@@ -19,12 +19,9 @@
 #include <phoenix/io.h>
 
 void pic_remap(void) {
-    u8 mask1;
-    u8 mask2;
-
     /* Save IRQ masks */
-    mask1 = inb(PIC1_DATA);
-    mask2 = inb(PIC2_DATA);
+    auto mask1 = inb(PIC1_DATA);
+    auto mask2 = inb(PIC2_DATA);
 
     /* Initialization sequence */
     outb(PIC1_CMD, ICW1_INIT | ICW1_ICW4);

@@ -24,7 +24,7 @@ void pcspk_init(void) {
 }
 
 void pcspk_play(u32 hz) {
-    u32 div = PIT_FREQ / hz;
+    auto div = PIT_FREQ / hz;
 
     /* Set the PIT to the desired frequency */
     cli();
@@ -34,7 +34,7 @@ void pcspk_play(u32 hz) {
     sti();
 
     /* Play the sound with the PC speaker */
-    u32 tmp = inb(0x61);
+    auto tmp = inb(0x61);
     if (tmp != (tmp | 3))
         outb(0x61, tmp | 3);
 }

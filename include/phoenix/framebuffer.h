@@ -54,7 +54,8 @@ typedef struct {
 #define FRAMEBUFFER_COLOR_LIGHT_MAGENTA FRAMEBUFFER_COLOR(0xd3, 0x86, 0x9b)
 #define FRAMEBUFFER_COLOR_LIGHT_BROWN   FRAMEBUFFER_COLOR(0xbd, 0xae, 0x93)
 
-NONNULL void framebuffer_init(struct limine_framebuffer_request* fb_req);
+NONNULL void
+framebuffer_init(volatile struct limine_framebuffer_request* fb_req);
 NODISCARD Color framebuffer_create_color(u8 red, u8 green, u8 blue);
 void framebuffer_draw_pixel(u32 x, u32 y, u32 color);
 void framebuffer_set_pos(u32 x, u32 y);

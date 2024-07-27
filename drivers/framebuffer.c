@@ -32,7 +32,8 @@ static PSF1_font font;
 static Color bg;
 static Color fg;
 
-NONNULL void framebuffer_init(struct limine_framebuffer_request* fb_req);
+NONNULL void
+framebuffer_init(volatile struct limine_framebuffer_request* fb_req);
 NODISCARD Color framebuffer_create_color(u8 red, u8 green, u8 blue);
 NODISCARD u32 framebuffer_to_color(Color* color);
 void framebuffer_draw_pixel(u32 x, u32 y, u32 color);
@@ -42,7 +43,8 @@ void framebuffer_write(char c);
 void framebuffer_writestring(char* str);
 void framebuffer_remove_last_char(void);
 
-NONNULL void framebuffer_init(struct limine_framebuffer_request* fb_req) {
+NONNULL void
+framebuffer_init(volatile struct limine_framebuffer_request* fb_req) {
     framebuffer_set_pos(0, 0);
 
     fb_base = fb_req->response->framebuffers[0];

@@ -22,12 +22,12 @@
 
 static Bitmap bitmap;
 
-inline u32 div_roundup(u32 a, u32 b) { return (a + (b - 1)) / b; }
+ALWAYS_INLINE u32 div_roundup(u32 a, u32 b) { return (a + (b - 1)) / b; }
 
 NONNULL void pmm_init(struct boot_info* boot_info) {
-    struct free_memory_hdr* memory_hdr = &boot_info->free_memory_hdr;
+    auto memory_hdr = &boot_info->free_memory_hdr;
 
-    uptr free_mem = convert_to_mb(memory_hdr->free_memory);
+    auto free_mem = convert_to_mb(memory_hdr->free_memory);
     info("\n%d Mb is free\n", free_mem);
 
     /* Compute the size of the bitmap */
@@ -62,7 +62,7 @@ NONNULL void pmm_init(struct boot_info* boot_info) {
     debug("[PMM] Initialized\n");
 }
 
-inline u64 pmm_get_index(void* address, Bitmap* bitmap) {
+ALWAYS_INLINE u64 pmm_get_index(void* address, Bitmap* bitmap) {
     return (u64)((uptr*)address - bitmap->base) / PAGE_SIZE;
 }
 
@@ -73,7 +73,7 @@ void pmm_reserve_page(u64 index) {
 
 void pmm_reserve_pages(void* address, u64 pages) {
     for (u64 i = 0; i < pages; i++) {
-        u64 index = pmm_get_index(address + (i * PAGE_SIZE), &bitmap);
+        auto index = pmm_get_index(address + (i * PAGE_SIZE), &bitmap);
         pmm_reserve_page(index);
     }
 }
@@ -94,7 +94,7 @@ int pmm_check_next_pages(u64 start_bit, uint64_t pages) {
 }
 
 NODISCARD RETURNS_NONNULL void* pmm_alloc(u64 length) {
-    u64 pages_number = div_roundup(length, PAGE_SIZE);
+    auto pages_number = div_roundup(length, PAGE_SIZE);
     void* addr;
 
     /* TODO: Enhance PMM by tracking the first free chunk and the bitmap tail */
@@ -121,7 +121,7 @@ NODISCARD RETURNS_NONNULL void* pmm_alloc(u64 length) {
 
 NONNULL void pmm_free(void* address, u64 pages) {
     for (u64 i = 0; i < pages; i++) {
-        u64 index = pmm_get_index(address + (i * PAGE_SIZE), &bitmap);
+        auto index = pmm_get_index(address + (i * PAGE_SIZE), &bitmap);
         bitmap_clear(&bitmap, index);
         debug("[PMM] freed page\n");
     }

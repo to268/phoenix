@@ -22,25 +22,35 @@
 #include <stddef.h>
 #include <limine.h>
 
-USED struct limine_bootloader_info_request bootloader_info_request = {
-    .id = LIMINE_BOOTLOADER_INFO_REQUEST,
-    .revision = 1,
-    .response = NULL,
+SECTION(".limine_requests_start_marker")
+USED static volatile LIMINE_REQUESTS_START_MARKER
+
+    SECTION(".limine_requests") USED static volatile LIMINE_BASE_REVISION(2);
+
+SECTION(".limine_requests")
+USED static volatile struct limine_bootloader_info_request
+    bootloader_info_request = {
+        .id = LIMINE_BOOTLOADER_INFO_REQUEST,
+        .revision = 1,
+        .response = NULL,
 };
 
-USED struct limine_framebuffer_request framebuffer_request = {
+SECTION(".limine_requests")
+USED static volatile struct limine_framebuffer_request framebuffer_request = {
     .id = LIMINE_FRAMEBUFFER_REQUEST,
     .revision = 1,
     .response = NULL,
 };
 
-USED struct limine_memmap_request memmap_request = {
+SECTION(".limine_requests")
+USED static volatile struct limine_memmap_request memmap_request = {
     .id = LIMINE_MEMMAP_REQUEST,
     .revision = 1,
     .response = NULL,
 };
 
-USED struct limine_module_request module_request = {
+SECTION(".limine_requests")
+USED static volatile struct limine_module_request module_request = {
     .id = LIMINE_MODULE_REQUEST,
     .revision = 1,
     .response = NULL,
@@ -48,15 +58,21 @@ USED struct limine_module_request module_request = {
     .internal_modules = NULL,
 };
 
-USED struct limine_paging_mode_request paging_request = {
+SECTION(".limine_requests")
+USED static volatile struct limine_paging_mode_request paging_request = {
     .id = LIMINE_PAGING_MODE_REQUEST,
     .revision = 1,
     .response = NULL,
     .mode = LIMINE_PAGING_MODE_MAX,
-    .flags = 0,
+    .min_mode = LIMINE_PAGING_MODE_MIN,
+    .max_mode = LIMINE_PAGING_MODE_MAX,
 };
 
-NORETURN extern void halt_cpu();
+SECTION(".limine_requests_end_marker")
+USED static volatile LIMINE_REQUESTS_END_MARKER
+
+    NORETURN extern void
+    halt_cpu();
 
 NONNULL static void limine_get_free_memmap(struct free_memory_hdr* memory_hdr) {
     u8 entries = 0;
@@ -65,8 +81,8 @@ NONNULL static void limine_get_free_memmap(struct free_memory_hdr* memory_hdr) {
     uptr highest_memory = 0;
 
     for (u64 i = 0; i < memmap_request.response->entry_count; i++) {
-        struct limine_memmap_entry* entry = memmap_request.response->entries[i];
-        struct free_memory* free_entry = &memory_hdr->segments[entries];
+        auto entry = memmap_request.response->entries[i];
+        auto free_entry = &memory_hdr->segments[entries];
 
         switch (entry->type) {
         case LIMINE_MEMMAP_USABLE:
@@ -98,6 +114,9 @@ NONNULL static void limine_get_free_memmap(struct free_memory_hdr* memory_hdr) {
 
 NONNULL void limine_handle_requests(struct boot_info* boot_info) {
     debug("[LIMINE] handling requests");
+
+    if (LIMINE_BASE_REVISION_SUPPORTED == false)
+        halt_cpu();
 
     if (framebuffer_request.response->framebuffer_count < 1)
         halt_cpu();

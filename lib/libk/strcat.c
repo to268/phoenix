@@ -19,12 +19,14 @@
 
 DIAGNOSE_AS_BUILTIN(__builtin_strcat, 1, 2)
 MAYBE_UNUSED NONNULL RETURNS_NONNULL char* strcat(char* dest, const char* src) {
-    size_t dest_len = strlen(dest);
+    auto dest_len = strlen(dest);
     size_t i = 0;
+
     while (src[i] != '\0') {
         dest[dest_len + i] = src[i];
         i++;
     }
+
     dest[dest_len + i] = '\0';
 
     return dest;
@@ -33,10 +35,12 @@ MAYBE_UNUSED NONNULL RETURNS_NONNULL char* strcat(char* dest, const char* src) {
 DIAGNOSE_AS_BUILTIN(__builtin_strncat, 1, 2, 3)
 MAYBE_UNUSED NONNULL RETURNS_NONNULL char* strncat(char* dest, const char* src,
                                                    size_t n) {
-    size_t dest_len = strlen(dest);
+    auto dest_len = strlen(dest);
     size_t i = 0;
+
     for (i = 0; i < n && src[i] != '\0'; i++)
         dest[dest_len + i] = src[i];
+
     dest[dest_len + i] = '\0';
 
     return dest;

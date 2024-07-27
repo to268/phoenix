@@ -18,7 +18,8 @@
 #include <phoenix/vga.h>
 
 MAYBE_UNUSED int putchar(int ic, u8 severity) {
-    char c = (char)ic;
+    auto c = (char)ic;
+
     /* Add color severity */
     switch (severity) {
     case KERN_VERBOSE:

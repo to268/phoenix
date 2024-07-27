@@ -20,9 +20,11 @@ DIAGNOSE_AS_BUILTIN(__builtin_memcpy, 1, 2, 3)
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 NODISCARD NONNULL RETURNS_NONNULL void*
 memcpy(void* __restrict dstptr, const void* __restrict srcptr, size_t size) {
-    unsigned char* dst = (unsigned char*)dstptr;
-    const unsigned char* src = (const unsigned char*)srcptr;
+    auto dst = (unsigned char*)dstptr;
+    auto src = (const unsigned char*)srcptr;
+
     for (size_t i = 0; i < size; i++)
         dst[i] = src[i];
+
     return dstptr;
 }

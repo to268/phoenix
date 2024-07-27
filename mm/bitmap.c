@@ -23,7 +23,7 @@ NONNULL void bitmap_set(Bitmap* bitmap, u64 bit) {
     if (bit > bitmap->size)
         return;
 
-    u64 byte_index = BYTE_INDEX(bit);
+    auto byte_index = BYTE_INDEX(bit);
     u8 bit_index = BIT_INDEX(bit);
 
     bitmap->bitmap[byte_index] |= (1 << bit_index);
@@ -33,7 +33,7 @@ NONNULL void bitmap_clear(Bitmap* bitmap, u64 bit) {
     if (bit > bitmap->size)
         return;
 
-    u64 byte_index = BYTE_INDEX(bit);
+    auto byte_index = BYTE_INDEX(bit);
     u8 bit_index = BIT_INDEX(bit);
 
     bitmap->bitmap[byte_index] &= ~(1 << bit_index);
@@ -43,7 +43,7 @@ NODISCARD NONNULL bool bitmap_check(Bitmap* bitmap, u64 bit) {
     if (bit > bitmap->size)
         return NULL;
 
-    u64 byte_index = BYTE_INDEX(bit);
+    auto byte_index = BYTE_INDEX(bit);
     u8 bit_index = BIT_INDEX(bit);
 
     return bitmap->bitmap[byte_index] & (1 << bit_index);

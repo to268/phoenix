@@ -1,43 +1,33 @@
 # Phoenix
+
 An hobbyist Unix-like operating system which aims to be simple and customizable.\
 The prebuild iso file is available in the Release tab.
 
 ## Dependencies
-In order to build it you need to install the following dependencies:
-`GNU Make`, `nasm`, `xorriso`,
-and these additional dependencies when using GCC:
-`bison`, `flex`, `gmp`, `mpc`, `mpfr`, `texinfo`.
 
-Furthermore, you need at least a supported compiler:
-- `GCC` >= 10 (arguably a GCC version capable of compiling Binutils and GCC)
-- `LLVM Clang, LLD` >= 9 is required.
+In order to build it you need to install the following dependencies:
+`meson`, `ninja`, `nasm`, `xorriso`.
+
+Furthermore, you need `LLVM Clang` >= 18.
 
 ## Build
-In order to build it you need to:
-- Build the os toolchain (If using GCC)
-- Generate the config file (set `CONFIG_COMPILER` in the config to llvm if using Clang)
-- Build the os
-- Generate the iso image
 
-Build the cross os toolchain:
+Creates the build dir:
 ```bash
-make toolchain
+./configure.py
 ```
 
-Generate the config file:
+Compiles the kernel:
 ```bash
-make config
+cd build
+ninja
 ```
 
-Build the os:
+Builds the ISO:
 ```bash
-make
-```
-
-Generate the iso image:
-```bash
-make iso
+ninja phoenix-x86_64.iso
 ```
 
 ## Contribution
+
 Feel free to contribute with pull requests and issues.

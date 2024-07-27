@@ -20,8 +20,9 @@ DIAGNOSE_AS_BUILTIN(__builtin_memmove, 1, 2, 3)
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 MAYBE_UNUSED NONNULL RETURNS_NONNULL void*
 memmove(void* dstptr, const void* srcptr, size_t size) {
-    unsigned char* dst = (unsigned char*)dstptr;
-    const unsigned char* src = (const unsigned char*)srcptr;
+    auto dst = (unsigned char*)dstptr;
+    auto src = (const unsigned char*)srcptr;
+
     if (dst < src) {
         for (size_t i = 0; i < size; i++)
             dst[i] = src[i];
@@ -29,5 +30,6 @@ memmove(void* dstptr, const void* srcptr, size_t size) {
         for (size_t i = size; i != 0; i--)
             dst[i - 1] = src[i - 1];
     }
+
     return dstptr;
 }

@@ -53,9 +53,9 @@ NODISCARD static u8 rtc_read(u8 reg) {
 
 void rtc_update_date_time(void) {
     /* Read date */
-    u8 day = rtc_read(0x7);
-    u8 month = rtc_read(0x8);
-    u8 year = rtc_read(0x9);
+    auto day = rtc_read(0x7);
+    auto month = rtc_read(0x8);
+    auto year = rtc_read(0x9);
 
     /* Convert BCD date to binary */
     date.day = (day & 0xf) + ((day / 16) * 10);

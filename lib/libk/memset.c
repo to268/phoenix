@@ -22,7 +22,8 @@ DIAGNOSE_AS_BUILTIN(__builtin_memset, 1, 2, 3)
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 MAYBE_UNUSED NONNULL RETURNS_NONNULL void* memset(void* bufptr, int value,
                                                   size_t size) {
-    unsigned char* buf = (unsigned char*)bufptr;
+    auto buf = (unsigned char*)bufptr;
+
     for (size_t i = 0; i < size; i++)
         buf[i] = (unsigned char)value;
     return bufptr;

@@ -19,7 +19,9 @@
 DIAGNOSE_AS_BUILTIN(__builtin_strlen, 1)
 NODISCARD NONNULL size_t strlen(const char* str) {
     size_t len = 0;
+
     while (str[len])
         len++;
+
     return len;
 }

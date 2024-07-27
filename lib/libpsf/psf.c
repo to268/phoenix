@@ -18,14 +18,14 @@
 #include <phoenix/serial.h>
 
 // NOLINTBEGIN(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
-extern unsigned char _binary_utils_font_psf_start;
-extern unsigned char _binary_utils_font_psf_end;
+extern unsigned char _binary____lib_libpsf_font_psf_start;
+extern unsigned char _binary____lib_libpsf_font_psf_end;
 // NOLINTEND(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
 
 NODISCARD PSF1_font psf1_init(void) {
     PSF1_font font;
 
-    PSF1_header* volatile header = (PSF1_header*)&_binary_utils_font_psf_start;
+    auto* volatile header = (PSF1_header*)&_binary____lib_libpsf_font_psf_start;
     font.header = header;
     font.data = (u8*)header + sizeof(PSF1_header);
 

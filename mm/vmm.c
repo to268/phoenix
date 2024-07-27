@@ -70,11 +70,11 @@ struct page_map vmm_new_pagemap(u8 lvl) {
 }
 
 NONNULL void vmm_init(struct boot_info* boot_info) {
-    struct free_memory_hdr* memory_hdr = &boot_info->free_memory_hdr;
+    auto memory_hdr = &boot_info->free_memory_hdr;
 
     /* Set page map level to 4 */
     /* TODO: Get if the processor supports 5 level paging */
-    struct page_map page_map = vmm_new_pagemap(4);
+    auto page_map = vmm_new_pagemap(4);
 
     // debug("[VMM] mapping base pages");
     // for (uptr i = 0; i < (BASE_MAP_AMOUNT / PAGE_SIZE); i++) {
@@ -88,7 +88,7 @@ NONNULL void vmm_init(struct boot_info* boot_info) {
     debug("[VMM] mapping free entries");
 
     for (uptr i = 0; i < memory_hdr->entries; i++) {
-        struct free_memory* segment = &memory_hdr->segments[i];
+        auto segment = &memory_hdr->segments[i];
         uptr aligned_base = segment->base - segment->base % PAGE_SIZE;
         uptr aligned_length = ((segment->length / PAGE_SIZE) + 1) * PAGE_SIZE;
 
