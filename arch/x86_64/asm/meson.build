@@ -3,6 +3,7 @@ nasm = find_program('nasm')
 asm_sources = [
     'gdt.asm',
     'idt.asm',
+    'sse.asm',
     'utils.asm'
 ]
 

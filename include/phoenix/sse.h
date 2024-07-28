@@ -13,36 +13,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <phoenix/limine.h>
-#include <phoenix/keyboard.h>
-#include <phoenix/kernel.h>
-#include <phoenix/serial.h>
-#include <phoenix/pcspk.h>
-#include <phoenix/boot.h>
-#include <phoenix/gdt.h>
-#include <phoenix/idt.h>
-#include <phoenix/pit.h>
-#include <phoenix/rtc.h>
-#include <phoenix/sse.h>
-#include <phoenix/pmm.h>
-#include <phoenix/vmm.h>
-#include <phoenix/vga.h>
+#ifndef _SSE_H_
+#define _SSE_H_
 
-void init(void) {
-    struct boot_info boot_info;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-    serial_init(SERIAL_COM1, 1);
-    limine_handle_requests(&boot_info);
+#if defined(ARCH_X86_64)
 
-    gdt_init();
-    idt_init();
-    keyboard_init();
-    pit_init(1000);
-    pcspk_init();
-    rtc_init();
-    pmm_init(&boot_info);
-    // vmm_init(&boot_info);
-    sse_init();
+void sse_init(void);
+void sse_save_state(void);
+void sse_restore_state(void);
 
-    kernel_main();
+#endif
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* _SSE_H_ */

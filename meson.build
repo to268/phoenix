@@ -14,7 +14,6 @@ project(
 
 native_compiler = meson.get_compiler('c', native: true)
 cross_compiler = meson.get_compiler('c', native: false)
-
 arch = target_machine.cpu_family()
 
 if not meson.is_cross_build()
@@ -82,6 +81,7 @@ add_project_arguments(
 # Add options
 add_project_arguments(
   [
+    '-DARCH_' + arch.to_upper(),
     '-DKEYBOARD_' + get_option('keyboard_layout').to_upper()
   ],
   language: 'c'

@@ -14,15 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <phoenix/kernel.h>
+#include <phoenix/cpu.h>
 #include <phoenix/pit.h>
 #include <phoenix/rtc.h>
 #include <phoenix/serial.h>
 #include <phoenix/mem.h>
 #include <phoenix/io.h>
-#include <cpuid.h>
 
 void kernel_main(void) {
     rtc_print_date_time();
+    cpu_print_info();
     info("Startup took %d msecs\n", pit_get_ticks());
     info("\n");
     info("Welcome to Phoenix !\n");
