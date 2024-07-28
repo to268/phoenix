@@ -1,1 +1,2 @@
 option('keyboard_layout', type: 'combo', choices: ['qwerty', 'azerty', 'dvorak'], value: 'qwerty')
+option('enable_tests', type : 'boolean', value : false)

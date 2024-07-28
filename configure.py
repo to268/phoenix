@@ -76,7 +76,7 @@ if __name__ == "__main__":
 
     print("BUILD OPTIONS:")
     print("Build type: " + args.build)
-    print("Additional Meson arguments: " + str(args.meson_args))
+    print("Additional Meson arguments: " + str(args.meson_args[1:]))
     print("")
 
     check_clang_version()

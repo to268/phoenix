@@ -44,5 +44,10 @@ void init(void) {
     // vmm_init(&boot_info);
     sse_init();
 
+#if defined(TEST_ENV)
+    extern void tests_main(void);
+    tests_main();
+#else
     kernel_main();
+#endif
 }

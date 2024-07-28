@@ -23,9 +23,10 @@ extern "C" {
 #include <phoenix/types.h>
 #include <phoenix/boot.h>
 
-#define KERN_VERBOSE 4
-#define KERN_INFO    3
-#define KERN_WARN    2
+#define KERN_VERBOSE 5
+#define KERN_INFO    4
+#define KERN_WARN    3
+#define KERN_VALID   2
 #define KERN_ERROR   1
 #define KERN_FATAL   0
 
@@ -42,6 +43,7 @@ MAYBE_UNUSED NONNULL int convert_int_to_char(int number, int base, char* buff);
 #define verbose(...) printk(KERN_VERBOSE, __VA_ARGS__)
 #define info(...)    printk(KERN_INFO, __VA_ARGS__)
 #define warn(...)    printk(KERN_WARN, __VA_ARGS__)
+#define valid(...)   printk(KERN_VALID, __VA_ARGS__)
 #define error(...)   printk(KERN_ERROR, __VA_ARGS__)
 
 /* Basic Functions */

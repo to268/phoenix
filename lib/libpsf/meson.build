@@ -1,5 +1,5 @@
 c_sources = [
-    'psf.c'
+  'psf.c'
 ]
 
 font_target = custom_target(
@@ -7,15 +7,15 @@ font_target = custom_target(
   input: 'font.psf',
   output: 'font.o',
   command: [
-      'llvm-objcopy',
-      '-O',
-      'elf64-x86-64',
-      '-B',
-      'i386',
-      '-I',
-      'binary',
-      '@INPUT@',
-      '@OUTPUT@'
+    'llvm-objcopy',
+    '-O',
+    'elf64-x86-64',
+    '-B',
+    'i386',
+    '-I',
+    'binary',
+    '@INPUT@',
+    '@OUTPUT@'
   ],
 )
 

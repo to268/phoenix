@@ -1,9 +1,9 @@
 subdir('idt')
 
 c_sources = [
-    'gdt.c',
-    'nmi.c',
-    'pic.c'
+  'gdt.c',
+  'nmi.c',
+  'pic.c'
 ]
 
 kernel_lib = static_library('kernel', c_sources)

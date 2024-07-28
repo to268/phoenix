@@ -9,7 +9,7 @@ project(
     'default_library=static'
   ],
   meson_version: '>=1.1.0',
-  version: '0.1-alpha',
+  version: '0.3.3-alpha',
 )
 
 native_compiler = meson.get_compiler('c', native: true)
@@ -31,29 +31,6 @@ if cross_compiler.get_id() == 'clang'
 
 else
   error('Unsupported C compiler: ', 'Only Clang is supported')
-endif
-
-# Set additional flags depending of build type
-buildtype = get_option('buildtype')
-
-link_args = [
-  '-T',
-  meson.current_source_dir() / 'arch' / arch / 'limine.ld',
-  '-nostdlib',
-  '-static',
-  '-z',
-  'max-page-size=0x1000'
-]
-
-if buildtype == 'release'
-  add_project_arguments(
-    [
-      '-flto'
-    ],
-    language: 'c'
-  )
-
-  link_args += '-flto'
 endif
 
 # Basic compiler flags
@@ -78,7 +55,39 @@ add_project_arguments(
   language: 'c'
 )
 
-# Add options
+# Basic linker flags
+add_project_link_arguments(
+  [
+    '-T',
+    meson.current_source_dir() / 'arch' / arch / 'limine.ld',
+    '-nostdlib',
+    '-static',
+    '-z',
+    'max-page-size=0x1000'
+  ],
+  language: 'c'
+)
+
+# Set additional flags depending of build type
+buildtype = get_option('buildtype')
+
+if buildtype == 'release'
+  add_project_arguments(
+    [
+      '-flto'
+    ],
+    language: 'c'
+  )
+
+  add_project_link_arguments(
+    [
+      '-flto'
+    ],
+    language: 'c'
+  )
+endif
+
+# Add compile options
 add_project_arguments(
   [
     '-DARCH_' + arch.to_upper(),
@@ -87,11 +96,25 @@ add_project_arguments(
   language: 'c'
 )
 
+# Add test configuration if necessary
+if get_option('enable_tests')
+  add_project_arguments(
+    [
+      '-DTEST_ENV'
+    ],
+    language: 'c'
+  )
+endif
+
 subdir('arch' / arch)
 subdir('drivers')
 subdir('kernel')
 subdir('lib')
 subdir('mm')
+
+if get_option('enable_tests')
+  subdir('tests')
+endif
 
 libs = []
 
@@ -110,8 +133,12 @@ endforeach
 libs += drivers_lib
 libs += mm_lib
 
+if get_option('enable_tests')
+  libs += tests_lib
+endif
+
 # Links kernel
-kernel = executable('phoenix.elf', ['init/init.c'], link_with: libs, link_args: link_args)
+kernel = executable('phoenix.elf', ['init/init.c'], link_with: libs)
 
 # List kernel symbols
 nm = find_program('nm')
@@ -160,7 +187,7 @@ qemu_runner = find_program('qemu-system-' + arch, required: false)
 
 if qemu_runner.found()
   run_target(
-    'qemu_run',
+    'run',
     command: [
       qemu_runner, qemu_flags, '-cdrom', iso_file
     ],
@@ -168,7 +195,7 @@ if qemu_runner.found()
   )
 
   run_target(
-    'qemu_run_serial',
+    'run_serial',
     command: [
       qemu_runner, qemu_flags, '-serial', 'file:serial.log', '-cdrom', iso_file
     ],
@@ -176,7 +203,7 @@ if qemu_runner.found()
   )
 
   run_target(
-    'qemu_run_debug',
+    'run_debug',
     command: [
       qemu_runner, qemu_flags, '-s', '-S', '-cdrom', iso_file
     ],

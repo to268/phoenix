@@ -1,10 +1,12 @@
 nasm = find_program('nasm')
 
+c_sources = [
+  'tests_runner.c',
+  'test_sse.c',
+]
+
 asm_sources = [
-  'gdt.asm',
-  'idt.asm',
-  'sse.asm',
-  'utils.asm'
+  'test_sse.asm',
 ]
 
 asm_objs = []
@@ -19,4 +21,4 @@ foreach asm_file : asm_sources
   asm_objs += asm_obj
 endforeach
 
-arch_asm_lib = static_library('arch_asm', asm_objs)
+tests_lib = static_library('tests', [c_sources, asm_objs])

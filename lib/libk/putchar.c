@@ -35,6 +35,10 @@ MAYBE_UNUSED int putchar(int ic, u8 severity) {
                               FRAMEBUFFER_COLOR_DARK);
         break;
 
+    case KERN_VALID:
+        framebuffer_set_color(FRAMEBUFFER_COLOR_GREEN, FRAMEBUFFER_COLOR_DARK);
+        break;
+
     case KERN_ERROR:
         framebuffer_set_color(FRAMEBUFFER_COLOR_ORANGE, FRAMEBUFFER_COLOR_DARK);
         break;
