@@ -26,6 +26,7 @@ ALWAYS_INLINE u32 div_roundup(u32 a, u32 b) { return (a + (b - 1)) / b; }
 
 NONNULL void pmm_init(struct boot_info* boot_info) {
     auto memory_hdr = &boot_info->free_memory_hdr;
+    auto hdmm_offset = boot_info->free_memory_hdr.hdmm_offset;
 
     auto free_mem = convert_to_mb(memory_hdr->free_memory);
     info("\n%d Mb is free\n", free_mem);
@@ -39,7 +40,7 @@ NONNULL void pmm_init(struct boot_info* boot_info) {
         struct free_memory* free_segment = &memory_hdr->segments[entry];
 
         if (free_segment->length >= bitmap.size) {
-            bitmap.bitmap = (u8*)free_segment->base;
+            bitmap.bitmap = (u8*)free_segment->base + hdmm_offset;
             memset(bitmap.bitmap, 0, bitmap.size);
             debug("[PMM] We found a place for the bitmap\n");
             break;
@@ -52,7 +53,7 @@ NONNULL void pmm_init(struct boot_info* boot_info) {
 
         /* Do no use the same segment of the bitmap */
         if (free_segment->base != (uptr)bitmap.bitmap) {
-            bitmap.base = (uptr*)free_segment->base;
+            bitmap.base = (uptr*)free_segment->base + hdmm_offset;
 
             debug("[PMM] We found a place to store pages\n");
             break;

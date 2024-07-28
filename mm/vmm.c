@@ -76,31 +76,18 @@ NONNULL void vmm_init(struct boot_info* boot_info) {
     /* TODO: Get if the processor supports 5 level paging */
     auto page_map = vmm_new_pagemap(4);
 
-    // debug("[VMM] mapping base pages");
-    // for (uptr i = 0; i < (BASE_MAP_AMOUNT / PAGE_SIZE); i++) {
-    //     uptr addr = i * PAGE_SIZE;
-    //
-    //     vmm_map(&page_map, addr, addr, VMM_PRESENT | VMM_WRITE | VMM_PRIV_S);
-    //     vmm_map(&page_map, addr, MEM_BASE + addr, VMM_PRESENT | VMM_WRITE |
-    //     VMM_PRIV_S);
-    // }
-
     debug("[VMM] mapping free entries");
-
     for (uptr i = 0; i < memory_hdr->entries; i++) {
         auto segment = &memory_hdr->segments[i];
-        uptr aligned_base = segment->base - segment->base % PAGE_SIZE;
+        auto hdmm_offset = memory_hdr->hdmm_offset;
+        uptr aligned_base =
+            (segment->base + hdmm_offset) - segment->base % PAGE_SIZE;
         uptr aligned_length = ((segment->length / PAGE_SIZE) + 1) * PAGE_SIZE;
 
         for (uptr j = 0; j * PAGE_SIZE < aligned_length; j++) {
             uptr addr = aligned_base + j * PAGE_SIZE;
 
             vmm_map(&page_map, addr, MEM_ADDR + addr, VMM_PRESENT | VMM_WRITE);
-
-            // if (segment->type == STIVALE2_MMAP_KERNEL_AND_MODULES) {
-            //     vmm_map(&page_map, addr, MEM_BASE + addr, VMM_PRESENT |
-            //     VMM_WRITE | VMM_PRIV_S);
-            // }
         }
     }
 

@@ -39,7 +39,7 @@ void init(void) {
     pit_init(1000);
     pcspk_init();
     rtc_init();
-    // pmm_init(&boot_info);
+    pmm_init(&boot_info);
     // vmm_init(&boot_info);
     kernel_main();
 }

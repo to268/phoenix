@@ -33,6 +33,7 @@ struct free_memory_hdr {
     u64 entries;
     u64 free_memory;
     u64 total_memory;
+    uptr hdmm_offset;
     uptr highest_memory;
     struct free_memory segments[LIMIT_SEGMENTS];
 };

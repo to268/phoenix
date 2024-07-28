@@ -68,6 +68,15 @@ USED static volatile struct limine_paging_mode_request paging_request = {
     .max_mode = LIMINE_PAGING_MODE_MAX,
 };
 
+SECTION(".limine_requests")
+USED static volatile struct limine_hhdm_request hhdm_request = {
+    .id = LIMINE_HHDM_REQUEST, .revision = 0, .response = NULL};
+
+SECTION(".limine_requests")
+USED static volatile struct limine_kernel_address_request
+    kernel_address_request = {.id = LIMINE_KERNEL_ADDRESS_REQUEST,
+                              .revision = 0};
+
 SECTION(".limine_requests_end_marker")
 USED static volatile LIMINE_REQUESTS_END_MARKER
 
@@ -84,11 +93,7 @@ NONNULL static void limine_get_free_memmap(struct free_memory_hdr* memory_hdr) {
         auto entry = memmap_request.response->entries[i];
         auto free_entry = &memory_hdr->segments[entries];
 
-        switch (entry->type) {
-        case LIMINE_MEMMAP_USABLE:
-        case LIMINE_MEMMAP_KERNEL_AND_MODULES:
-        case LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE:
-        case LIMINE_MEMMAP_ACPI_RECLAIMABLE:
+        if (entry->type == LIMINE_MEMMAP_USABLE) {
             free_entry->base = entry->base;
             free_entry->length = entry->length;
 
@@ -109,6 +114,7 @@ NONNULL static void limine_get_free_memmap(struct free_memory_hdr* memory_hdr) {
     memory_hdr->free_memory = free_memory;
     memory_hdr->total_memory = total_memory;
     memory_hdr->highest_memory = highest_memory;
+    memory_hdr->hdmm_offset = hhdm_request.response->offset;
     debug("[LIMINE] built free segment memmap");
 }
 
