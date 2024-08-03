@@ -5,9 +5,9 @@ import shutil
 import subprocess
 
 
-def get_b2sum(cfg_path):
+def get_b2sum(conf_path):
     try:
-        result = subprocess.check_output(["b2sum", cfg_path], text=True)
+        result = subprocess.check_output(["b2sum", conf_path], text=True)
         return result.split()[0]
     except subprocess.CalledProcessError:
         exit(-1)
@@ -15,7 +15,7 @@ def get_b2sum(cfg_path):
 
 def enroll_config(iso_dir):
     limine_utility = iso_dir + os.sep + "limine"
-    limine_cfg = iso_dir + os.sep + "limine.cfg"
+    limine_conf = iso_dir + os.sep + "limine.conf"
     limine_bios_sys = iso_dir + os.sep + "limine-bios.sys"
 
     command = [
@@ -23,7 +23,7 @@ def enroll_config(iso_dir):
         "enroll-config",
         "--quiet",
         limine_bios_sys,
-        get_b2sum(limine_cfg),
+        get_b2sum(limine_conf),
     ]
 
     try:
