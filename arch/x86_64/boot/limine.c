@@ -32,45 +32,45 @@ USED static volatile struct limine_bootloader_info_request
     bootloader_info_request = {
         .id = LIMINE_BOOTLOADER_INFO_REQUEST,
         .revision = 1,
-        .response = NULL,
+        .response = nullptr,
 };
 
 SECTION(".limine_requests")
 USED static volatile struct limine_framebuffer_request framebuffer_request = {
     .id = LIMINE_FRAMEBUFFER_REQUEST,
     .revision = 1,
-    .response = NULL,
+    .response = nullptr,
 };
 
 SECTION(".limine_requests")
 USED static volatile struct limine_memmap_request memmap_request = {
     .id = LIMINE_MEMMAP_REQUEST,
     .revision = 1,
-    .response = NULL,
+    .response = nullptr,
 };
 
 SECTION(".limine_requests")
 USED static volatile struct limine_module_request module_request = {
     .id = LIMINE_MODULE_REQUEST,
     .revision = 1,
-    .response = NULL,
+    .response = nullptr,
     .internal_module_count = 0,
-    .internal_modules = NULL,
+    .internal_modules = nullptr,
 };
 
 SECTION(".limine_requests")
 USED static volatile struct limine_paging_mode_request paging_request = {
     .id = LIMINE_PAGING_MODE_REQUEST,
     .revision = 1,
-    .response = NULL,
-    .mode = LIMINE_PAGING_MODE_MAX,
-    .min_mode = LIMINE_PAGING_MODE_MIN,
-    .max_mode = LIMINE_PAGING_MODE_MAX,
+    .response = nullptr,
+    .mode = LIMINE_PAGING_MODE_X86_64_4LVL,
+    .min_mode = LIMINE_PAGING_MODE_X86_64_4LVL,
+    .max_mode = LIMINE_PAGING_MODE_X86_64_4LVL,
 };
 
 SECTION(".limine_requests")
 USED static volatile struct limine_hhdm_request hhdm_request = {
-    .id = LIMINE_HHDM_REQUEST, .revision = 0, .response = NULL};
+    .id = LIMINE_HHDM_REQUEST, .revision = 0, .response = nullptr};
 
 SECTION(".limine_requests")
 USED static volatile struct limine_kernel_address_request
@@ -135,7 +135,7 @@ NONNULL void limine_handle_requests(struct boot_info* boot_info) {
          bootloader_info_request.response->revision,
          bootloader_info_request.response->version);
 
-    if (paging_request.response == NULL)
+    if (paging_request.response == nullptr)
         panic("No paging available");
 
     info("paging mode: LVL%d\n", paging_request.mode ? 5 : 4);

@@ -21,7 +21,7 @@
 #include <phoenix/vmm.h>
 
 NONNULL RETURNS_NONNULL uptr* vmm_get_next_level(uptr* current_lvl, u8 entry) {
-    uptr* ret = 0;
+    uptr* ret = nullptr;
 
     /* Check for the present flag */
     if (current_lvl[entry] & PT_PRESENT) {
